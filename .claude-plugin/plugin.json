@@ -1,0 +1,8 @@
+{
+  "name": "tstack",
+  "version": "0.1.0",
+  "description": "Six-skill chain that turns a rough product idea into a documented, milestone-sequenced, built project. Discovery → PRODUCT.md → technical docs → ROADMAP → milestone loop, plus an iteration skill for adding features to existing TStack projects.",
+  "author": { "name": "Tate Jennings" },
+  "license": "MIT",
+  "keywords": ["product", "planning", "documentation", "roadmap", "workflow"]
+}
