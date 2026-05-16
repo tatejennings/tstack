@@ -37,6 +37,6 @@ When the brief is saved and committed, end with:
 
 > Discovery complete — `docs/1 - Discovery/business-brief.md` is ready.
 >
-> **Next: start a fresh Claude Code session, then run `tstack-product`** (or say "let's write the PRD").
+> **Next: run `tstack-product`** (or say "let's write the PRD").
 >
-> Why a fresh session: `tstack-product` produces a stronger PRODUCT.md when it reads the brief as a finalized artifact from disk rather than continuing from the discovery conversation.
+> Fresh session recommended (but not required) for projects with non-trivial scope — `tstack-product` produces a stronger PRODUCT.md when it reads the brief as a finalized artifact from disk. For smaller projects or when iterating fast, continuing in this session is fine.

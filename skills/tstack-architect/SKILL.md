@@ -98,9 +98,23 @@ Wait for the answer. Generate only the requested subset.
 
 2. **Write `docs/DECISIONS.md` first** with the four foundational ADRs (plus ADR-5 if AI is in scope). The rest of the doc set must be internally consistent with these — for example, if ADR-1 specifies row-level security, the ARCHITECTURE.md data-flow diagram needs to show where the policy is enforced.
 
-3. **Present tech-stack options with tradeoffs**, don't choose unilaterally. For each significant choice (language/framework, database, auth provider, hosting, key infrastructure), present 2–3 options with pros/cons and let the user pick. Append each choice as a new ADR (ADR-6, ADR-7, …).
+3. **Propose the opinionated 2026 default stack; only present alternatives where the user signals they want to deviate.** Don't open every choice as a three-way menu — that creates paralysis. Lead with the defaults, ask the user to confirm or override, and only expand into tradeoffs when they push back. Append every accepted choice as a new ADR (ADR-6, ADR-7, …).
 
-   **Opinionated 2026 defaults** to use as the *first* option presented (the user can still pick something else, but these should be the lead): TypeScript strict + Next.js App Router for web; Postgres for transactional data; Vercel or Cloudflare for deploy; shadcn/ui for components; Vitest + Playwright for testing; pnpm for package management. For iOS: Swift + SwiftUI + SwiftData. For Python services: uv + FastAPI + Pydantic. These are defaults, not mandates.
+   **Default stacks by project type** (use these unless the user has a specific reason to deviate):
+
+   | Project type | Defaults |
+   |---|---|
+   | Web app | Next.js App Router · TypeScript strict · Postgres · Vercel deploy · shadcn/ui · Vitest + Playwright · pnpm |
+   | Mobile (iOS) | Swift · SwiftUI · SwiftData · async/await · Xcode 16+ · SwiftLint + SwiftFormat |
+   | Mobile (Android) | Kotlin · Jetpack Compose · Room · Hilt · Kotest |
+   | Python service | uv · FastAPI · Pydantic v2 · Postgres · pytest · Ruff |
+   | Cross-platform mobile | React Native + Expo · TypeScript strict · TanStack Query · NativeWind |
+   | CLI tool | Bun + TypeScript · or Rust + clap if performance matters · or Python + Click for prototyping |
+   | Edge / serverless | Cloudflare Workers · Hono · D1 or R2 for storage · Wrangler |
+
+   For auth: **Clerk** (managed, fastest to ship) is the default for web apps; Supabase Auth if Supabase is already in the stack; Auth0 for enterprise/SAML needs; only build custom if there's a documented reason none of the above fit. For analytics / error tracking: **Sentry** for errors, **PostHog** for product analytics — both have generous free tiers and Vercel integrations. For background jobs: **Inngest** or **Trigger.dev** (typed, durable, retry-aware); roll your own only if requirements truly demand it.
+
+   When the user wants to deviate from a default, ask why and record the rationale in the relevant ADR. "I prefer Remix" is fine if recorded; silent override is not. The point isn't to force the defaults — it's to make deviations explicit choices rather than accidental ones.
 
 4. **Write one doc at a time**, in this order, getting user review between each:
    1. ARCHITECTURE.md — system overview, tech-stack table with rationale, repo structure, module boundaries, data flow (showing where security/observability boundaries live), deployment topology
@@ -108,7 +122,7 @@ Wait for the answer. Generate only the requested subset.
    3. CONVENTIONS.md — code style, naming, file organization, anti-patterns. Cross-reference TESTING.md rather than duplicating testing rules.
    4. TESTING.md — unit/integration/e2e split with framework choice for each; coverage floor (be specific: "85% statements / 75% branches" or similar); where tests live (alongside code preferred for 2026 web stacks); mocking strategy; test data approach; what's in CI vs. local; how to verify a11y (axe in CI), security (dependency scanning), and the four ADRs' acceptance.
 
-   **Stop here, commit, and start a fresh session** before continuing with breakout specs and AGENTS.md. This is the documented context-management breakpoint — without it, the specs phase produces lower-quality output.
+   Commit the four core docs here. For Full-sized projects, **consider** starting a fresh session before continuing with breakout specs and AGENTS.md — the specs phase is context-heavy. For Minimum/Standard projects (no breakout specs or just one), continuing in the same session is usually fine.
 
 5. **In the fresh session, continue with:**
    5. Breakout specs in `docs/2 - Specs/`:
@@ -146,6 +160,6 @@ When the full set is complete and committed:
 
 > Technical docs complete. {N} files written under `docs/` plus AGENTS.md and CLAUDE.md at repo root. {N} ADRs recorded in DECISIONS.md (including the four foundational + tech-stack choices{ + AI strategy if applicable}).
 >
-> **Next: start a fresh Claude Code session, then run `tstack-roadmap`** (or say "make a roadmap").
+> **Next: run `tstack-roadmap`** (or say "make a roadmap").
 >
-> Why a fresh session: ROADMAP.md is generated by reading the entire `docs/` tree at once. A fresh session has the full context budget available for that.
+> Fresh session recommended — ROADMAP.md is generated by reading the entire `docs/` tree, which benefits from a clean context budget. For small projects (5-6 docs total), continuing here is fine.

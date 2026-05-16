@@ -83,6 +83,6 @@ For the full template, troubleshooting (thin requirements, scope creep, missing 
 
 > PRODUCT.md complete — committed to `docs/PRODUCT.md`.
 >
-> **Next: start a fresh Claude Code session, then run `tstack-architect`** (or say "design the architecture").
+> **Next: run `tstack-architect`** (or say "design the architecture").
 >
-> Why a fresh session: technical docs are higher quality when Claude reads PRODUCT.md as a finalized artifact from disk, not as something just written in context.
+> Fresh session recommended for non-trivial projects — `tstack-architect` produces several docs and benefits from a clean context budget. For small projects, continuing here is fine.
