@@ -148,7 +148,7 @@ claude-code-starter/             # this repo = the plugin
 │   └── tstack-specify/          SKILL.md (no migrated reference — written from scratch)
 ├── README.md                    # you are here
 ├── CLAUDE.md                    # for someone editing the plugin
-├── .claudeignore.example        # template to copy into consumer projects
+├── BACKLOG.md                   # plugin's own backlog of upcoming features
 └── images/banner.jpg
 ```
 

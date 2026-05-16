@@ -42,3 +42,4 @@ The chain: `discover → product → architect → roadmap → plan → build`. 
 - **Update the auto-triggering of a skill:** edit only the `description:` field in the SKILL.md frontmatter. Test by saying the trigger phrases in a consumer project.
 - **Add a new skill:** create `skills/tstack-<name>/SKILL.md` following the established shape. Update README's lifecycle diagram and skill table. Decide where it fits in the chain (or whether it's a parallel iteration skill like `tstack-specify`).
 - **Test the plugin:** see README's Quick Start. From a scratch directory, `/plugin install <this-repo-path>` and walk the chain.
+- **Track future work:** add to `BACKLOG.md` at the repo root. Solo-dev shorthand list of upcoming features, content gaps, and process items.
