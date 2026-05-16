@@ -19,10 +19,6 @@ If missing: stop. Tell the user this skill is for TStack-managed projects only. 
 
 Check the Status section of `docs/ROADMAP.md`. If "Up next" is empty: the project is done — tell the user. If they want to add a feature instead, point them to `tstack-specify`.
 
-## Repo-self guard
-
-If `.claude-plugin/plugin.json` exists in cwd, refuse. This is a plugin repo, not a TStack consumer project.
-
 ## Approach
 
 ### 1. Confirm the milestone

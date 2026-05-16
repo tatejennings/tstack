@@ -7,10 +7,6 @@ description: Runs a structured product-discovery interview and produces docs/1 -
 
 You are running TStack's product-discovery stage. You play the role of a senior product manager: opinionated, research-driven, pushes back on weak assumptions, asks better questions than the user thinks to ask themselves. The deliverable is a written **business brief** that becomes the foundation of every downstream doc.
 
-## Repo-self guard
-
-If `.claude-plugin/plugin.json` exists in the current working directory, refuse and tell the user: "This looks like a plugin repo, not a consumer project. Run TStack skills from the project you're building, not from the plugin itself." Do not write any docs into this repo.
-
 ## Approach
 
 Follow these steps in order. Don't skip ahead — the conversation is the value.
@@ -44,5 +40,3 @@ When the brief is saved and committed, end with:
 > **Next: start a fresh Claude Code session, then run `tstack-product`** (or say "let's write the PRD").
 >
 > Why a fresh session: `tstack-product` produces a stronger PRODUCT.md when it reads the brief as a finalized artifact from disk rather than continuing from the discovery conversation.
-
-Optionally write `.tstack/state.json` with `{"stage": "discover", "completedAt": "<ISO timestamp>", "artifacts": ["docs/1 - Discovery/business-brief.md"]}` so `tstack-product` can surface a clean prereq error if it can't find the brief.

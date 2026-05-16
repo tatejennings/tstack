@@ -28,10 +28,6 @@ docs/1 - Discovery/business-brief.md
 
 If a required input is missing: stop and tell the user to run `tstack-architect` first.
 
-## Repo-self guard
-
-If `.claude-plugin/plugin.json` exists in cwd, refuse.
-
 ## Approach
 
 1. **Read every doc in `docs/`** before doing anything else. Extract:
@@ -101,5 +97,3 @@ For the full milestone template, "Read before starting" rules, "Done when" rules
 > Up next: M0 — {name}.
 >
 > **Next: run `tstack-plan`** (or say "plan milestone M0"). No fresh session needed — `tstack-plan` reads only the docs the milestone points at, not the whole tree.
-
-Optionally update `.tstack/state.json` `stage` to `"roadmap"`.

@@ -21,10 +21,6 @@ If it's missing: this is greenfield. Stop and tell the user to run `tstack-produ
 
 Optional but used heavily if present: `docs/ARCHITECTURE.md`, `docs/API.md`, `docs/CONVENTIONS.md`, `docs/DECISIONS.md`, `docs/ROADMAP.md`, `docs/2 - Specs/*.md`.
 
-## Repo-self guard
-
-If `.claude-plugin/plugin.json` exists in cwd, refuse. This is the TStack plugin repo, not a consumer project.
-
 ## Approach
 
 ### 1. Feature interview
@@ -57,18 +53,25 @@ Present a checklist. Use this exact format so the user can give per-item approva
 ```
 Proposed updates for "{feature name}":
 
+Changes I want to make:
 - [ ] PRODUCT.md — {what changes: new feature section under §X, updated data model for User (adds `timezone`), updated acceptance criteria for §Y}
-- [ ] ARCHITECTURE.md — {no change | what changes}
-- [ ] API.md — {no change | which endpoints get added/modified, with method+path}
-- [ ] CONVENTIONS.md — {no change | which new pattern is being introduced}
-- [ ] DECISIONS.md — {no change | which new ADR is being added, ADR-N: "..."}
-- [ ] 2 - Specs/ — {no change | new file 2 - Specs/{name}.md, or edits to existing spec X}
+- [ ] API.md — {which endpoints get added/modified, with method+path}
+- [ ] 2 - Specs/{name}.md — {new file | edits to existing spec X}
 - [ ] ROADMAP.md — append milestones {Mx (server-side), My (UI), iz (mobile)} with dependencies on {Ma, Mb}
 
-Reply: approve / modify / reject per item. Type "approve all" if everything looks right.
+Docs I considered but propose NOT to change (challenge any of these if you disagree):
+- ARCHITECTURE.md — {one-line reason, e.g. "no new module boundaries; existing data flow handles this"}
+- CONVENTIONS.md — {one-line reason, e.g. "uses existing API + validation patterns"}
+- DECISIONS.md — {one-line reason, e.g. "no architecturally significant choice; defers to ADR-3"}
+- 2 - Specs/encryption.md — {one-line reason, e.g. "this feature doesn't store new sensitive fields"}
+- {…any other existing spec files} — {one-line reason each}
+
+Reply: approve / modify / reject per item in either list. Type "approve all" if everything looks right, or call out a "NOT to change" item you think I'm wrong about.
 ```
 
-Wait for explicit approval per line. Modify the proposal based on user pushback. Re-present if it changes substantially.
+The "considered but not changing" list is mandatory — it surfaces the negatives so the user can challenge a missed edit. Every existing file in `docs/` that *could* plausibly be affected must appear in one of the two lists. If you skip a file silently, the user has no way to push back. Enumerate the actual file paths present in the repo, not abstract categories.
+
+Wait for explicit approval. Modify the proposal based on user pushback (including challenges to "no change" items). Re-present if it changes substantially.
 
 ### 4. Apply edits one doc at a time
 

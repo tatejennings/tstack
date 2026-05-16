@@ -17,10 +17,6 @@ Required state:
 
 If you're on `main` or have no approved plan: stop and tell the user to run `tstack-plan` first. Don't try to plan-as-you-go — that's the failure mode this split exists to prevent.
 
-## Repo-self guard
-
-If `.claude-plugin/plugin.json` exists in cwd, refuse.
-
 ## Approach
 
 ### 1. Implement the plan
@@ -35,15 +31,38 @@ If the plan turns out to be wrong mid-build (a missing piece, an unanticipated c
 
 ### 2. Verify against "Done when" criteria
 
-This is mandatory and explicit — not a vibe check. Open `docs/ROADMAP.md`, find this milestone's "Done when" list, and walk every criterion with the user. For each:
+**Mandatory format: every criterion is verified by running a real command and quoting its output back into the conversation.** "I checked it" / "looks good" / "verified ✓" without quoted output does not count and must not be accepted.
 
-- Run the relevant test or command
-- Show the user the actual output (don't just claim it passed)
-- For isolation criteria ("user A can't see user B's data"): actually run the cross-account test with two sessions
-- For encryption round-trips: encrypt → store → read → decrypt and confirm the original is returned
-- For background jobs: confirm both success and failure paths
+Open `docs/ROADMAP.md`, find this milestone's "Done when" list, and produce a verification report in this exact shape:
 
-If any criterion fails: fix it. Don't move on. Don't mark the milestone done.
+````
+## Verification for M{id} — {name}
+
+### Criterion 1: {paste the criterion verbatim}
+Command: `<the command run>`
+Output:
+```
+<paste the actual output, truncated to the relevant ~20 lines>
+```
+Result: PASS / FAIL — {one-line reason}
+
+### Criterion 2: …
+(repeat for every criterion)
+````
+
+Per-criterion command guidance:
+
+- **API endpoints / happy path:** `curl` (or the project's test command) with a real request; show status code + response body.
+- **Type safety / build health:** `tsc --noEmit` (or `swift build`, `cargo check`, etc.); show "0 errors" or the failure.
+- **Unit / integration tests:** the project's test command (`vitest run`, `pytest`, `swift test`, …); show the pass/fail summary line.
+- **Isolation criteria** ("user A cannot see user B's data"): run the cross-account test with two distinct auth tokens; show both responses side by side.
+- **Encryption round-trip:** encrypt → store → read → decrypt; show input value, stored ciphertext (truncated), and output value.
+- **Background jobs:** trigger the job; show both the success log and a forced-failure log (or its absence with a "no error scenario possible" note).
+- **Manual UI flows** (last resort, only when no automated path exists): describe the exact click sequence, paste a screenshot path or console output captured during it, and call out that this is manual.
+
+If a criterion can't be verified by any of the above, the criterion is not testable. Stop and tell the user the roadmap entry has a soft criterion that needs rewriting before the milestone can be shipped.
+
+If any criterion is FAIL: fix it. Don't move on. Don't mark the milestone done.
 
 ### 3. Commit final state and merge
 

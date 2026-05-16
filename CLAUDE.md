@@ -19,10 +19,10 @@ The chain: `discover → product → architect → roadmap → build`. Plus `spe
 ## Editorial Conventions (Match These When Editing)
 
 - **Filenames use full words, no acronyms.** `PRODUCT.md`, not `PRD.md`.
-- **Every SKILL.md follows the same shape:** frontmatter → Prereq check → Repo-self guard → Approach → Reference handoff → Handoff. Don't break the symmetry — it makes the chain readable.
-- **Every SKILL.md has a repo-self guard** that refuses to run if `.claude-plugin/plugin.json` exists in cwd. This prevents the skill from writing consumer docs into the plugin repo itself.
+- **Every SKILL.md follows the same shape:** frontmatter → Prereq check → Approach → Reference handoff → Handoff. Don't break the symmetry — it makes the chain readable.
 - **Frontmatter `description`** must lead with what the skill does, then "Use when…" triggers, then explicit Input/Output, then handoff. The Input clause is what makes Claude check prerequisites before triggering.
 - **`tstack-product` and `tstack-specify` are mutually exclusive triggers.** Product creates initial PRODUCT.md; specify amends an existing one. Both descriptions carry an explicit negative phrase to disambiguate.
+- **Verification in `tstack-build` requires quoted command output.** Every "Done when" criterion is checked by running a real command and pasting its output into the conversation. "Verified ✓" without output is not acceptable — match this discipline when editing the verification section.
 
 ## What NOT to Do
 
