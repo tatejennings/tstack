@@ -1,6 +1,6 @@
 ---
 name: tstack-specify
-description: Specifies a new feature for an existing TStack project. Interviews the user about the change, proposes which docs need updates (PRODUCT.md, ARCHITECTURE.md, API.md, breakout specs) with per-item approval before editing, then appends new milestones to docs/ROADMAP.md. Use when docs/PRODUCT.md already exists and the user says "let's add X feature", "I want to spec out a new capability", "this product needs to change", "add a feature", or "extend the product". Do not use to create the initial PRODUCT.md — that's tstack-product. Input is the existing doc set; output is updated docs + new milestone entries in ROADMAP.md. Hands off to tstack-build.
+description: Specifies a new feature for an existing TStack project. Interviews the user about the change, proposes which docs need updates (PRODUCT.md, ARCHITECTURE.md, API.md, breakout specs) with per-item approval before editing, then appends new milestones to docs/ROADMAP.md. Use when docs/PRODUCT.md already exists and the user says "let's add X feature", "I want to spec out a new capability", "this product needs to change", "add a feature", or "extend the product". Do not use to create the initial PRODUCT.md — that's tstack-product. Input is the existing doc set; output is updated docs + new milestone entries in ROADMAP.md. Hands off to tstack-plan.
 ---
 
 # tstack-specify
@@ -116,6 +116,6 @@ When all approved edits are applied and committed:
 
 > Feature "{name}" specified. Doc updates: {list}. New milestones in ROADMAP.md: {Mx, My, …}.
 >
-> **Next: run `tstack-build`** (or say "start milestone {Mx}") to implement.
+> **Next: run `tstack-plan`** (or say "plan milestone {Mx}") to start implementation.
 >
-> No fresh session required — `tstack-build` reads the roadmap on entry.
+> No fresh session required — `tstack-plan` reads only what the new milestone points at.

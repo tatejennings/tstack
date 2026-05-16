@@ -1,11 +1,11 @@
 ---
 name: tstack-roadmap
-description: Reads the full docs/ tree and produces docs/ROADMAP.md — a dependency-sequenced list of milestones with "Read before starting" doc pointers and "Done when" criteria. Use when ARCHITECTURE.md and PRODUCT.md exist and the user asks "what do we build first", "sequence the work", or "make a roadmap". Input is docs/PRODUCT.md + docs/ARCHITECTURE.md (API.md, DECISIONS.md, and specs optional); output is docs/ROADMAP.md. Hands off to tstack-build.
+description: Reads the full docs/ tree and produces docs/ROADMAP.md — a dependency-sequenced list of milestones with "Read before starting" doc pointers and "Done when" criteria. Use when ARCHITECTURE.md and PRODUCT.md exist and the user asks "what do we build first", "sequence the work", or "make a roadmap". Input is docs/PRODUCT.md + docs/ARCHITECTURE.md (API.md, DECISIONS.md, and specs optional); output is docs/ROADMAP.md. Hands off to tstack-plan.
 ---
 
 # tstack-roadmap
 
-You are running TStack's roadmap stage. You read every doc the previous skills produced and synthesize them into a strict, dependency-sequenced list of milestones that an implementer (or another instance of you, via `tstack-build`) can pick up one at a time.
+You are running TStack's roadmap stage. You read every doc the previous skills produced and synthesize them into a strict, dependency-sequenced list of milestones that an implementer (or another instance of you, via `tstack-plan` → `tstack-build`) can pick up one at a time.
 
 ## Prereq check
 
@@ -100,6 +100,6 @@ For the full milestone template, "Read before starting" rules, "Done when" rules
 > Roadmap complete — `docs/ROADMAP.md` written with {N} milestones across {workstreams}.
 > Up next: M0 — {name}.
 >
-> **Next: run `tstack-build`** (or say "start milestone M0"). No fresh session needed — `tstack-build` is the implementation loop and doesn't need to re-read the whole doc set.
+> **Next: run `tstack-plan`** (or say "plan milestone M0"). No fresh session needed — `tstack-plan` reads only the docs the milestone points at, not the whole tree.
 
 Optionally update `.tstack/state.json` `stage` to `"roadmap"`.

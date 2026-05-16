@@ -2,7 +2,7 @@
 
 # TStack — a Claude Code Plugin
 
-TStack is a six-skill Claude Code plugin that takes you from a rough product idea to a fully documented, milestone-sequenced, built project. Each stage is a skill that auto-triggers based on what you say, reads its input artifact from disk, produces its output, and hands off to the next.
+TStack is a seven-skill Claude Code plugin that takes you from a rough product idea to a fully documented, milestone-sequenced, built project. Each stage is a skill that auto-triggers based on what you say, reads its input artifact from disk, produces its output, and hands off to the next.
 
 > Replaces a previous paste-the-guide-into-each-session workflow with a chain of skills that activate automatically and remember the state of your project on disk.
 
@@ -14,15 +14,17 @@ flowchart LR
   B["**tstack-product**<br/>brief → PRODUCT.md"]
   C["**tstack-architect**<br/>PRODUCT.md → ARCHITECTURE / API / CONVENTIONS / DECISIONS / specs / AGENTS / CLAUDE"]
   D["**tstack-roadmap**<br/>full docs/ → ROADMAP.md"]
-  E["**tstack-build**<br/>milestone loop: branch → plan → build → verify → merge"]
+  P["**tstack-plan**<br/>milestone + docs → approved plan + branch"]
+  E["**tstack-build**<br/>plan → implement → verify → merge → update status"]
   F["**tstack-specify**<br/>(iteration) add new feature → update docs + ROADMAP"]
-  A --> B --> C --> D --> E
-  F --> E
+  A --> B --> C --> D --> P --> E
+  E -.next milestone.-> P
+  F --> P
 ```
 
-Five skills form a one-time setup chain. The sixth — `tstack-specify` — is the iteration skill you reach for every time you add a feature after launch.
+Four skills form a one-time setup chain (`discover` → `product` → `architect` → `roadmap`). Then `tstack-plan` and `tstack-build` form the per-milestone loop you run repeatedly. `tstack-specify` is the iteration skill for adding features after launch — it hands into the same `plan` → `build` loop.
 
-## The Six Skills
+## The Seven Skills
 
 | Skill | When it triggers | Input | Output |
 |---|---|---|---|
@@ -30,7 +32,8 @@ Five skills form a one-time setup chain. The sixth — `tstack-specify` — is t
 | `tstack-product` | "let's write the PRD" after discovery | business brief | `docs/PRODUCT.md` |
 | `tstack-architect` | "design the architecture" after PRODUCT.md | PRODUCT.md | ARCHITECTURE / API / CONVENTIONS / DECISIONS / specs + AGENTS.md + CLAUDE.md |
 | `tstack-roadmap` | "make a roadmap" / "what do we build first" | full `docs/` tree | `docs/ROADMAP.md` |
-| `tstack-build` | "start milestone Mx" / "build the next one" | ROADMAP.md + specs | shipped milestone + updated status |
+| `tstack-plan` | "plan milestone Mx" / "what should we build next" | ROADMAP.md + milestone-referenced docs | approved implementation plan + feature branch |
+| `tstack-build` | "build it" / "ship this milestone" after a plan is approved | approved plan + feature branch | shipped milestone + merged branch + updated status |
 | `tstack-specify` | "let's add feature X" in an established project | existing PRODUCT.md (+ ROADMAP.md) | updated docs + appended milestones |
 
 ## Install
@@ -42,7 +45,7 @@ This repo *is* the plugin. From a project where you want to use TStack:
 /plugin install /path/to/claude-code-starter
 ```
 
-Once installed, the skills auto-trigger when their descriptions match what you say — no manual invocation required. You can also invoke explicitly with `/tstack-discover`, `/tstack-product`, etc., if you want to skip the trigger phrase.
+Once installed, the skills auto-trigger when their descriptions match what you say — no manual invocation required. You can also invoke explicitly with `/tstack-discover`, `/tstack-plan`, etc., if you want to skip the trigger phrase.
 
 ## Quick Start
 
@@ -52,20 +55,24 @@ Once installed, the skills auto-trigger when their descriptions match what you s
 
    `tstack-discover` activates, interviews you, researches competitors, and writes `docs/1 - Discovery/business-brief.md`. Commit it and start a fresh session.
 
-2. **Walk the chain.** In each new session, the next skill triggers from natural language:
+2. **Walk the setup chain.** In each new session, the next skill triggers from natural language:
 
    - "let's write the PRD" → `tstack-product` produces PRODUCT.md
    - "design the architecture" → `tstack-architect` produces the technical doc set
    - "make a roadmap" → `tstack-roadmap` produces ROADMAP.md
-   - "start milestone M0" → `tstack-build` enters the implementation loop
 
-3. **Ship milestones.** `tstack-build` handles the per-milestone loop (branch → plan → build → verify → merge → update status). Repeat until the roadmap is done.
+3. **Per-milestone loop:** for every milestone, run two skills back-to-back in the same session:
+
+   - "plan milestone M0" → `tstack-plan` reads the milestone's referenced docs, branches, and produces an approved implementation plan
+   - "build it" → `tstack-build` implements the plan, verifies "Done when" criteria, merges, and updates ROADMAP.md status
+
+   Then loop into the next milestone (`tstack-plan` again). Repeat until the roadmap is done.
 
 4. **Add features after launch.** When you want to extend the product, say:
 
    > "I want to add a CSV import feature."
 
-   `tstack-specify` activates, interviews you, proposes which docs need updates (with per-item approval), applies them, appends new milestones to ROADMAP.md, and hands off to `tstack-build`.
+   `tstack-specify` activates, interviews you, proposes which docs need updates (with per-item approval), applies them, appends new milestones to ROADMAP.md, and hands off to `tstack-plan` for the first new milestone.
 
 ## Output Structure (in a Consumer Project)
 
@@ -121,6 +128,7 @@ claude-code-starter/             # this repo = the plugin
 │   ├── tstack-product/          SKILL.md + references/full-guide.md
 │   ├── tstack-architect/        SKILL.md + references/full-guide.md
 │   ├── tstack-roadmap/          SKILL.md + references/full-guide.md
+│   ├── tstack-plan/             SKILL.md (shares tstack-build's reference)
 │   ├── tstack-build/            SKILL.md + references/full-guide.md
 │   └── tstack-specify/          SKILL.md (no migrated reference — written from scratch)
 ├── README.md                    # you are here

@@ -1,81 +1,51 @@
 ---
 name: tstack-build
-description: Drives the per-milestone implementation loop for a TStack-managed project — branch → plan → build → verify → merge → update roadmap status. Use when docs/ROADMAP.md exists and the user says "start milestone Mx", "build the next milestone", "implement M4", or is ready to ship a roadmap entry. Do not use for ad-hoc feature work in repos without docs/ROADMAP.md. Input is docs/ROADMAP.md + the specs that milestone references; output is shipped code, a merged branch, and updated roadmap status. Repeats until the roadmap is done.
+description: Executes an approved milestone plan for a TStack-managed project — implements the plan with frequent commits, verifies against the milestone's "Done when" criteria, commits and merges the feature branch, and updates docs/ROADMAP.md status. Use when a milestone plan has been approved (typically immediately after tstack-plan finishes) or the user says "build it", "implement the plan", "ship this milestone", "execute the plan". Do not use to plan a milestone — that's tstack-plan. Input is an approved plan + feature branch + docs/ROADMAP.md. Output is shipped code, merged branch, and updated roadmap status. Hands back to tstack-plan for the next milestone.
 ---
 
 # tstack-build
 
-You are running TStack's implementation loop. Each invocation drives a single milestone from a feature branch through to merge and roadmap update. You're disciplined about plan-first work, frequent commits, and explicit verification against "Done when" criteria.
+You are running TStack's per-milestone execution stage. The plan is already approved and the feature branch is checked out (`tstack-plan` did that). Your job is to implement, verify, merge, and update the roadmap. You do not re-litigate the plan unless it turns out to be wrong.
 
 ## Prereq check
 
-Required:
+Required state:
 
-```
-docs/ROADMAP.md
-```
+- `docs/ROADMAP.md` exists
+- An approved implementation plan exists in conversation context (or in `~/.claude/plans/...` if the user wants to resume)
+- The current branch is a `milestone/*` branch (not `main`)
 
-If missing: stop. Tell the user this skill is for TStack-managed projects only. If they want to start one, run `tstack-discover`. If they have docs but no roadmap yet, run `tstack-roadmap`.
-
-Also check the Status section of `docs/ROADMAP.md`. If "Up next" is empty: the project is done — tell the user.
+If you're on `main` or have no approved plan: stop and tell the user to run `tstack-plan` first. Don't try to plan-as-you-go — that's the failure mode this split exists to prevent.
 
 ## Repo-self guard
 
-If `.claude-plugin/plugin.json` exists in cwd, refuse. This is a plugin repo, not a TStack consumer project.
+If `.claude-plugin/plugin.json` exists in cwd, refuse.
 
-## Approach — the milestone loop
+## Approach
 
-Follow these steps strictly in order. Don't skip the plan or the verification.
+### 1. Implement the plan
 
-### 1. Confirm the milestone
+Work through the plan in order. **Commit frequently** — after each meaningful piece works, commit with a descriptive message tied to the plan step. Frequent commits are clean rollback points if a later step goes wrong.
 
-Read the Status section of `docs/ROADMAP.md`. The "Up next" entry is what you're building. Verify with the user before proceeding:
+For larger milestones, work in chunks (steps 1–3, then 4–6, then 7+) and verify incrementally. Don't try to land the whole milestone in one push.
 
-> Starting M{N} — {name}. Dependencies {Mx, My} are in Completed. Proceed?
+If the plan turns out to be wrong mid-build (a missing piece, an unanticipated constraint, an underspecified edge case):
+- For small course corrections, adjust and continue
+- For anything that affects what the milestone *delivers* (scope creep, missing prerequisite, spec gap): stop and tell the user to either re-enter `tstack-plan` for this milestone, or run `tstack-specify` if PRODUCT.md is wrong
 
-If the user wants a different milestone, accept that and use it. But check its listed dependencies are completed first.
+### 2. Verify against "Done when" criteria
 
-### 2. Update roadmap state & branch
+This is mandatory and explicit — not a vibe check. Open `docs/ROADMAP.md`, find this milestone's "Done when" list, and walk every criterion with the user. For each:
 
-Move the milestone's name into the active position in your todo for this session. Then create the feature branch:
+- Run the relevant test or command
+- Show the user the actual output (don't just claim it passed)
+- For isolation criteria ("user A can't see user B's data"): actually run the cross-account test with two sessions
+- For encryption round-trips: encrypt → store → read → decrypt and confirm the original is returned
+- For background jobs: confirm both success and failure paths
 
-```bash
-git checkout main && git pull
-git checkout -b milestone/{id-lowercased}-{short-desc}
-```
+If any criterion fails: fix it. Don't move on. Don't mark the milestone done.
 
-Naming: `milestone/m4-entity-crud`, `milestone/i2-entity-list` (iOS), `milestone/m21-sync-endpoint` (cross-cutting).
-
-### 3. Plan (enter plan mode)
-
-Enter plan mode. Read every doc the milestone's "Read before starting" section names — specific sections only, not whole files unless the entry says so. Then plan: list every file to create or modify, in what order, and how you'll verify each piece. Surface tradeoffs the user should weigh before approving.
-
-### 4. Get the plan approved
-
-Review with the user. Adjust. Common pushback to expect and incorporate:
-- "Use the existing pattern in `<file>` instead of inventing a new one."
-- "Move shared types/schemas to a common location — they'll be needed again."
-- "Smaller commits — break this into two phases."
-
-Do not exit plan mode until the plan is approved.
-
-### 5. Build
-
-Implement the approved plan. **Commit frequently** — after each meaningful piece works, commit with a descriptive message. Frequent commits are clean rollback points if a later step goes wrong.
-
-For larger milestones, work through the plan in chunks (steps 1–3, then 4–6, etc.) so verification happens incrementally.
-
-### 6. Verify against "Done when" criteria
-
-This is mandatory and explicit. Read the milestone's "Done when" list in ROADMAP.md and walk through every criterion. For each:
-- Run the relevant test/command
-- Show the user the result
-- For isolation criteria (e.g., "user A can't see user B's data"), actually run the cross-account test, don't just assert it works
-- For encryption round-trip: encrypt → store → read → decrypt and verify the original is returned
-
-If any criterion fails: fix it. Don't move on.
-
-### 7. Merge
+### 3. Commit final state and merge
 
 Once every criterion passes:
 
@@ -85,19 +55,20 @@ git commit -m "feat: complete {id} — {name}"
 git push origin {branch}
 ```
 
-For solo projects, merge directly:
+**Solo projects** — merge directly:
 
 ```bash
 git checkout main && git merge {branch} && git push origin main && git branch -d {branch}
 ```
 
-For team projects, open a PR instead and follow the team's review workflow.
+**Team projects** — open a PR and follow the team's review workflow instead. Use `gh pr create` if available. The rest of the loop is the same after merge.
 
-### 8. Update roadmap status
+### 4. Update roadmap status
 
-Edit the Status section at the bottom of `docs/ROADMAP.md`:
-- Move the just-finished milestone into `Completed:`
-- Update `Up next:` to the next ready milestone (its dependencies must all be in Completed)
+Edit the **Status section at the bottom** of `docs/ROADMAP.md` — this is the only place status is tracked. Do not put status indicators on individual milestone entries.
+
+- Move the just-finished milestone into `Completed:` (append, preserve order)
+- Update `Up next:` to the next milestone whose dependencies are all in Completed
 
 Commit to `main`:
 
@@ -107,23 +78,29 @@ git commit -m "docs: {id} complete, up next {next-id}"
 git push origin main
 ```
 
-### 9. Offer to continue
+### 5. Offer to continue
 
-Ask the user if they want to start the next milestone now. If yes, loop back to step 1. If no, end cleanly.
+Ask the user:
+
+> {id} shipped and merged. Up next: {next-id} — {next-name}. Want to plan it now?
+
+- If yes → hand back to `tstack-plan` for the next milestone
+- If no → end cleanly. They can return later by invoking `tstack-plan` or saying "plan the next milestone."
 
 ## Reference handoff
 
-`references/full-guide.md` has the full guide: branching conventions for different milestone shapes, prompting patterns (starting, resuming, struggling, handling scope creep), more verification examples, and troubleshooting.
+`references/full-guide.md` is the full implementation guide. The execution-relevant sections are "Build", "Verify Against Done When Criteria", "Merge", "Update Roadmap Status", and the prompting patterns for "Resuming After a Break" and "Struggling Mid-Milestone." Read those when the situation calls for them.
 
-## When the roadmap evolves mid-build
+## When the plan was wrong
 
-If during planning or build the user realizes the milestone needs to change (scope creep, missing prerequisite, a feature was misspecified): **stop and run `tstack-specify`** instead. Don't silently expand scope — feature changes go through the doc-update flow so PRODUCT.md, API.md, and ROADMAP.md stay consistent.
+Don't silently expand scope. If during build you find:
 
-## Handoff
+- The milestone is bigger than the plan accounted for → propose splitting (`Mxa` / `Mxb`) and re-enter `tstack-plan` for the second half
+- A feature is misspecified in PRODUCT.md or API.md → stop, run `tstack-specify` to update the docs, regenerate the relevant roadmap entries, then re-enter `tstack-plan`
+- The plan referenced a doc section that doesn't exist → flag the gap, get the user to fill it before continuing
 
-After each milestone:
+Silent overreach is the failure mode. Surface the issue, don't paper over it.
 
-- Roadmap not done → loop back to step 1 with the new "Up next."
-- Roadmap done → "All milestones shipped. If you want to add features, run `tstack-specify`."
+## Hand-back
 
-`tstack-specify` is the natural follow-up once the initial roadmap is complete and the user wants to extend the product.
+After step 5, you either loop into `tstack-plan` for the next milestone (continuous flow) or end the session cleanly. Either way, the project state on disk reflects exactly what's been shipped: `Completed:` and `Up next:` in ROADMAP.md are the source of truth for what to do next.
