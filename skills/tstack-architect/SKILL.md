@@ -1,11 +1,11 @@
 ---
 name: tstack-architect
-description: Generates the technical doc set (ARCHITECTURE.md, API.md, CONVENTIONS.md, DECISIONS.md, breakout specs in docs/2 - Specs/, plus AGENTS.md and CLAUDE.md) from a completed PRODUCT.md. Use when docs/PRODUCT.md exists and the user wants system design, tech-stack decisions, API contracts, or coding conventions. Input is docs/PRODUCT.md; output is the full technical doc set. Hands off to tstack-roadmap.
+description: Generates the technical doc set (ARCHITECTURE.md, API.md, CONVENTIONS.md, TESTING.md, DECISIONS.md, optional ai-strategy spec, breakout specs in docs/2 - Specs/, plus AGENTS.md and CLAUDE.md) from a completed PRODUCT.md. Use when docs/PRODUCT.md exists and the user wants system design, tech-stack decisions, API contracts, coding conventions, or technical foundation work. Asks four foundational questions (security, observability, accessibility, privacy) before generating docs — each becomes an ADR. Input is docs/PRODUCT.md; output is the full technical doc set. Hands off to tstack-roadmap.
 ---
 
 # tstack-architect
 
-You are running TStack's technical-design stage. You translate product requirements into a complete technical specification: architecture, APIs, conventions, recorded decisions, and per-system breakout specs. You also write the agent-facing config (`AGENTS.md` + `CLAUDE.md`) at the consumer repo root.
+You are running TStack's technical-design stage. You translate product requirements into a complete technical specification: foundational decisions, architecture, APIs, conventions, testing approach, recorded decisions, and per-system breakout specs. You also write the agent-facing config (`AGENTS.md` + `CLAUDE.md`) at the consumer repo root.
 
 ## Prereq check
 
@@ -17,42 +17,113 @@ docs/PRODUCT.md
 
 If it's missing: stop and tell the user to run `tstack-product` first (or `tstack-discover` if they don't have a business brief either).
 
-## Right-sizing question (ask first)
+## Foundational ADRs (ask before writing anything)
 
-Before writing anything, ask the user which doc set fits their project:
+Four questions must be answered before any doc is written. Each answer becomes an Architecture Decision Record (ADR) in `docs/DECISIONS.md`. Answers can be brief — what matters is that the choice is explicit and recorded, not deferred to "we'll figure it out later." Push back on vague answers; record specific ones.
+
+### ADR-1: Security posture
+
+Ask:
+- What data does the system store that's sensitive or regulated? (PII, payment, health, auth credentials, anything subject to GDPR/CCPA/HIPAA/PCI/SOC2?)
+- Where do secrets live? (`.env` for local + a managed secret store for deploy? Vault? AWS Secrets Manager? Plain env vars on the host?)
+- Who is the auth provider? (Clerk, Auth0, Supabase Auth, NextAuth, custom, none — pick one with rationale)
+- What's the authorization model? (RBAC, row-level security, attribute-based, none — appropriate to the data sensitivity)
+
+Record as **ADR-1: Security posture** with concrete commitments. A consumer project running on Vercel with no PII might land at: "No regulated data; secrets via Vercel env vars; Clerk for auth; RBAC with `admin` / `member` roles."
+
+### ADR-2: Observability posture
+
+Ask:
+- Where do logs go? (stdout in dev; in prod: Vercel logs, Datadog, Logflare, Better Stack, CloudWatch — pick one)
+- What's the log format? (Structured JSON with correlation IDs is the 2026 default; unstructured stdout is acceptable for very small projects but say so)
+- Error tracking provider? (Sentry, Bugsnag, Rollbar, or rolling your own — pick one)
+- Metrics destination, if any? (Prometheus, Datadog, OpenTelemetry → vendor — many small projects skip this in v1, which is fine if stated)
+
+Record as **ADR-2: Observability posture**. Solo-dev minimum: "stdout → Vercel logs; Sentry for errors; no metrics in v1."
+
+### ADR-3: Accessibility posture
+
+Ask:
+- Is this consumer-facing software (users outside your team)? If yes, WCAG 2.1 AA is the default minimum and must be reflected in `tstack-product`'s acceptance criteria.
+- Is this strictly internal (employees, contractors)? AA is still recommended but justifying AAA for some flows (or A as a floor) is acceptable if scoped.
+- Is this a CLI / library / API-only product with no UI? a11y obligations are minimal — say so explicitly, don't quietly skip.
+
+Record as **ADR-3: Accessibility posture**. Default for consumer web/mobile: "WCAG 2.1 AA across all user-facing screens; tested with axe in CI."
+
+### ADR-4: Privacy & data handling
+
+Ask:
+- Data residency requirements? (US-only, EU-only, customer-choice, no constraint?)
+- Retention policy per data type? ("User account data: indefinite while account active, 30 days after deletion. Analytics: 12 months." — be specific.)
+- Deletion API or manual process? (GDPR Article 17 requires the *capability*; you decide UX. Self-serve account deletion is the 2026 norm.)
+- Compliance regimes that constrain architecture choices? (GDPR, CCPA, HIPAA, COPPA, PCI, SOX, FERPA…)
+
+Record as **ADR-4: Privacy & data handling**. Even "none — internal tool" is a valid answer if explicit.
+
+## AI strategy (opt-in question)
+
+Ask: **Does this product use LLMs, embeddings, ML models, or other AI components as part of its core value?**
+
+- **No** → skip this section.
+- **Yes** → generate `docs/2 - Specs/ai-strategy.md` regardless of right-sizing choice below. The spec covers:
+  - **Model selection** — which model(s), provider, why (cost/quality/latency tradeoffs)
+  - **Prompt versioning** — where prompts live, how they're tested, change-management process
+  - **Eval framework** — how do you measure quality? (golden test set, side-by-side comparison, user feedback signal, automated graders)
+  - **Fallback behavior** — what happens on rate limit, timeout, low confidence, content filter trip
+  - **Cost ceilings** — per-request, per-user-per-month, total monthly budget; what triggers alerts or shutoffs
+  - **Privacy with AI** — what user data is sent to providers, retention by provider, opt-out path
+  - **Model rotation strategy** — how do you change models without breaking users (versioned prompts, A/B rollout)
+
+If the product uses AI, the answers here become **ADR-5: AI/LLM strategy** in DECISIONS.md as well.
+
+## Right-sizing question (ask after foundational ADRs)
+
+Ask the user which doc set fits their project:
 
 | Size | Docs produced |
 |---|---|
-| **Minimum** (solo dev, single feature domain) | ARCHITECTURE.md, CONVENTIONS.md, AGENTS.md, CLAUDE.md |
-| **Standard** (multi-feature app, API-driven) | + API.md, DECISIONS.md |
+| **Minimum** (solo dev, single feature domain) | ARCHITECTURE.md, CONVENTIONS.md, TESTING.md, DECISIONS.md, AGENTS.md, CLAUDE.md |
+| **Standard** (multi-feature app, API-driven) | + API.md |
 | **Full** (complex system, multi-service, team) | + breakout specs in `docs/2 - Specs/` |
+
+DECISIONS.md and TESTING.md are mandatory at every size. The four ADRs above (plus AI ADR if applicable) are required artifacts — they don't get cut when the user chooses Minimum.
+
+If the user answered "yes" to the AI question, `docs/2 - Specs/ai-strategy.md` is added regardless of size.
 
 Wait for the answer. Generate only the requested subset.
 
 ## Approach
 
-1. **Read inputs.** `docs/PRODUCT.md` is required. Also read `docs/1 - Discovery/business-brief.md` if present — the "Technical Context" section there constrains tech-stack choices. Confirm understanding before designing.
+1. **Read inputs.** `docs/PRODUCT.md` is required. Also read `docs/1 - Discovery/business-brief.md` if present — the "Technical Context" section constrains tech-stack choices. Confirm understanding before designing.
 
-2. **Present tech-stack options with tradeoffs**, don't choose unilaterally. For each significant choice (language/framework, database, auth, hosting), present 2–3 options with pros/cons and let the user pick. Record every choice in DECISIONS.md as an ADR.
+2. **Write `docs/DECISIONS.md` first** with the four foundational ADRs (plus ADR-5 if AI is in scope). The rest of the doc set must be internally consistent with these — for example, if ADR-1 specifies row-level security, the ARCHITECTURE.md data-flow diagram needs to show where the policy is enforced.
 
-3. **Write one doc at a time**, in this order, getting user review between each:
-   1. ARCHITECTURE.md — system overview, tech stack table with rationale, repo structure, module boundaries, data flow, deployment topology
-   2. API.md (if Standard or Full) — every endpoint with method, path, auth, request/response shapes, side effects, rate limits
-   3. CONVENTIONS.md — code style, naming, file organization, testing approach, anti-patterns
-   4. DECISIONS.md (if Standard or Full) — ADRs for every significant technical choice
+3. **Present tech-stack options with tradeoffs**, don't choose unilaterally. For each significant choice (language/framework, database, auth provider, hosting, key infrastructure), present 2–3 options with pros/cons and let the user pick. Append each choice as a new ADR (ADR-6, ADR-7, …).
+
+   **Opinionated 2026 defaults** to use as the *first* option presented (the user can still pick something else, but these should be the lead): TypeScript strict + Next.js App Router for web; Postgres for transactional data; Vercel or Cloudflare for deploy; shadcn/ui for components; Vitest + Playwright for testing; pnpm for package management. For iOS: Swift + SwiftUI + SwiftData. For Python services: uv + FastAPI + Pydantic. These are defaults, not mandates.
+
+4. **Write one doc at a time**, in this order, getting user review between each:
+   1. ARCHITECTURE.md — system overview, tech-stack table with rationale, repo structure, module boundaries, data flow (showing where security/observability boundaries live), deployment topology
+   2. API.md (if Standard or Full) — every endpoint with method, path, auth, request/response shapes, side effects, rate limits, idempotency where relevant
+   3. CONVENTIONS.md — code style, naming, file organization, anti-patterns. Cross-reference TESTING.md rather than duplicating testing rules.
+   4. TESTING.md — unit/integration/e2e split with framework choice for each; coverage floor (be specific: "85% statements / 75% branches" or similar); where tests live (alongside code preferred for 2026 web stacks); mocking strategy; test data approach; what's in CI vs. local; how to verify a11y (axe in CI), security (dependency scanning), and the four ADRs' acceptance.
 
    **Stop here, commit, and start a fresh session** before continuing with breakout specs and AGENTS.md. This is the documented context-management breakpoint — without it, the specs phase produces lower-quality output.
 
-4. **In the fresh session, continue with:**
-   5. Breakout specs in `docs/2 - Specs/` (if Full size) — one per topic that needs more depth than ARCHITECTURE.md provides (e.g., `database-schema.md`, `authentication.md`, `event-pipeline.md`). One spec per file; don't pile multiple topics into one doc.
-   6. AGENTS.md at repo root — project overview, tech stack, doc-pointer table, common commands, key code patterns, conventions quick-reference. This is the single source of truth for all AI coding tools.
+5. **In the fresh session, continue with:**
+   5. Breakout specs in `docs/2 - Specs/`:
+      - If AI=yes: `ai-strategy.md` (mandatory, regardless of size)
+      - If Full size: additional specs for any topic needing more depth than ARCHITECTURE.md provides (`database-schema.md`, `authentication.md`, `event-pipeline.md`, etc.). One spec per file.
+   6. AGENTS.md at repo root — project overview, tech stack, doc-pointer table including the new TESTING.md and DECISIONS.md entries, common commands, key code patterns, conventions quick-reference.
    7. CLAUDE.md at repo root — contents are exactly `See @AGENTS.md` (plus optional Claude-specific overrides if the user has any).
 
-5. **Cross-reference check** after all docs are written:
+6. **Cross-reference check** after all docs are written:
    - ARCHITECTURE.md and API.md agree on what runs where
+   - ARCHITECTURE.md's data-flow shows where ADR-1 (security) and ADR-2 (observability) boundaries are enforced
    - Every breakout spec is referenced from ARCHITECTURE.md or PRODUCT.md
-   - Every significant choice has an ADR in DECISIONS.md
-   - AGENTS.md's doc table lists every doc that exists
+   - Every significant tech choice has an ADR in DECISIONS.md (including the four foundational ones and the AI ADR if applicable)
+   - AGENTS.md's doc table lists every doc that exists (including TESTING.md and DECISIONS.md)
+   - TESTING.md's a11y testing approach aligns with ADR-3
 
    Flag inconsistencies for the user to resolve.
 
@@ -67,11 +138,13 @@ Every section above has detailed templates, content rules, and troubleshooting i
 - Per-file "Should contain / Should NOT contain" lists
 - iOS-specific addenda if the project targets iOS
 
+The reference guide predates the foundational-ADRs and TESTING.md additions, so use this SKILL.md (not the reference) as the authoritative shape for those.
+
 ## Handoff
 
 When the full set is complete and committed:
 
-> Technical docs complete. {N} files written under `docs/` plus AGENTS.md and CLAUDE.md at repo root.
+> Technical docs complete. {N} files written under `docs/` plus AGENTS.md and CLAUDE.md at repo root. {N} ADRs recorded in DECISIONS.md (including the four foundational + tech-stack choices{ + AI strategy if applicable}).
 >
 > **Next: start a fresh Claude Code session, then run `tstack-roadmap`** (or say "make a roadmap").
 >

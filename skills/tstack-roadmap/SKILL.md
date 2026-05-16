@@ -1,6 +1,6 @@
 ---
 name: tstack-roadmap
-description: Reads the full docs/ tree and produces docs/ROADMAP.md — a dependency-sequenced list of milestones with "Read before starting" doc pointers and "Done when" criteria. Use when ARCHITECTURE.md and PRODUCT.md exist and the user asks "what do we build first", "sequence the work", or "make a roadmap". Input is docs/PRODUCT.md + docs/ARCHITECTURE.md (API.md, DECISIONS.md, and specs optional); output is docs/ROADMAP.md. Hands off to tstack-plan.
+description: Reads the full docs/ tree and produces docs/ROADMAP.md — a dependency-sequenced list of milestones with "Read before starting" doc pointers and "Done when" criteria. Always mandates an M0 — Infrastructure baseline milestone covering CI, branch protection, secrets, deployment skeleton, and observability bootstrap. Use when ARCHITECTURE.md and PRODUCT.md exist and the user asks "what do we build first", "sequence the work", or "make a roadmap". Input is docs/PRODUCT.md + docs/ARCHITECTURE.md + docs/DECISIONS.md + docs/TESTING.md (API.md and breakout specs optional); output is docs/ROADMAP.md. Hands off to tstack-plan.
 ---
 
 # tstack-roadmap
@@ -14,19 +14,20 @@ Required inputs:
 ```
 docs/PRODUCT.md
 docs/ARCHITECTURE.md
+docs/DECISIONS.md
+docs/TESTING.md
+docs/CONVENTIONS.md
 ```
 
 Optional but used if present:
 
 ```
 docs/API.md
-docs/CONVENTIONS.md
-docs/DECISIONS.md
-docs/2 - Specs/*.md
+docs/2 - Specs/*.md         (including ai-strategy.md if the product uses AI)
 docs/1 - Discovery/business-brief.md
 ```
 
-If a required input is missing: stop and tell the user to run `tstack-architect` first.
+If a required input is missing: stop and tell the user to run `tstack-architect` first. (The required set assumes `tstack-architect` has run at the current TStack v0.2 — older projects predating mandatory DECISIONS/TESTING may need a re-run.)
 
 ## Approach
 
@@ -60,6 +61,26 @@ If a required input is missing: stop and tell the user to run `tstack-architect`
 
    Do NOT put status on individual milestones. Status lives only in the Status section at the bottom.
 
+### M0 — Infrastructure baseline is mandatory
+
+Every roadmap **must** begin with `M0 — Infrastructure baseline`. Do not generate a roadmap without it. This milestone covers the things that, if deferred, create compounding pain across every feature milestone:
+
+- **CI workflow** — GitHub Actions (or equivalent) running typecheck + tests + lint on every PR
+- **Branch protection** — `main` requires passing CI and at least one approval for teams (or "no force-push, status checks required" for solo)
+- **Secrets management** — wired up per ADR-1's choice (e.g., Vercel env vars, Doppler, Vault); no secrets in the repo
+- **Deployment skeleton** — at minimum, a working deploy of the empty app to the chosen platform (per ARCHITECTURE.md's deployment topology) so subsequent milestones have somewhere to land
+- **Observability bootstrap** — per ADR-2: log destination working, error tracker integrated (e.g., Sentry SDK installed and reporting from a deliberate test error), basic dashboard or log view accessible
+- **Linting + formatting** — per CONVENTIONS.md: lint/format configured and enforced in CI
+- **Test runner** — per TESTING.md: test runner installed, one trivial passing test, CI runs it
+
+**Done when** criteria for M0 should explicitly include:
+- Pushing a PR triggers CI; CI status appears on the PR
+- A deliberate test error appears in the error tracker
+- Lint failures block merge
+- `main` is protected per the agreed rules
+
+Refuse to save the roadmap if M0 is absent or its scope is missing any of the above bullets. If the user pushes back ("I don't need CI for a weekend project"), point them at the ADRs they recorded in `tstack-architect` and ask which bullet they want to formally defer with an ADR-style explanation. Don't silently drop infrastructure.
+
 5. **Naming conventions:**
    - Server/web milestones: `M0`, `M1`, `M2`, …
    - Mobile milestones (separate workstream): `i0`, `i1`, … (or other letter if not iOS)
@@ -73,8 +94,10 @@ If a required input is missing: stop and tell the user to run `tstack-architect`
    - **Status** section at the bottom: `Completed:` (none yet) and `Up next: M0 — …`
 
 7. **Cross-check before saving:**
+   - `M0 — Infrastructure baseline` is present, with all six bullets above covered (or formally deferred with explicit rationale)
+   - Every feature milestone (`M1` onward) lists `M0` directly or transitively in its dependencies
    - Every "Read before starting" reference points to a doc/section that exists
-   - Every "Done when" criterion is binary
+   - Every "Done when" criterion is binary and verifiable by a real command (matches `tstack-build`'s verification format)
    - No milestone exceeds ~2 days of focused work (split if so)
    - No milestone is so granular it's not independently shippable (combine if so)
 
