@@ -79,6 +79,8 @@ If the user pushes you to add architecture or APIs here, redirect — those belo
 
 For the full template, troubleshooting (thin requirements, scope creep, missing acceptance criteria), and section-by-section guidance, read `references/full-guide.md`.
 
+For a realistic PRODUCT.md excerpt showing the expected level of detail — including a deterministic + AI mixed-acceptance-criteria example — read `references/example-output.md`.
+
 ## Handoff
 
 > PRODUCT.md complete — committed to `docs/PRODUCT.md`.

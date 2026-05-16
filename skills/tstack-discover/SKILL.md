@@ -31,6 +31,8 @@ Follow these steps in order. Don't skip ahead — the conversation is the value.
 
 For the full discovery prompts, troubleshooting, and brief template, read `references/full-guide.md`. It's the verbatim original guide and remains the authoritative source for edge cases.
 
+For a realistic example of the business brief you should be producing — calibrate against this for level of specificity — read `references/example-output.md`.
+
 ## Handoff
 
 When the brief is saved and committed, end with:

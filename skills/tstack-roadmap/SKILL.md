@@ -114,6 +114,8 @@ Refuse to save the roadmap if M0 is absent or its scope is missing any of the ab
 
 For the full milestone template, "Read before starting" rules, "Done when" rules, and troubleshooting (too-large/too-granular milestones, missing dependencies), read `references/full-guide.md`.
 
+For a realistic example showing the dependency graph format, the mandatory M0 — Infrastructure baseline structure, and the milestone-entry shape, read `references/example-output.md`.
+
 ## Handoff
 
 > Roadmap complete — `docs/ROADMAP.md` written with {N} milestones across {workstreams}.

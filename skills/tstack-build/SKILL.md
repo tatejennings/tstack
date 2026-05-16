@@ -110,6 +110,8 @@ Ask the user:
 
 `references/full-guide.md` is the full implementation guide. The execution-relevant sections are "Build", "Verify Against Done When Criteria", "Merge", "Update Roadmap Status", and the prompting patterns for "Resuming After a Break" and "Struggling Mid-Milestone." Read those when the situation calls for them.
 
+For a realistic verification-report example showing the quoted-command-output discipline across six different criteria types (unit tests, curl, Playwright, manual UI, axe a11y), read `references/example-output.md`.
+
 ## When the plan was wrong
 
 Don't silently expand scope. If during build you find:

@@ -92,6 +92,8 @@ Do not write any code in this skill. Hand the approved plan + branch to `tstack-
 
 The full implementation guide lives at `../tstack-build/references/full-guide.md`. It covers planning patterns, "Read before starting" semantics, "Done when" verification approaches, and prompting patterns. Read the planning-relevant sections before producing the plan — especially the prompting patterns for "Starting a Session" and "Plan Phase."
 
+For a realistic example of an approved plan — showing dependency-ordered file lists, reused-vs-introduced patterns, per-criterion verification approach, and explicit out-of-scope — read `references/example-output.md`.
+
 ## Common refusals
 
 - The user says "just start building" — politely refuse. Plan-first is the discipline that makes the milestone loop work. The plan takes 5 minutes and saves an hour of misdirection.

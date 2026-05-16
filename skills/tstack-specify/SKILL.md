@@ -113,6 +113,8 @@ For deep templates, this skill draws on existing references in the plugin:
 
 In a consumer project, those references are inside the installed plugin — you can read them, but more practically, model the new content on the patterns already present in the consumer's docs.
 
+For a realistic example of the two-list doc-impact proposal (with "considered but no change" entries and user-pushback handling), plus a sample milestone-insertion that follows, read `references/example-output.md`.
+
 ## Handoff
 
 When all approved edits are applied and committed:

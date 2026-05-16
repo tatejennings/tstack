@@ -101,9 +101,24 @@ Not every project needs every artifact. `tstack-architect` will ask which level 
 
 | Project complexity | Docs produced |
 |---|---|
-| **Minimum** (solo dev, single feature domain) | ARCHITECTURE.md, CONVENTIONS.md, AGENTS.md, CLAUDE.md |
-| **Standard** (multi-feature app, API-driven) | + API.md, DECISIONS.md |
+| **Minimum** (solo dev, single feature domain) | ARCHITECTURE.md · CONVENTIONS.md · TESTING.md · DECISIONS.md · AGENTS.md · CLAUDE.md |
+| **Standard** (multi-feature app, API-driven) | + API.md |
 | **Full** (complex system, multiple services, team) | + breakout specs in `docs/2 - Specs/` |
+
+DECISIONS.md and TESTING.md are mandatory at every size. `tstack-architect` records four foundational ADRs (security, observability, accessibility, privacy) before any other doc is written — regardless of project size. AI/LLM products get an additional `ai-strategy.md` spec.
+
+## Trigger Compatibility
+
+TStack skills coexist with other Claude Code plugins, but a few descriptions overlap. Disambiguating phrases:
+
+| If you want… | Say | Avoids triggering |
+|---|---|---|
+| Plan the next TStack milestone | "plan milestone M3" / "plan the next milestone" | `superpowers:writing-plans` (which triggers on generic "write a plan") |
+| Execute a TStack milestone | "build it" / "ship M3" / "implement the plan" | `superpowers:executing-plans` (generic plan execution) |
+| TStack product discovery | "discover a new product" / "let's spec a new product idea" | `superpowers:brainstorming` (generic ideation) |
+| TStack feature spec on existing project | "add a feature to this TStack project" / "spec a new feature" | `tstack-product` (which is for greenfield only) |
+
+In most cases auto-triggering picks the right skill because TStack descriptions include `docs/PRODUCT.md` / `docs/ROADMAP.md` prerequisites — superpowers skills don't reference those files, so Claude prefers the TStack skill when those docs exist. If you hit a collision in practice, invoke the skill explicitly: `/tstack-plan`, `/tstack-build`, etc.
 
 ## Multi-Agent Support
 

@@ -154,6 +154,8 @@ Every section above has detailed templates, content rules, and troubleshooting i
 
 The reference guide predates the foundational-ADRs and TESTING.md additions, so use this SKILL.md (not the reference) as the authoritative shape for those.
 
+For a realistic example showing ARCHITECTURE.md tech-stack tables, data-flow diagrams, module boundaries, and DECISIONS.md ADR shape (including the four foundational ADRs and an AI-strategy ADR), read `references/example-output.md`.
+
 ## Handoff
 
 When the full set is complete and committed:
