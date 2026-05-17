@@ -42,7 +42,8 @@ This repo *is* the plugin. From a project where you want to use TStack:
 
 ```bash
 # In Claude Code:
-/plugin install /path/to/claude-code-starter
+/plugin marketplace add tatejennings/tstack
+/plugin install tstack@tstack
 ```
 
 Once installed, the skills auto-trigger when their descriptions match what you say — no manual invocation required. You can also invoke explicitly with `/tstack-discover`, `/tstack-plan`, etc., if you want to skip the trigger phrase.
