@@ -1,0 +1,13 @@
+{
+  "name": "tstack",
+  "owner": {
+    "name": "Tate Jennings"
+  },
+  "plugins": [
+    {
+      "name": "tstack",
+      "source": "./",
+      "description": "Seven-skill chain that turns a rough product idea into a documented, milestone-sequenced, built project."
+    }
+  ]
+}
