@@ -10,6 +10,8 @@ Move the Unreleased entries under a new version heading when you tag a release
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-05-30
+
 ### Added
 - `tstack-design` — optional, off-chain skill that produces a design/UX spec (`docs/2 - Specs/design.md`) plus ready-to-paste prompts and context for Claude Design. Invokable at any point; not part of the chain.
 - `tstack-status` — optional, off-chain, read-only inspector. Reports project status, planned-ahead plans, missing mandatory docs, and **doc drift** (e.g. PRODUCT.md edited after ROADMAP.md's last sync). Writes nothing.

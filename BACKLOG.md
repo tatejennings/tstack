@@ -16,7 +16,7 @@ From a deep review of the skill chain (see `REVIEW.md`). All advisory; needs the
 
 - [ ] End-to-end test in a scratch repo — full chain (`discover` → `product` → `architect` → `roadmap` → `plan` → `build`) for a small real product. Confirm: the four foundational ADRs are produced, TESTING.md is generated, M0 is enforced, AI branch fires correctly when answered yes, verification report is properly quoted.
 - [ ] Negative tests from the v0.2 plan: invoke `tstack-roadmap` without M0, expect refusal; invoke `tstack-specify` and check the "considered, no change" line appears.
-- [ ] Tag `v0.2.0` on GitHub once verified — move `CHANGELOG.md`'s Unreleased entries under a `[0.2.0]` heading and bump `plugin.json` version.
+- [x] Cut `0.2.0` — `plugin.json` bumped, `CHANGELOG.md` `[0.2.0]` dated. **Still to do:** `git tag v0.2.0` on GitHub, and run the verification above (shipped ahead of it).
 
 ## New skills (deferred from v0.2)
 
