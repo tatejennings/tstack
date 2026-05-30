@@ -2,12 +2,21 @@
 
 Things to do next, ordered by rough priority. This is solo-dev shorthand — when something gets picked up, move it to a real branch and update this file when it ships.
 
+## Shipped — review-driven hardening pass
+
+From a deep review of the skill chain (see `REVIEW.md`). All advisory; needs the end-to-end verification under "Verify v0.2" before tagging.
+
+- **Seam fixes:** in-repo plan artifact at `docs/plans/{id}.md` (`plan` writes, `build` reads — commit it to hand planned-ahead milestones to a cloud agent); `roadmap`↔`specify` contract (roadmap regenerates + `Docs last synced:` marker, specify is append-only); `AGENTS.md` ownership (architect owns; roadmap/build touch only `## Current Focus`); `tstack-roadmap` description now lists CONVENTIONS.md.
+- **Quality gates:** `roadmap` checks "Done when" testability at write time; `product` detects AI features early + has a completion sign-off; `build` has a controlled criterion-waiver policy + concrete team-PR flow.
+- **Guides:** architect `full-guide.md` de-staled (TESTING.md + foundational ADRs added, opinionated-default contradiction fixed, dead `0x-*.md` refs removed); product `full-guide.md` thickened (deep acceptance-criteria section incl. AI eval depth + subjectivity). Both carry a "SKILL.md is source of truth" header.
+- **Polish:** tech-stack defaults now dated + ask-ecosystem-first; standardized session-boundary thresholds; discover has when-NOT-to-run + brief-ready gate + operationalized no-WebSearch fallback.
+- **New off-chain skills:** `tstack-design` (UX spec + paste-ready Claude Design prompts) and `tstack-status` (read-only inspector with doc-drift detection).
+
 ## Verify v0.2
 
 - [ ] End-to-end test in a scratch repo — full chain (`discover` → `product` → `architect` → `roadmap` → `plan` → `build`) for a small real product. Confirm: the four foundational ADRs are produced, TESTING.md is generated, M0 is enforced, AI branch fires correctly when answered yes, verification report is properly quoted.
 - [ ] Negative tests from the v0.2 plan: invoke `tstack-roadmap` without M0, expect refusal; invoke `tstack-specify` and check the "considered, no change" line appears.
-- [ ] Tag `v0.2.0` on GitHub once verified.
-- [ ] Add a CHANGELOG.md (v0.1 = initial chain, v0.2 = ADRs/M0/AI/examples).
+- [ ] Tag `v0.2.0` on GitHub once verified — move `CHANGELOG.md`'s Unreleased entries under a `[0.2.0]` heading and bump `plugin.json` version.
 
 ## New skills (deferred from v0.2)
 
@@ -17,7 +26,7 @@ Things to do next, ordered by rough priority. This is solo-dev shorthand — whe
 
 ## Content gaps to close
 
-- [ ] `references/full-guide.md` is the verbatim pre-plugin content for the five migrated skills. Some of it contradicts the current SKILL.md (e.g., discovery guide still says "web search works best on Claude.ai" — superseded). Do a refresh pass.
+- [ ] `references/full-guide.md` refresh pass. **Architect and product guides done** in the hardening pass (de-staled + source-of-truth headers). **Still pending:** the discovery guide's "web search works best on Claude.ai" line and a check of the roadmap/build guides for SKILL.md contradictions.
 - [ ] AGENTS.md format in `tstack-architect/references/full-guide.md` is dated. Should cover: MCP server configs, hook patterns, skill recommendations, model-routing preferences, worktree conventions for parallel agent work.
 - [ ] Extract inline templates (business-brief, PRODUCT, ARCHITECTURE, API, ROADMAP, milestone-entry) into separate `references/*-template.md` files. Currently embedded in full-guide.md; harder to update.
 - [ ] Add a 5th and 6th foundational ADR question: **performance budgets** (Core Web Vitals targets, server p95 latency, mobile Lighthouse minimums) and **cost ceilings** (monthly infra + AI budget, per-user cost target).

@@ -1,6 +1,6 @@
 ---
 name: tstack-roadmap
-description: Reads the full docs/ tree and produces docs/ROADMAP.md — a dependency-sequenced list of milestones with "Read before starting" doc pointers and "Done when" criteria. Always mandates an M0 — Infrastructure baseline milestone covering CI, branch protection, secrets, deployment skeleton, and observability bootstrap. Use when ARCHITECTURE.md and PRODUCT.md exist and the user asks "what do we build first", "sequence the work", or "make a roadmap". Input is docs/PRODUCT.md + docs/ARCHITECTURE.md + docs/DECISIONS.md + docs/TESTING.md (API.md and breakout specs optional); output is docs/ROADMAP.md. Hands off to tstack-plan.
+description: Reads the full docs/ tree and produces docs/ROADMAP.md — a dependency-sequenced list of milestones with "Read before starting" doc pointers and "Done when" criteria. Always mandates an M0 — Infrastructure baseline milestone covering CI, branch protection, secrets, deployment skeleton, and observability bootstrap. Use when ARCHITECTURE.md and PRODUCT.md exist and the user asks "what do we build first", "sequence the work", or "make a roadmap". Input is docs/PRODUCT.md + docs/ARCHITECTURE.md + docs/CONVENTIONS.md + docs/DECISIONS.md + docs/TESTING.md (API.md and breakout specs optional); output is docs/ROADMAP.md. Hands off to tstack-plan.
 ---
 
 # tstack-roadmap
@@ -91,24 +91,37 @@ Refuse to save the roadmap if M0 is absent or its scope is missing any of the ab
    - Dependency Graph Diagram (ASCII, parallel tracks if multi-workstream)
    - Milestone Entries (in build order)
    - Parallelization Notes (which milestones can run simultaneously; critical path)
-   - **Status** section at the bottom: `Completed:` (none yet) and `Up next: M0 — …`
+   - **Status** section at the bottom: `Completed:` (none yet), `Up next: M0 — …`, and a `Docs last synced:` line (see below)
+
+   The Status section header carries a sync marker so drift is visible at a glance:
+
+   ```markdown
+   ## Status
+   Docs last synced: <commit short-SHA or date this roadmap was generated/re-sequenced from the docs>
+   Completed: none yet
+   Up next: M0 — Infrastructure baseline
+   ```
+
+   `tstack-specify` appends milestones surgically without re-running this skill, so the marker tells a reader when the roadmap was last fully reconciled against `docs/`. If PRODUCT.md/ARCHITECTURE.md changed after that point and the change wasn't a surgical `tstack-specify` edit, the roadmap may be stale — re-run `tstack-roadmap` to re-sequence.
 
 7. **Cross-check before saving:**
    - `M0 — Infrastructure baseline` is present, with all six bullets above covered (or formally deferred with explicit rationale)
    - Every feature milestone (`M1` onward) lists `M0` directly or transitively in its dependencies
    - Every "Read before starting" reference points to a doc/section that exists
-   - Every "Done when" criterion is binary and verifiable by a real command (matches `tstack-build`'s verification format)
+   - **Every "Done when" criterion is testable at write time.** For each criterion, name the command or test that would prove it (e.g., `curl …`, `npm test path`, `playwright test`, `axe` scan). If you can't name one — the criterion is soft ("looks good", "feels fast", "works well") — rewrite it now into something a command can verify, or split out the measurable part. Don't defer this to `tstack-build`; a soft criterion discovered at build time is a roadmap defect caught too late.
    - No milestone exceeds ~2 days of focused work (split if so)
    - No milestone is so granular it's not independently shippable (combine if so)
 
 8. **Save to `docs/ROADMAP.md`.** Commit: `docs: generate ROADMAP.md from project docs`.
 
-9. **Add a Current Focus pointer** to `AGENTS.md` (or `CLAUDE.md` if AGENTS.md isn't present):
+9. **Update the `## Current Focus` block** that `tstack-architect` created in `AGENTS.md`. `tstack-architect` owns `AGENTS.md`; downstream skills only update the designated `## Current Focus` block — never restructure the rest of the file. Set it to:
 
    ```markdown
    ## Current Focus
    Check `docs/ROADMAP.md` — see the Status section at the bottom for the current milestone.
    ```
+
+   If `AGENTS.md` has no `## Current Focus` block (older project), add one. If `AGENTS.md` doesn't exist at all, write the block into `CLAUDE.md` instead.
 
 ## Reference handoff
 

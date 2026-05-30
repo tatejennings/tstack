@@ -7,7 +7,7 @@
     {
       "name": "tstack",
       "source": "./",
-      "description": "Seven-skill chain that turns a rough product idea into a documented, milestone-sequenced, built project."
+      "description": "Seven-skill chain that turns a rough product idea into a documented, milestone-sequenced, built project, plus optional off-chain companions for UX design and project status."
     }
   ]
 }

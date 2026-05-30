@@ -1,0 +1,35 @@
+# Changelog
+
+All notable changes to the TStack plugin are recorded here. Format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/); this project uses
+[semantic versioning](https://semver.org/).
+
+When you edit a skill or change plugin behaviour, add an entry under **Unreleased**.
+Move the Unreleased entries under a new version heading when you tag a release
+(and bump `version` in `.claude-plugin/plugin.json`).
+
+## [Unreleased]
+
+### Added
+- `tstack-design` — optional, off-chain skill that produces a design/UX spec (`docs/2 - Specs/design.md`) plus ready-to-paste prompts and context for Claude Design. Invokable at any point; not part of the chain.
+- `tstack-status` — optional, off-chain, read-only inspector. Reports project status, planned-ahead plans, missing mandatory docs, and **doc drift** (e.g. PRODUCT.md edited after ROADMAP.md's last sync). Writes nothing.
+- Foundational ADRs in `tstack-architect` (security, observability, accessibility, privacy) + optional AI/LLM ADR; mandatory `TESTING.md` and `DECISIONS.md` at every right-sizing level.
+- `M0 — Infrastructure baseline` mandate in `tstack-roadmap` (refuses to save a roadmap without it).
+- Eval-based AI/LLM acceptance criteria (eval set + quality bar + fallback) in `tstack-product`; deep acceptance-criteria guidance incl. the subjectivity question.
+
+### Changed
+- **Plan artifact** persisted in-repo at `docs/plans/{id}.md` (`tstack-plan` writes, `tstack-build` reads). Committing is a manual step so planned-ahead milestones can be handed to a cloud agent.
+- **`ROADMAP.md` ownership contract:** `tstack-roadmap` regenerates and carries a `Docs last synced:` marker; `tstack-specify` is append-only (never renumbers).
+- **`AGENTS.md` ownership:** `tstack-architect` owns the file; `tstack-roadmap`/`tstack-build` update only the `## Current Focus` block.
+- `tstack-roadmap` validates "Done when" testability at write time; description now lists `CONVENTIONS.md`.
+- `tstack-product` flags AI features early and requires a completion sign-off before saving.
+- `tstack-architect` asks the team's ecosystem before proposing a stack, dates each tech-stack ADR, and consolidates related choices into one ADR.
+- `tstack-build` gained a controlled criterion-waiver policy and a concrete team-PR flow.
+- `tstack-discover` gained a when-NOT-to-run redirect, a brief-ready gate, and an operationalized no-WebSearch fallback.
+- Standardized the fresh-session threshold across the setup-chain handoffs.
+- De-staled the `architect` `full-guide.md` (added TESTING.md + foundational ADRs, fixed the opinionated-default contradiction, removed dead pre-plugin file references) and thickened the `product` `full-guide.md`; both now name SKILL.md as the source of truth.
+
+## [0.1.0]
+
+### Added
+- Initial release: the TStack skill chain — `tstack-discover`, `tstack-product`, `tstack-architect`, `tstack-roadmap`, `tstack-plan`, `tstack-build`, plus the `tstack-specify` iteration loop.

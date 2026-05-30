@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Repo Is
 
-This repo *is* the **TStack** Claude Code plugin. It's not an application, it's not a documentation kit — it's a plugin you install into other projects so the seven TStack skills become available there. The deliverable is the contents of `.claude-plugin/` and `skills/`.
+This repo *is* the **TStack** Claude Code plugin. It's not an application, it's not a documentation kit — it's a plugin you install into other projects so the TStack skills become available there: seven chained skills plus two optional off-chain companions (`tstack-design`, `tstack-status`). The deliverable is the contents of `.claude-plugin/` and `skills/`.
 
 Most edits here are editorial: tightening a `SKILL.md`, updating a `references/full-guide.md`, or refining the README. There is no build, test, or lint.
 
@@ -12,9 +12,15 @@ Most edits here are editorial: tightening a `SKILL.md`, updating a `references/f
 
 - `.claude-plugin/plugin.json` — plugin manifest (name, version, author). Skills are auto-discovered from `skills/`, not enumerated here.
 - `skills/tstack-<stage>/SKILL.md` — the concise procedural top-level for each skill. Frontmatter `description` is load-bearing — it drives auto-triggering. ~120–200 lines max.
-- `skills/tstack-<stage>/references/full-guide.md` — the verbatim long-form guide. Source of edge-case detail; SKILL.md tells Claude when to consult it.
+- `skills/tstack-<stage>/references/full-guide.md` — the long-form guide. Source of edge-case detail; SKILL.md tells Claude when to consult it. Each carries a header naming SKILL.md as the source of truth. The `discover`/`roadmap`/`build` guides are still the preserved pre-plugin prose; the `architect` and `product` guides have been actively maintained (de-staled/thickened) and are no longer verbatim.
 
-The chain: `discover → product → architect → roadmap → plan → build`. Plus `specify` as the iteration loop, which hands off to `plan`.
+The chain: `discover → product → architect → roadmap → plan → build`. Plus `specify` as the iteration loop, which hands off to `plan`. Two skills sit **off-chain** (optional, invokable at any point, no required handoff): `tstack-design` (UX spec + ready-to-paste Claude Design prompts; reads PRODUCT.md if present) and `tstack-status` (strictly read-only project inspector — reports status and doc drift, writes nothing). When editing an off-chain skill, keep it off-chain — don't wire it into the linear flow, and keep `tstack-status` from mutating anything.
+
+**Cross-skill contracts (don't regress these when editing):**
+- **`AGENTS.md` is owned by `tstack-architect`.** Only it writes the full file. `tstack-roadmap` and `tstack-build` update *only* the `## Current Focus` block; they never restructure the rest.
+- **The approved plan is written in-repo at `docs/plans/{milestone-id}.md`.** `tstack-plan` writes it; `tstack-build` reads it. It lives in the project (not a local user folder) on purpose: once committed (a manual step, left to the user), milestones can be planned ahead and built later by a cloud agent or a different machine. The schema lives in `tstack-plan/SKILL.md`.
+- **`ROADMAP.md` has one full-regenerator (`tstack-roadmap`) and one append-only editor (`tstack-specify`).** Roadmap carries a `Docs last synced:` marker; specify advances it with a `(surgical: …)` annotation and never renumbers existing milestones. `tstack-status` reads that marker to flag drift.
+- **`tstack-roadmap` validates "Done when" testability at write time** — every criterion must map to a runnable command before save, not be discovered as soft at build time.
 
 **Foundational decisions live in `tstack-architect`.** Before generating any technical doc, the skill asks four mandatory questions (security, observability, accessibility, privacy) — each becomes an ADR in DECISIONS.md. Optionally a fifth question for AI/LLM products. DECISIONS.md and TESTING.md are now mandatory outputs at every right-sizing level. When editing `tstack-architect/SKILL.md`, preserve this order: prereq check → foundational ADRs → AI question → right-sizing → approach.
 
@@ -28,18 +34,19 @@ The chain: `discover → product → architect → roadmap → plan → build`. 
 - **`tstack-product` and `tstack-specify` are mutually exclusive triggers.** Product creates initial PRODUCT.md; specify amends an existing one. Both descriptions carry an explicit negative phrase to disambiguate.
 - **Verification in `tstack-build` requires quoted command output.** Every "Done when" criterion is checked by running a real command and pasting its output into the conversation. "Verified ✓" without output is not acceptable — match this discipline when editing the verification section.
 - **AI-feature acceptance criteria use eval-based format**, not Given/When/Then. Required parts: eval set (versioned, on disk), quality bar (measurable threshold), fallback (deterministic). `tstack-product` enforces this — match the format when adding examples.
+- **Always update `CHANGELOG.md`.** Any change to a skill's behaviour, a new/removed skill, or a manifest/README change adds an entry under the `## [Unreleased]` heading (Added / Changed / Fixed / Removed). This is part of every edit, not an afterthought. When tagging a release, move Unreleased entries under the new version heading and bump `version` in `.claude-plugin/plugin.json`.
 
 ## What NOT to Do
 
 - Don't add a build system, tests, or CI — there's no executable code.
 - Don't add `AGENTS.md` to this repo's root. The framework *produces* AGENTS.md in consumer projects, but the plugin itself isn't a consumer of itself.
 - Don't enumerate skills in `plugin.json` unless plugin loading turns out to require it (currently it doesn't).
-- Don't rewrite `references/full-guide.md` content unless asked — those are validated prose, preserved verbatim from the pre-plugin guides. Edit the SKILL.md instead.
+- Don't rewrite a `references/full-guide.md` unless asked — prefer editing the SKILL.md. The `discover`/`roadmap`/`build` guides remain preserved pre-plugin prose; keep them that way absent a request. (`architect` and `product` guides were intentionally reconciled against their SKILL.md — when you touch those, keep them consistent with the SKILL.md, which is the source of truth.)
 
 ## Common Tasks
 
-- **Tweak a skill's behavior:** edit the relevant `skills/tstack-<name>/SKILL.md`. Keep it concise; move detail into the reference.
+- **Tweak a skill's behavior:** edit the relevant `skills/tstack-<name>/SKILL.md`. Keep it concise; move detail into the reference. Add a `CHANGELOG.md` Unreleased entry.
 - **Update the auto-triggering of a skill:** edit only the `description:` field in the SKILL.md frontmatter. Test by saying the trigger phrases in a consumer project.
-- **Add a new skill:** create `skills/tstack-<name>/SKILL.md` following the established shape. Update README's lifecycle diagram and skill table. Decide where it fits in the chain (or whether it's a parallel iteration skill like `tstack-specify`).
+- **Add a new skill:** create `skills/tstack-<name>/SKILL.md` following the established shape. Update README's lifecycle diagram and skill table, and the skill-count wording in `plugin.json` / `marketplace.json`. Decide where it fits in the chain (or whether it's a parallel iteration skill like `tstack-specify`, or an optional off-chain companion like `tstack-design` / `tstack-status`). Add a `CHANGELOG.md` Unreleased entry.
 - **Test the plugin:** see README's Quick Start. From a scratch directory, `/plugin install <this-repo-path>` and walk the chain.
 - **Track future work:** add to `BACKLOG.md` at the repo root. Solo-dev shorthand list of upcoming features, content gaps, and process items.

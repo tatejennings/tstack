@@ -12,10 +12,10 @@ You are running TStack's per-milestone execution stage. The plan is already appr
 Required state:
 
 - `docs/ROADMAP.md` exists
-- An approved implementation plan exists in conversation context (or in `~/.claude/plans/...` if the user wants to resume)
+- An approved implementation plan exists in the repo at `docs/plans/{id}.md` (written by `tstack-plan`). If it was committed, this works even when a cloud agent or a different machine — not the session that planned it — is doing the build.
 - The current branch is a `milestone/*` branch (not `main`)
 
-If you're on `main` or have no approved plan: stop and tell the user to run `tstack-plan` first. Don't try to plan-as-you-go — that's the failure mode this split exists to prevent.
+**Load the plan first.** Read `docs/plans/{id}.md` for the milestone you're building. If it's missing and there's no approved plan in context: stop and tell the user to run `tstack-plan` first. Don't try to plan-as-you-go — that's the failure mode this split exists to prevent. The plan file carries the "Done when" criteria copied from ROADMAP.md; still open `docs/ROADMAP.md` to confirm they match (if they've drifted, the roadmap is authoritative — flag it).
 
 ## Approach
 
@@ -60,9 +60,16 @@ Per-criterion command guidance:
 - **Background jobs:** trigger the job; show both the success log and a forced-failure log (or its absence with a "no error scenario possible" note).
 - **Manual UI flows** (last resort, only when no automated path exists): describe the exact click sequence, paste a screenshot path or console output captured during it, and call out that this is manual.
 
-If a criterion can't be verified by any of the above, the criterion is not testable. Stop and tell the user the roadmap entry has a soft criterion that needs rewriting before the milestone can be shipped.
+If a criterion can't be verified by any of the above, the criterion is not testable. Stop and tell the user the roadmap entry has a soft criterion that needs rewriting before the milestone can be shipped. (This should be rare — `tstack-roadmap` now checks testability at write time. If you hit one here, it slipped through; fixing it is a roadmap edit, not a build judgment call.)
 
-If any criterion is FAIL: fix it. Don't move on. Don't mark the milestone done.
+**Default is all-or-nothing: every criterion must PASS before the milestone ships.** If any criterion is FAIL: fix it. Don't move on. Don't mark the milestone done.
+
+**Waiving a criterion (controlled escape hatch).** A criterion may be deferred *only* with explicit user sign-off, and only when it's a genuine scope split rather than a defect being hidden. When the user signs off:
+1. Record it in the verification report as `Result: DEFERRED — {reason} (user-approved {date})`, not PASS.
+2. Append a follow-up milestone to `docs/ROADMAP.md` (via `tstack-specify` rules, or a direct append with explicit dependency) that carries the deferred criterion, so it isn't lost.
+3. Note the known gap in the merge commit body.
+
+Never silently mark a milestone done with a failing or unmet criterion. A waiver is a visible, tracked decision — not a soft pass.
 
 ### 3. Commit final state and merge
 
@@ -80,7 +87,7 @@ git push origin {branch}
 git checkout main && git merge {branch} && git push origin main && git branch -d {branch}
 ```
 
-**Team projects** — open a PR and follow the team's review workflow instead. Use `gh pr create` if available. The rest of the loop is the same after merge.
+**Team projects** — open a PR instead of merging directly. Use `gh pr create` if available, targeting `main`. Find the review requirements where the project records them — `AGENTS.md`, `CONTRIBUTING.md`, or ADR-1 / the M0 branch-protection rules in `DECISIONS.md` (e.g., "requires one approval + passing CI"). Put the verification report (from step 2) in the PR body so reviewers see the proof. **The milestone is not `Completed` until the PR actually merges** — don't update ROADMAP status (step 4) on PR open. If CI or review is still pending, tell the user the milestone is "in review" and pause the loop there; resume step 4 once it merges.
 
 ### 4. Update roadmap status
 

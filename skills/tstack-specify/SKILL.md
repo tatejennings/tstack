@@ -71,6 +71,8 @@ Reply: approve / modify / reject per item in either list. Type "approve all" if 
 
 The "considered but not changing" list is mandatory — it surfaces the negatives so the user can challenge a missed edit. Every existing file in `docs/` that *could* plausibly be affected must appear in one of the two lists. If you skip a file silently, the user has no way to push back. Enumerate the actual file paths present in the repo, not abstract categories.
 
+**Spec-heavy projects:** if `docs/2 - Specs/` holds many files and most are obviously unrelated to this feature, you don't have to spend a line on each. List individually every spec with any plausible connection, then collapse the clearly-irrelevant remainder into one line: `2 - Specs/ — {n} other specs ({names}) — unrelated to this feature; ask if you want any reconsidered.` The rule is "no silent skips," not "one verbose line per file."
+
 Wait for explicit approval. Modify the proposal based on user pushback (including challenges to "no change" items). Re-present if it changes substantially.
 
 ### 4. Apply edits one doc at a time
@@ -85,13 +87,15 @@ If you're creating a new breakout spec, follow the template style of existing sp
 
 ### 5. Append milestones to ROADMAP.md
 
-This is the most surgical edit. Rules:
+This is the most surgical edit. **Contract with `tstack-roadmap`:** this skill is *append-only* — it adds new milestone IDs and never renumbers, re-sequences, or rewrites existing entries. A full re-sequence (e.g., the feature reshuffles the whole build order, or you've accumulated many surgical edits) is `tstack-roadmap`'s job — tell the user to re-run it rather than hand-reordering here.
 
-- **Dependency-aware insertion** — a new milestone may depend on existing infrastructure milestones (e.g., the encryption module from M3). Make those dependencies explicit. Don't just append to the bottom; place it where dependencies are satisfied.
+Rules:
+
+- **Numbering is append-only; ordering is expressed by dependencies, not by ID.** Always take the next free ID, even when the new work logically slots earlier. Example: existing roadmap has M0–M5 completed and M6–M8 planned, and the new feature needs M6's output. The new milestone is **M9 with an explicit `Dependencies: M6`** — *not* inserted between M6 and M7 and *not* a renumber of M7+. The dependency field and the graph edges carry the real order; the integer is just a stable label.
+- **Dependency-aware** — a new milestone may depend on existing infrastructure milestones (e.g., the encryption module from M3). Make those dependencies explicit so `tstack-plan` won't start it before its prerequisites are in `Completed`.
 - **Reuse the milestone template** from `references/full-guide.md` of the `tstack-roadmap` skill (i.e., `../tstack-roadmap/references/full-guide.md` from the plugin's perspective; in a consumer project, read the patterns in the existing ROADMAP.md).
-- **Numbering** — continue the existing sequence. If existing milestones go up to M13, start at M14 (or `i7` for the iOS workstream).
-- **Required fields per milestone:** What gets built, Dependencies, Read before starting (point at the *just-updated* doc sections), Done when (binary criteria).
-- **Status section** — do not touch existing Completed entries. Do not move the "Up next" pointer unless the user explicitly says this new feature is taking priority over the current "Up next".
+- **Required fields per milestone:** What gets built, Dependencies, Read before starting (point at the *just-updated* doc sections), Done when (binary, command-verifiable criteria — same testability bar `tstack-roadmap` enforces).
+- **Status section** — do not touch existing Completed entries. Do not move the "Up next" pointer unless the user explicitly says this new feature is taking priority. **Do** update the `Docs last synced:` marker to the new commit with a surgical annotation, e.g. `Docs last synced: <sha> (surgical: added {feature})`, so the marker stays honest — specify kept docs and roadmap consistent for this change, but did not re-validate the whole sequence.
 - Update the Dependency Graph Diagram at the top of ROADMAP.md if the diagram exists.
 
 ### 6. Final cross-check

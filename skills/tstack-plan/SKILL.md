@@ -67,6 +67,10 @@ Switch into plan mode. The plan must contain:
 
 Cross-check the plan against the milestone's "Done when" criteria in ROADMAP.md. Every criterion must be addressed by a specific step in the plan. If a criterion isn't covered, your plan is incomplete — fix it before presenting.
 
+**Granularity check.** A well-sized milestone plan touches roughly 5–15 files. Use that as a smell test, not a hard rule:
+- Ballooning past ~20 files, or splitting into two or more independently-shippable chunks → the milestone is too big. Stop and tell the user to re-scope it (`tstack-specify` to amend, or re-run `tstack-roadmap` to re-sequence). Don't quietly plan a three-day milestone.
+- Only one or two trivial files with no real dependencies → the milestone may be too granular to be worth its own loop; suggest folding it into an adjacent one.
+
 ### 5. Review with the user, adjust, approve
 
 Present the plan. Expect pushback. Common categories to incorporate:
@@ -78,15 +82,44 @@ Present the plan. Expect pushback. Common categories to incorporate:
 
 Iterate until the user approves. Do not exit plan mode prematurely.
 
-### 6. Hand off
+### 6. Persist the approved plan
 
-When the plan is approved:
+The approved plan is `tstack-build`'s input, so it must survive a session restart — and it should be able to travel **with the project**, because you may plan several milestones ahead and hand them to a cloud agent or a different machine to build. So it lives in the repo, not a local user folder. Write it to a deterministic in-repo path:
 
-> Plan approved for M{N} — {name}. Feature branch `milestone/{id}-{desc}` is ready. {N} files to create/modify, {N} verification checks.
+```
+docs/plans/{milestone-id}.md      e.g. docs/plans/m4.md, docs/plans/i2.md
+```
+
+Create `docs/plans/` if it doesn't exist. Use the milestone ID (lowercased) as the filename so `tstack-build` can find it without guessing. The file contains the approved plan in this shape:
+
+```markdown
+# Plan: {milestone-id} — {name}
+Branch: milestone/{id}-{desc}
+Roadmap "Done when" criteria: {copied verbatim from ROADMAP.md, so build verifies against the source of truth}
+
+## Files to create/modify (dependency order)
+...
+## Patterns to reuse (file paths)
+...
+## New patterns to introduce (+ rationale)
+...
+## Verification approach (per "Done when" criterion)
+...
+## Out of scope
+...
+```
+
+The plan lives in the repo so it can travel — you can commit it and hand the milestone to a cloud agent or another machine to build. **Committing is your call** (a manual step); this skill writes the file but doesn't commit it for you. If the plan changes later (re-planned mid-build), overwrite the file so it always reflects the *current* approved plan.
+
+### 7. Hand off
+
+When the plan is approved and written to `docs/plans/{id}.md`:
+
+> Plan approved for M{N} — {name} and written to `docs/plans/{id}.md`. Feature branch `milestone/{id}-{desc}` is ready. {N} files to create/modify, {N} verification checks.
 >
-> **Next: run `tstack-build`** (or just say "build it" / "ship it"). Same session is fine — `tstack-build` picks up from the approved plan and feature branch.
+> **Next: run `tstack-build`** (or just say "build it" / "ship it"). Same session is fine — `tstack-build` reads the approved plan from `docs/plans/{id}.md` and the feature branch. (Commit the plan file if you want a cloud agent or another machine to build it.)
 
-Do not write any code in this skill. Hand the approved plan + branch to `tstack-build`.
+Do not write any code in this skill. Hand the approved plan file + branch to `tstack-build`.
 
 ## Reference handoff
 

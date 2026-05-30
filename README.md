@@ -2,7 +2,7 @@
 
 # TStack — a Claude Code Plugin
 
-TStack is a seven-skill Claude Code plugin that takes you from a rough product idea to a fully documented, milestone-sequenced, built project. Each stage is a skill that auto-triggers based on what you say, reads its input artifact from disk, produces its output, and hands off to the next.
+TStack is a Claude Code plugin that takes you from a rough product idea to a fully documented, milestone-sequenced, built project: **seven chained skills** (discover → product → architect → roadmap → plan → build, plus the specify iteration loop) and **two optional, off-chain companions** (`tstack-design` and `tstack-status`) you can run at any point. Each chained stage auto-triggers based on what you say, reads its input artifact from disk, produces its output, and hands off to the next.
 
 > Replaces a previous paste-the-guide-into-each-session workflow with a chain of skills that activate automatically and remember the state of your project on disk.
 
@@ -20,21 +20,34 @@ flowchart LR
   A --> B --> C --> D --> P --> E
   E -.next milestone.-> P
   F --> P
+  subgraph offchain ["optional · off-chain · run at any point"]
+    G["**tstack-design**<br/>→ design.md + Claude Design prompts"]
+    H["**tstack-status**<br/>read-only status + drift report"]
+  end
 ```
 
-Four skills form a one-time setup chain (`discover` → `product` → `architect` → `roadmap`). Then `tstack-plan` and `tstack-build` form the per-milestone loop you run repeatedly. `tstack-specify` is the iteration skill for adding features after launch — it hands into the same `plan` → `build` loop.
+Four skills form a one-time setup chain (`discover` → `product` → `architect` → `roadmap`). Then `tstack-plan` and `tstack-build` form the per-milestone loop you run repeatedly. `tstack-specify` is the iteration skill for adding features after launch — it hands into the same `plan` → `build` loop. `tstack-design` and `tstack-status` sit **outside** the chain: invoke them whenever you need them — neither is a required step and neither blocks the flow.
 
-## The Seven Skills
+## The Skills
+
+**Chain (seven skills):**
 
 | Skill | When it triggers | Input | Output |
 |---|---|---|---|
 | `tstack-discover` | "I want to build…", new product idea, no brief yet | rough description | `docs/1 - Discovery/business-brief.md` |
 | `tstack-product` | "let's write the PRD" after discovery | business brief | `docs/PRODUCT.md` |
-| `tstack-architect` | "design the architecture" after PRODUCT.md | PRODUCT.md | ARCHITECTURE / API / CONVENTIONS / DECISIONS / specs + AGENTS.md + CLAUDE.md |
+| `tstack-architect` | "design the architecture" after PRODUCT.md | PRODUCT.md | ARCHITECTURE / API / CONVENTIONS / TESTING / DECISIONS / specs + AGENTS.md + CLAUDE.md |
 | `tstack-roadmap` | "make a roadmap" / "what do we build first" | full `docs/` tree | `docs/ROADMAP.md` |
-| `tstack-plan` | "plan milestone Mx" / "what should we build next" | ROADMAP.md + milestone-referenced docs | approved implementation plan + feature branch |
+| `tstack-plan` | "plan milestone Mx" / "what should we build next" | ROADMAP.md + milestone-referenced docs | approved implementation plan (`docs/plans/{id}.md`) + feature branch |
 | `tstack-build` | "build it" / "ship this milestone" after a plan is approved | approved plan + feature branch | shipped milestone + merged branch + updated status |
 | `tstack-specify` | "let's add feature X" in an established project | existing PRODUCT.md (+ ROADMAP.md) | updated docs + appended milestones |
+
+**Optional companions (off-chain — run at any point):**
+
+| Skill | When it triggers | Input | Output |
+|---|---|---|---|
+| `tstack-design` | "design the UI" / "create a design system" / "give me design prompts" | PRODUCT.md if present (else a description) + frontend stack | `docs/2 - Specs/design.md` + ready-to-paste Claude Design prompts |
+| `tstack-status` | "where are we" / "project status" / "what's left" / "is anything out of sync" | `docs/` tree + git (read-only) | a chat status report incl. doc-drift flags |
 
 ## Install
 
@@ -88,11 +101,15 @@ your-project/
 │   ├── ARCHITECTURE.md
 │   ├── API.md
 │   ├── CONVENTIONS.md
+│   ├── TESTING.md
 │   ├── DECISIONS.md
 │   ├── ROADMAP.md
+│   ├── plans/                   # milestone plans (tstack-plan → tstack-build)
+│   │   └── m0.md
 │   ├── 1 - Discovery/business-brief.md
 │   └── 2 - Specs/
 │       ├── database-schema.md
+│       ├── design.md            # if tstack-design was run
 │       └── …
 ```
 
@@ -146,7 +163,9 @@ claude-code-starter/             # this repo = the plugin
 │   ├── tstack-roadmap/          SKILL.md + references/full-guide.md
 │   ├── tstack-plan/             SKILL.md (shares tstack-build's reference)
 │   ├── tstack-build/            SKILL.md + references/full-guide.md
-│   └── tstack-specify/          SKILL.md (no migrated reference — written from scratch)
+│   ├── tstack-specify/          SKILL.md (no migrated reference — written from scratch)
+│   ├── tstack-design/           SKILL.md + references/example-output.md (optional, off-chain)
+│   └── tstack-status/           SKILL.md + references/example-output.md (optional, off-chain)
 ├── README.md                    # you are here
 ├── CLAUDE.md                    # for someone editing the plugin
 ├── BACKLOG.md                   # plugin's own backlog of upcoming features

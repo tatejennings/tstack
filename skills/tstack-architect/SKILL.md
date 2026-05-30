@@ -98,9 +98,13 @@ Wait for the answer. Generate only the requested subset.
 
 2. **Write `docs/DECISIONS.md` first** with the four foundational ADRs (plus ADR-5 if AI is in scope). The rest of the doc set must be internally consistent with these — for example, if ADR-1 specifies row-level security, the ARCHITECTURE.md data-flow diagram needs to show where the policy is enforced.
 
-3. **Propose the opinionated 2026 default stack; only present alternatives where the user signals they want to deviate.** Don't open every choice as a three-way menu — that creates paralysis. Lead with the defaults, ask the user to confirm or override, and only expand into tradeoffs when they push back. Append every accepted choice as a new ADR (ADR-6, ADR-7, …).
+3. **Ask the target platform and the team's language/ecosystem before proposing a stack.** One question first: "What platform(s) are we targeting (web, iOS, Android, service/API, CLI), and what language/ecosystem does the team already know well?" The opinionated default is only useful if it's a default *for the right ecosystem* — don't propose Next.js to a team that lives in Python, or FastAPI to an iOS shop. Pick the default-stack row that matches their answer; if their existing expertise conflicts with the listed default, lead with *their* ecosystem and record the rationale.
 
-   **Default stacks by project type** (use these unless the user has a specific reason to deviate):
+   Then **propose the opinionated default stack for that ecosystem; only present alternatives where the user signals they want to deviate.** Don't open every choice as a three-way menu — that creates paralysis. Lead with the defaults, ask the user to confirm or override, and only expand into tradeoffs when they push back. Append accepted choices as ADRs (ADR-6, ADR-7, …) — but **consolidate, don't proliferate.** Group a coherent set of choices into one ADR (e.g., one "ADR-6: Web stack" covering framework + language + styling + package manager) rather than a separate ADR per package. Reserve a standalone ADR for a choice that was genuinely contested or has a non-obvious tradeoff worth recording on its own.
+
+   **Date every tech-stack ADR.** These defaults are current as of early 2026 and *will* age. Each tech-stack ADR records `Chosen: <today's date>` and a revisit trigger (e.g., "revisit at next major framework upgrade" or "re-evaluate auth provider if pricing changes / at 50k MAU"). That way a reader in 2027 knows whether the choice is fresh or due for review, rather than treating a stale default as gospel.
+
+   **Default stacks by project type** (use these unless the user's ecosystem or a specific reason says otherwise):
 
    | Project type | Defaults |
    |---|---|
@@ -128,7 +132,9 @@ Wait for the answer. Generate only the requested subset.
    5. Breakout specs in `docs/2 - Specs/`:
       - If AI=yes: `ai-strategy.md` (mandatory, regardless of size)
       - If Full size: additional specs for any topic needing more depth than ARCHITECTURE.md provides (`database-schema.md`, `authentication.md`, `event-pipeline.md`, etc.). One spec per file.
-   6. AGENTS.md at repo root — project overview, tech stack, doc-pointer table including the new TESTING.md and DECISIONS.md entries, common commands, key code patterns, conventions quick-reference.
+   6. AGENTS.md at repo root — project overview, tech stack, doc-pointer table including the new TESTING.md and DECISIONS.md entries, common commands, key code patterns, conventions quick-reference, and a `## Current Focus` block (initialize it to "Roadmap not generated yet — run `tstack-roadmap`").
+
+      **`tstack-architect` owns `AGENTS.md`.** It is the only skill that writes the full structure. Downstream skills follow a section contract: `tstack-roadmap` and `tstack-build` update **only** the `## Current Focus` block (pointing at ROADMAP.md's Status) and never restructure the rest. So give `AGENTS.md` a stable `## Current Focus` heading they can target. If a downstream skill finds the block missing, it adds just that block — it does not regenerate the file.
    7. CLAUDE.md at repo root — contents are exactly `See @AGENTS.md` (plus optional Claude-specific overrides if the user has any).
 
 6. **Cross-reference check** after all docs are written:
@@ -152,7 +158,7 @@ Every section above has detailed templates, content rules, and troubleshooting i
 - Per-file "Should contain / Should NOT contain" lists
 - iOS-specific addenda if the project targets iOS
 
-The reference guide predates the foundational-ADRs and TESTING.md additions, so use this SKILL.md (not the reference) as the authoritative shape for those.
+This SKILL.md is authoritative for the *process and shape* of the stage (foundational ADRs, opinionated defaults, mandatory TESTING.md/DECISIONS.md, AGENTS.md ownership); the reference guide carries the longer-form templates and content rules. If the two ever diverge, follow SKILL.md and fix the guide.
 
 For a realistic example showing ARCHITECTURE.md tech-stack tables, data-flow diagrams, module boundaries, and DECISIONS.md ADR shape (including the four foundational ADRs and an AI-strategy ADR), read `references/example-output.md`.
 
@@ -164,4 +170,4 @@ When the full set is complete and committed:
 >
 > **Next: run `tstack-roadmap`** (or say "make a roadmap").
 >
-> Fresh session recommended — ROADMAP.md is generated by reading the entire `docs/` tree, which benefits from a clean context budget. For small projects (5-6 docs total), continuing here is fine.
+> **Fresh session** if this is a larger project — rough rule: **8+ features, 5+ data entities, or more than one workstream** (e.g., web + mobile). ROADMAP.md is generated by reading the entire `docs/` tree, which benefits from a clean context budget. For a small single-domain project (5-6 docs total), continuing here is fine.

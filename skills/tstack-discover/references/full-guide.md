@@ -18,7 +18,7 @@ A short description of your product idea. It can be as rough as a few sentences:
 
 Or as detailed as a few paragraphs. The less you provide, the more questions Claude will ask. That's fine — the questions are the point.
 
-> **Web search:** The competitive research step works best with a Claude interface that has web search enabled (Claude.ai, Claude Code). If web search isn't available, do your own competitor research and include it with your product description — Claude will still run the full discovery process.
+> **Web search:** The competitive research step uses `WebSearch` when it's available. If it isn't, Claude doesn't send you elsewhere — it runs the research *through you* with a structured set of questions (closest competitors/substitutes, rough pricing, common complaints) and records the answers labeled "user-reported (no live search)". Either way the full discovery process runs. See the SKILL.md fallback for the exact prompts.
 
 ### What Claude Does
 

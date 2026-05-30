@@ -2,6 +2,8 @@
 
 A complete reference for creating the technical documentation that Claude Code needs to build your project. Give this file to Claude Code along with your completed PRODUCT.md — Claude will work through each document in order, producing the full documentation set before any code is written.
 
+> **Source of truth:** `SKILL.md` is authoritative for the *process and shape* of this stage — the four foundational ADRs (security, observability, accessibility, privacy), the optional AI ADR, the opinionated-default tech-stack approach, mandatory TESTING.md and DECISIONS.md, and AGENTS.md ownership. This guide provides the longer-form **templates, per-file content rules, and troubleshooting**. Where the two ever disagree, follow SKILL.md and treat the discrepancy as a guide bug to fix.
+
 ---
 
 ## Overview
@@ -20,9 +22,9 @@ Claude follows this process in order:
 
 2. **Work through each document in the Step-by-Step order** (ARCHITECTURE.md first, CLAUDE.md last). Complete one document at a time. Present each document for user review before moving to the next.
 
-3. **For technical decisions, present options with tradeoffs** rather than choosing unilaterally. Tech stack, database, auth provider, hosting — present 2-3 options and let the user decide. Record every significant choice in DECISIONS.md.
+3. **Lead with the opinionated default, not a menu.** Per SKILL.md, ask the target platform and the team's ecosystem first, then propose the opinionated default stack for that ecosystem and ask the user to confirm or override. Only expand a choice into a 2-3 option tradeoff comparison when the user signals they want to deviate — don't open every decision as a three-way menu (that creates paralysis). Either way, record the accepted choice (default-confirmed or overridden) in DECISIONS.md with its rationale and a `Chosen: <date>` stamp; silent override is the only thing that's not allowed.
 
-4. **Manage session context proactively.** For complex projects, the full doc set may exceed a single session's effective context. A natural breakpoint is after DECISIONS.md (step 4) — start a fresh session for breakout specs and AGENTS.md (steps 5-7), pointing the new session at the docs created so far.
+4. **Manage session context proactively.** For complex projects, the full doc set may exceed a single session's effective context. Because DECISIONS.md is written *first* (the foundational ADRs gate everything else), a natural breakpoint is after the four core docs (ARCHITECTURE/API/CONVENTIONS/TESTING) — start a fresh session for breakout specs and AGENTS.md, pointing the new session at the docs created so far.
 
 5. **After all documents are created, cross-reference check.** Does ARCHITECTURE.md align with API.md? Do breakout specs cover all PRODUCT.md features? Does DECISIONS.md capture every significant technical choice? Flag inconsistencies for the user to resolve.
 
@@ -41,6 +43,7 @@ project-root/
 │   ├── ARCHITECTURE.md          # System overview, tech stack, data flow
 │   ├── API.md                   # API contracts, endpoints, request/response shapes
 │   ├── CONVENTIONS.md           # Code style, naming, file organization rules
+│   ├── TESTING.md               # Test strategy, coverage floor, a11y/security checks
 │   ├── DECISIONS.md             # Architecture Decision Records (ADRs)
 │   ├── ROADMAP.md               # Build-order milestones with dependencies
 │   ├── 1 - Discovery/           # Business brief, market research, competitive analysis
@@ -59,8 +62,9 @@ project-root/
 | **PRODUCT.md** | User stories, features, data models, acceptance criteria, edge cases, UI flows | Before implementing any feature |
 | **ARCHITECTURE.md** | Component relationships, tech stack rationale, repo structure, module boundaries, data flow diagrams, deployment topology | Starting new features, understanding system design, refactoring |
 | **API.md** | Every endpoint with method, path, request body, response shape, auth requirements, rate limits | Building any endpoint or client that calls one |
-| **CONVENTIONS.md** | Code patterns, naming rules, file organization, testing approach, anti-patterns to avoid | Any code generation task |
-| **DECISIONS.md** | Past architectural choices — what was decided, what was rejected, why | When Claude suggests something you've already evaluated |
+| **CONVENTIONS.md** | Code patterns, naming rules, file organization, anti-patterns to avoid (cross-references TESTING.md rather than duplicating it) | Any code generation task |
+| **TESTING.md** | Unit/integration/e2e split + frameworks, coverage floor, test location, mocking, what's in CI vs local, how a11y/security/the four ADRs are verified | Writing tests; defining a milestone's "Done when" verification |
+| **DECISIONS.md** | Past architectural choices — what was decided, what was rejected, why. Always opens with the four foundational ADRs (+ AI ADR if applicable) | When Claude suggests something you've already evaluated |
 | **ROADMAP.md** | Sequenced milestones with dependencies, spec references, and "done when" criteria | Before starting any milestone; to understand what's next |
 | **1 - Discovery/** | Business context, market research, competitive analysis | Rarely by Claude Code; primarily for human reference |
 | **2 - Specs/** | Detailed breakout specs for topics that need more depth than the high-level docs provide | Before implementing the specific system that spec covers |
@@ -95,7 +99,8 @@ Brief description (2-3 sentences) of what the project does.
 | `docs/PRODUCT.md` | Before implementing any feature — contains requirements, user flows, acceptance criteria |
 | `docs/ARCHITECTURE.md` | When starting a new feature, refactoring, or needing to understand system design |
 | `docs/API.md` | When building any endpoint or client that calls one |
-| `docs/CONVENTIONS.md` | Before writing any code — code style, naming, file organization, testing rules |
+| `docs/CONVENTIONS.md` | Before writing any code — code style, naming, file organization |
+| `docs/TESTING.md` | Before writing tests or verifying a milestone — test strategy, coverage floor, a11y/security checks |
 | `docs/DECISIONS.md` | Before suggesting alternatives to existing patterns — check if it's already been evaluated |
 | `docs/ROADMAP.md` | Before starting any milestone — build order, dependencies, "done when" criteria |
 | `docs/2 - Specs/*` | Before implementing the specific system that spec covers — detailed blueprints |
@@ -116,15 +121,17 @@ The top 10 rules from CONVENTIONS.md that apply to every task. Keep it scannable
 (API route structure, database query pattern, etc.)
 
 ## Current Focus
-Check `docs/ROADMAP.md` — see the Status section at the bottom for the current milestone.
+Roadmap not generated yet — run `tstack-roadmap`.
 ```
+
+`tstack-architect` initializes `## Current Focus` to the placeholder above. Once `tstack-roadmap` runs, it updates the block to point at ROADMAP.md's Status section. After that the block is a **static pointer** — it doesn't change per milestone, because the live "what's next" lives in ROADMAP.md's Status, which `tstack-build` keeps current.
 
 **Rules:**
 - Don't enumerate every file in the project — agents can explore
 - Don't paste full specs — point to them
 - Do include common commands (agents can't guess your build/test scripts)
 - Do include the 2-3 most important code patterns (saves agents from inventing their own)
-- Update the "Current Focus" section when you start a new milestone
+- `tstack-architect` owns this file. Downstream skills (`tstack-roadmap`, `tstack-build`) update **only** the `## Current Focus` block — they never restructure the rest.
 
 > **iOS projects:** Include Swift version, minimum deployment target, SwiftUI vs UIKit, dependency manager, async patterns (`async/await` vs Combine), Xcode build commands, and any Run Script phases that affect codegen.
 
@@ -215,9 +222,34 @@ See @AGENTS.md
 
 ---
 
+### TESTING.md
+
+**Purpose:** The test strategy. Mandatory at every right-sizing level. It's what `tstack-roadmap` and `tstack-build` lean on to make "Done when" criteria command-verifiable, so it must name concrete, runnable checks — not aspirations.
+
+**Should contain:**
+- **Test levels and frameworks** — unit / integration / e2e split, with the framework chosen for each (e.g., Vitest for unit+integration, Playwright for e2e; pytest; swift test).
+- **Coverage floor** — a specific number, not "high coverage" (e.g., "85% statements / 75% branches"). State what's measured and where it's enforced.
+- **Where tests live** — alongside code (preferred for 2026 web stacks) vs a separate tree.
+- **Mocking / test-data strategy** — what gets mocked, how fixtures/factories are built, how the DB is seeded/reset.
+- **CI vs local** — which checks run on every PR vs on demand.
+- **How the foundational ADRs are verified** — concretely: accessibility via `axe` in CI (ADR-3), security via dependency scanning / secret scanning (ADR-1), observability smoke-check that errors reach the tracker (ADR-2), privacy/deletion path covered by a test (ADR-4).
+
+**Should NOT contain:** the conventions for writing code (that's CONVENTIONS.md — cross-reference it), or per-feature acceptance criteria (those live in PRODUCT.md and become milestone "Done when" criteria).
+
+---
+
 ### DECISIONS.md
 
-**Purpose:** Architecture Decision Records. Prevents Claude Code from suggesting things you've already evaluated and rejected.
+**Purpose:** Architecture Decision Records. Prevents Claude Code from suggesting things you've already evaluated and rejected. **Written first**, before the other technical docs.
+
+**Always opens with the four foundational ADRs**, in this order, captured before any other doc is written (see SKILL.md for the questions each asks):
+- **ADR-1: Security posture** — sensitive/regulated data, secret storage, auth provider, authorization model
+- **ADR-2: Observability posture** — log destination + format, error tracker, metrics (or explicit "none in v1")
+- **ADR-3: Accessibility posture** — WCAG target for consumer-facing UI, or explicit minimal-obligation note for CLI/API
+- **ADR-4: Privacy & data handling** — residency, retention per data type, deletion capability, compliance regimes
+- **ADR-5: AI/LLM strategy** — *only if* the product uses AI; pairs with `docs/2 - Specs/ai-strategy.md`
+
+Tech-stack choices follow as ADR-6, ADR-7, … — each with a `Chosen: <date>` stamp and a revisit trigger.
 
 **For each decision:**
 
@@ -275,7 +307,7 @@ Good ADRs save time. When Claude Code suggests "why not use X?", you can point t
 
 **Purpose:** Build-order milestone sequence. Tells Claude Code what to build next, what it depends on, and what "done" looks like.
 
-**See the companion document** `04-generate-roadmap.md` for the complete process of creating this file from the other documentation.
+**See the `tstack-roadmap` skill** for the complete process of creating this file from the other documentation.
 
 **Key properties:**
 - Milestones sequenced by **technical dependencies**, not by PRODUCT.md section order
@@ -299,25 +331,29 @@ Good ADRs save time. When Claude Code suggests "why not use X?", you can point t
 
 3. **Write CONVENTIONS.md.** Establish code style before any code exists. This prevents inconsistency from the first line.
 
-4. **Write DECISIONS.md.** Document the architectural choices you made in steps 1-3. Every "we chose X over Y" gets an ADR.
+4. **Write TESTING.md.** Define the test strategy — levels, frameworks, coverage floor, and how the foundational ADRs are verified. Mandatory at every size; `tstack-build` verifies milestones against it.
 
-5. **Write breakout specs** for anything that needs more detail. Database schema is almost always a spec. Pipelines, sync protocols, and complex algorithms usually need specs too.
+5. **Write DECISIONS.md.** In practice this is written *first* (the four foundational ADRs gate everything), but ensure every "we chose X over Y" from the steps above has an ADR with a `Chosen: <date>` stamp.
 
-6. **Create AGENTS.md** at the repo root. This is the single source of truth for all AI agents. Point to all the docs. Include commands and key patterns. Note: the AGENTS.md template references `docs/ROADMAP.md` — that file doesn't exist yet and that's expected. It will be created in the next step using `04-generate-roadmap.md`.
+6. **Write breakout specs** for anything that needs more detail. Database schema is almost always a spec. Pipelines, sync protocols, and complex algorithms usually need specs too. If the product uses AI, `2 - Specs/ai-strategy.md` is mandatory regardless of size.
 
-7. **Create CLAUDE.md** at the repo root with contents: `See @AGENTS.md`. If you use other AI tools, create their config files the same way (e.g., `.cursorrules` pointing to AGENTS.md).
+7. **Create AGENTS.md** at the repo root. This is the single source of truth for all AI agents and `tstack-architect` owns it. Point to all the docs (including TESTING.md and DECISIONS.md). Include commands and key patterns. Note: the AGENTS.md template references `docs/ROADMAP.md` — that file doesn't exist yet and that's expected. It's created in the next stage by `tstack-roadmap`.
 
-**Stop here.** The roadmap is created separately using `04-generate-roadmap.md` in a new session.
+8. **Create CLAUDE.md** at the repo root with contents: `See @AGENTS.md`. If you use other AI tools, create their config files the same way (e.g., `.cursorrules` pointing to AGENTS.md).
 
-### 8. Validate Documentation Consistency
+**Stop here.** The roadmap is created separately by the `tstack-roadmap` skill in a new session.
+
+### 9. Validate Documentation Consistency
 
 Before moving to roadmap generation, verify the docs are internally consistent. Run through this checklist (Claude can do this, or you can do it manually):
 
 1. Every feature in PRODUCT.md has corresponding coverage in API.md (for endpoints), ARCHITECTURE.md (for system components), or a breakout spec (for complex subsystems)
 2. Every endpoint in API.md traces back to a feature or flow in PRODUCT.md
-3. Every significant tech stack choice in ARCHITECTURE.md has an ADR in DECISIONS.md
-4. Breakout specs reference which PRODUCT.md sections and ARCHITECTURE.md components they implement
-5. AGENTS.md correctly points to all created docs and includes accurate common commands
+3. Every significant tech stack choice in ARCHITECTURE.md has an ADR in DECISIONS.md (with a `Chosen:` date)
+4. DECISIONS.md opens with the four foundational ADRs (+ AI ADR if the product uses AI)
+5. TESTING.md's a11y/security checks align with ADR-3 and ADR-1
+6. Breakout specs reference which PRODUCT.md sections and ARCHITECTURE.md components they implement
+7. AGENTS.md correctly points to all created docs (including TESTING.md and DECISIONS.md) and includes accurate common commands
 
 Catching inconsistencies now is much cheaper than discovering them during implementation.
 
@@ -325,13 +361,13 @@ Catching inconsistencies now is much cheaper than discovering them during implem
 
 ## Working with Claude Code
 
-For detailed guidance on Claude Code prompting patterns, session management, context hygiene, and git workflow during implementation, see `05-implement-milestones.md`.
+For detailed guidance on Claude Code prompting patterns, session management, context hygiene, and git workflow during implementation, see the `tstack-build` skill's `references/full-guide.md`.
 
 **Key principles for the documentation phase:**
 
 - **Start fresh sessions** for unrelated tasks — context pollution degrades output quality
 - **Don't load all docs at once.** CLAUDE.md tells Claude Code *when* to read each file. Let it load docs on demand.
-- **Use `.claudeignore`** to exclude build artifacts, large assets, and environment files from Claude Code's context. See `.claudeignore.example` in this repo for a starting template.
+- **Use `.claudeignore`** to exclude build artifacts, large assets, and environment files from Claude Code's context.
 - **Commit frequently.** Claude Code works better with clean git state. Treat Claude Code output like a PR from a teammate — review diffs before accepting.
 
 ---
@@ -347,14 +383,15 @@ Let's pause here. Commit what we have. I'll start a fresh session for the
 remaining documents. Read the docs we've created so far before continuing.
 ```
 
-### Claude Makes Tech Stack Choices Without Asking
+### Claude Bakes In a Tech Stack Silently
 
-Claude should present options and let you decide, not pick technologies unilaterally. Re-anchor it:
+Claude should *propose* its opinionated default explicitly and let you confirm or override — not quietly bake a choice into ARCHITECTURE.md as if it were settled. Re-anchor it:
 
 ```
-Stop. Don't choose the tech stack for me. Present 2-3 options for the database
-with tradeoffs (cost, complexity, team familiarity) and let me decide. Record
-the decision in DECISIONS.md.
+Stop. Don't silently commit the stack. State your default for the database and
+why, then let me confirm or override. If I push back, give me 2-3 options with
+tradeoffs (cost, complexity, team familiarity). Record the decision in
+DECISIONS.md with a Chosen: date.
 ```
 
 ### Docs Are Too Thin for Implementation

@@ -23,6 +23,8 @@ If `docs/PRODUCT.md` already exists: stop and ask if they want to (a) replace it
 
 1. **Read the business brief from disk** and summarize what you understood: the product, target user, core value prop. Flag any gaps that will block requirements writing — unclear features, missing user flows, ambiguous scope. Resolve those with the user before writing.
 
+   **Flag AI/LLM/ML features now, not later.** As you read, identify every feature whose behavior is non-deterministic — chat, recommendations, classification, generation, search relevance, anything model-driven. Name them explicitly back to the user ("X and Y look like AI features"). This matters because those features take **eval-based** acceptance criteria (step 4), not Given/When/Then, and `tstack-architect` will need an AI-strategy ADR for them downstream. Catching them here prevents a soft criterion like "suggestions feel relevant" from slipping through to `tstack-build`, where it can't be verified.
+
 2. **Work through PRODUCT.md section by section.** Present each section for review before moving on. The intended order:
    1. Product Overview (what it is, target user, business model summary)
    2. Features (each with description, user flow, acceptance criteria)
@@ -65,6 +67,11 @@ If `docs/PRODUCT.md` already exists: stop and ask if they want to (a) replace it
    - Edge cases and error states are documented (including rate-limit, abuse, multi-tenancy isolation if applicable)
    - UI/UX descriptions are specific enough for a developer to implement from
 
+   Then **get an explicit completion sign-off before saving.** Present the assembled PRODUCT.md (or a section-by-section recap) and ask directly: "Is this complete, or is anything missing?" Don't treat reaching the last section as done.
+   - If the user names a missing feature or flow → iterate within PRODUCT.md; add it and re-run the checklist. Stay in this skill.
+   - If the gap reveals the *brief itself* is wrong or incomplete (a whole audience, market, or value-prop was never explored) → stop and send them back to `tstack-discover` to fix the brief, rather than inventing product direction here.
+   Only save once the user confirms it's complete.
+
 6. **Save to `docs/PRODUCT.md`.** Commit: `docs: create PRODUCT.md from business brief`.
 
 ## What PRODUCT.md should NOT contain
@@ -87,4 +94,4 @@ For a realistic PRODUCT.md excerpt showing the expected level of detail — incl
 >
 > **Next: run `tstack-architect`** (or say "design the architecture").
 >
-> Fresh session recommended for non-trivial projects — `tstack-architect` produces several docs and benefits from a clean context budget. For small projects, continuing here is fine.
+> **Fresh session** if this is a larger project — rough rule: **8+ features, 5+ data entities, or more than one workstream** (e.g., web + mobile). `tstack-architect` produces several docs and benefits from a clean context budget. For a small single-domain project, continuing here is fine.
