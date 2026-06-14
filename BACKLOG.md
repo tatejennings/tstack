@@ -18,6 +18,15 @@ From a deep review of the skill chain (see `REVIEW.md`). All advisory; needs the
 - [ ] Negative tests from the v0.2 plan: invoke `tstack-roadmap` without M0, expect refusal; invoke `tstack-specify` and check the "considered, no change" line appears.
 - [x] Cut `0.2.0` — `plugin.json` bumped, `CHANGELOG.md` `[0.2.0]` dated. **Still to do:** `git tag v0.2.0` on GitHub, and run the verification above (shipped ahead of it).
 
+## Evolution pass — from user feedback (2026-06)
+
+Four improvements surfaced by a real-world weekend build (user got to milestone 22 with ~20 more queued). All validated against current best-practice research; tackle one at a time, deeply. Order = rough priority.
+
+1. [x] **`tstack-wrap` — session doc-sweep skill** *(shipped in v0.3.0).* New off-chain companion that closes out a work session: sweeps for undocumented decisions / tradeoffs / gotchas / operational events (stale branches, deferred criteria, manual steps) from the session's work and writes each gap to the right home (DECISIONS.md ADR, CONVENTIONS.md, a code comment, ROADMAP.md Status). Does not commit; routes new scope/milestones to `tstack-specify`. Built from a user's end-of-session sweep prompt ("I catch something almost every time"). `tstack-status` only *detects* drift — nothing currently *closes* it, and staleness is the chain's #1 risk.
+2. [ ] **Tame auto-chaining + recommend fresh session per milestone.** `tstack-plan` step 7 and `tstack-build` step 5 currently invite a continuous one-window plan→build→plan loop ("Same session is fine", "typically immediately after tstack-plan finishes"). User reported this bloats context more than expected (and the agent sometimes auto-advances milestones). Flip the default handoff to *stop and recommend a fresh session*; the in-repo plan artifact already makes fresh context cheap. Loop-hygiene, not a discipline change.
+3. [ ] **Delivery skills — UAT / manual testing / user docs.** The chain ends at "merged + roadmap updated"; there's no handoff-to-a-human stage, so the user built their own: install/UAT ("how do I install/test, what should work?"), optional manual testing (env setup + steps), and end-user docs (what it does, how to install/use). Decide shape in its own session — one `tstack-deliver` vs three skills (`tstack-uat`, `tstack-manual-test`, `tstack-userdocs`). Adjacent to (but distinct from) the backlogged `tstack-audit`, which is production-readiness, not human handoff.
+4. [ ] **Loop-engineering positioning pass.** Editorial only. Reframe README + CLAUDE.md around the agentic loop: docs = durable external context, the "Done when" verify step = the engine, fresh session per milestone = the iteration. ("Loop engineering" is a soft community term; the substance — strong external verification + state-on-disk — is already TStack's core. Make it legible.) No behavior change.
+
 ## New skills (deferred from v0.2)
 
 - [ ] `tstack-audit` — production-readiness review. Runs over an established TStack project and checks: are ADRs honored in code? Is observability actually wired? Are a11y tests in CI? Surfaces drift between docs and reality.

@@ -2,7 +2,7 @@
 
 # TStack — a Claude Code Plugin
 
-TStack is a Claude Code plugin that takes you from a rough product idea to a fully documented, milestone-sequenced, built project: **seven chained skills** (discover → product → architect → roadmap → plan → build, plus the specify iteration loop) and **two optional, off-chain companions** (`tstack-design` and `tstack-status`) you can run at any point. Each chained stage auto-triggers based on what you say, reads its input artifact from disk, produces its output, and hands off to the next.
+TStack is a Claude Code plugin that takes you from a rough product idea to a fully documented, milestone-sequenced, built project: **seven chained skills** (discover → product → architect → roadmap → plan → build, plus the specify iteration loop) and **three optional, off-chain companions** (`tstack-design`, `tstack-status`, and `tstack-wrap`) you can run at any point. Each chained stage auto-triggers based on what you say, reads its input artifact from disk, produces its output, and hands off to the next.
 
 > Replaces a previous paste-the-guide-into-each-session workflow with a chain of skills that activate automatically and remember the state of your project on disk.
 
@@ -23,10 +23,11 @@ flowchart LR
   subgraph offchain ["optional · off-chain · run at any point"]
     G["**tstack-design**<br/>→ design.md + Claude Design prompts"]
     H["**tstack-status**<br/>read-only status + drift report"]
+    W["**tstack-wrap**<br/>session sweep → write undocumented gaps"]
   end
 ```
 
-Four skills form a one-time setup chain (`discover` → `product` → `architect` → `roadmap`). Then `tstack-plan` and `tstack-build` form the per-milestone loop you run repeatedly. `tstack-specify` is the iteration skill for adding features after launch — it hands into the same `plan` → `build` loop. `tstack-design` and `tstack-status` sit **outside** the chain: invoke them whenever you need them — neither is a required step and neither blocks the flow.
+Four skills form a one-time setup chain (`discover` → `product` → `architect` → `roadmap`). Then `tstack-plan` and `tstack-build` form the per-milestone loop you run repeatedly. `tstack-specify` is the iteration skill for adding features after launch — it hands into the same `plan` → `build` loop. `tstack-design`, `tstack-status`, and `tstack-wrap` sit **outside** the chain: invoke them whenever you need them — none is a required step and none blocks the flow. `tstack-wrap` is the natural way to close a session — it sweeps the work you just did for anything that should be in the docs but isn't, and writes the gaps.
 
 ## The Skills
 
@@ -48,6 +49,50 @@ Four skills form a one-time setup chain (`discover` → `product` → `architect
 |---|---|---|---|
 | `tstack-design` | "design the UI" / "create a design system" / "give me design prompts" | PRODUCT.md if present (else a description) + frontend stack | `docs/2 - Specs/design.md` + ready-to-paste Claude Design prompts |
 | `tstack-status` | "where are we" / "project status" / "what's left" / "is anything out of sync" | `docs/` tree + git (read-only) | a chat status report incl. doc-drift flags |
+| `tstack-wrap` | "before we wrap" / "did we miss documenting anything" / "sweep for doc gaps" / end of session | session work + `git log` + `docs/` tree | undocumented decisions/gotchas/events written to the right doc (no commit) + a chat report |
+
+### Optional: auto-prompt `tstack-wrap` at session end
+
+By default `tstack-wrap` is **manual** — you invoke it (`/tstack-wrap`, or by saying "before we wrap…"). That's deliberate: the highest-fidelity sweep needs the *live conversation*, where the session's decisions actually live, so it's best run in-session, on purpose.
+
+If you want a guaranteed nudge when you're wrapping up, add an opt-in **`Stop` hook** to your project's `.claude/settings.json`. Note the constraints that make this the only workable pattern:
+
+- `SessionEnd` **can't** do it — it fires *after* the model is done, so it can't run a skill or influence Claude (it's cleanup-only).
+- `Stop` fires after **every** assistant turn, so it must (a) detect wrap-up intent and (b) guard against re-firing via `stop_hook_active`, or it will nag constantly.
+- A headless/automated sweep (e.g. spawning `claude -p` from `SessionEnd`) would see only git + docs, **not** the chat — losing the part that matters most. So the goal of the hook is to *prompt you to run it interactively*, not to run it behind your back.
+
+```jsonc
+// .claude/settings.json
+{
+  "hooks": {
+    "Stop": [
+      { "matcher": "*", "hooks": [
+        { "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/wrap-nudge.sh", "timeout": 5 }
+      ] }
+    ]
+  }
+}
+```
+
+```bash
+#!/usr/bin/env bash
+# .claude/hooks/wrap-nudge.sh — nudge tstack-wrap when you signal wrap-up. Needs jq.
+input=$(cat)
+# don't re-fire after we've already blocked once this turn (avoids a loop)
+[ "$(jq -r '.stop_hook_active // false' <<<"$input")" = "true" ] && exit 0
+transcript=$(jq -r '.transcript_path // ""' <<<"$input")
+[ -f "$transcript" ] || exit 0
+# last user message text (content may be a plain string or an array of blocks)
+last=$(jq -rs '[.[] | select(.type=="user")] | last
+  | (.message.content // .content)
+  | if type=="array" then (map(.text? // empty) | join(" ")) else (. // "") end' "$transcript")
+if echo "$last" | grep -iqE '(wrap (up|it)|that.?s all|we.?re done|finish( up)?|end session|sign off)'; then
+  jq -n '{decision:"block", reason:"Wrap-up detected — run tstack-wrap to sweep this session for undocumented decisions/gotchas before closing. Then stop."}'
+fi
+exit 0
+```
+
+It's opt-in and yours to tune — adjust the trigger phrases, or drop it entirely and just make `/tstack-wrap` a habit. It needs `jq`, and transcript field names can shift between Claude Code versions; if it never fires, inspect the real hook input with `/hooks` and adjust the jq path.
 
 ## Install
 
@@ -165,7 +210,8 @@ claude-code-starter/             # this repo = the plugin
 │   ├── tstack-build/            SKILL.md + references/full-guide.md
 │   ├── tstack-specify/          SKILL.md (no migrated reference — written from scratch)
 │   ├── tstack-design/           SKILL.md + references/example-output.md (optional, off-chain)
-│   └── tstack-status/           SKILL.md + references/example-output.md (optional, off-chain)
+│   ├── tstack-status/           SKILL.md + references/example-output.md (optional, off-chain)
+│   └── tstack-wrap/             SKILL.md + references/example-output.md (optional, off-chain)
 ├── README.md                    # you are here
 ├── CLAUDE.md                    # for someone editing the plugin
 ├── BACKLOG.md                   # plugin's own backlog of upcoming features

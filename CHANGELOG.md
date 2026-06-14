@@ -10,6 +10,11 @@ Move the Unreleased entries under a new version heading when you tag a release
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-06-14
+
+### Added
+- `tstack-wrap` — optional, off-chain session doc-sweep skill. At the end of a session it sweeps the work just done (conversation + `git log` + `docs/`) for undocumented decisions, tradeoffs, gotchas, and operational events (stale branches, deferred criteria, manual steps), then writes each genuine gap to its right home — a dated ADR in `DECISIONS.md`, a pattern in `CONVENTIONS.md`, a code comment, or `ROADMAP.md`'s Status section. It **does not commit**, never adds or renumbers roadmap milestones, and routes new scope to `tstack-specify`. Complements `tstack-status` (which only *detects* drift, read-only) by *closing* the gap. Addresses the doc-staleness risk surfaced by user feedback. Manual by default; the README documents an optional opt-in `Stop` hook for consumers who want a wrap-up nudge at session end.
+
 ## [0.2.0] — 2026-05-30
 
 ### Added
