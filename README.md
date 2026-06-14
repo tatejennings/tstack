@@ -6,6 +6,8 @@ TStack is a Claude Code plugin that takes you from a rough product idea to a ful
 
 > Replaces a previous paste-the-guide-into-each-session workflow with a chain of skills that activate automatically and remember the state of your project on disk.
 
+Under the hood it's an **agentic loop** built to stay trustworthy over a long project: durable context on disk, verification as the engine, and a fresh session per iteration. ([Why that matters ↓](#the-agentic-loop))
+
 ## The Lifecycle
 
 ```mermaid
@@ -28,6 +30,16 @@ flowchart LR
 ```
 
 Four skills form a one-time setup chain (`discover` → `product` → `architect` → `roadmap`). Then `tstack-plan` and `tstack-build` form the per-milestone loop you run repeatedly. `tstack-specify` is the iteration skill for adding features after launch — it hands into the same `plan` → `build` loop. `tstack-design`, `tstack-status`, and `tstack-wrap` sit **outside** the chain: invoke them whenever you need them — none is a required step and none blocks the flow. `tstack-wrap` is the natural way to close a session — it sweeps the work you just did for anything that should be in the docs but isn't, and writes the gaps.
+
+## The agentic loop
+
+A coding agent is just an LLM running tools in a loop. The hard part isn't the first response — it's keeping the loop honest across a project too big to fit in one context window. TStack is built around the three things that make that work:
+
+- **Durable context, on disk.** PRODUCT, ARCHITECTURE, DECISIONS, ROADMAP, and each approved plan (`docs/plans/{id}.md`) are the project's external memory. A fresh agent — a new session, another machine, a cloud agent — reloads the project from disk instead of from a context window that degrades as it fills. The docs *are* the memory.
+- **Verification is the engine.** Every milestone's "Done when" criteria are checked by running a real command and pasting its output back (`tstack-build`). That external signal — tests, types, lint, a real request — is what keeps each turn honest instead of plausible-but-wrong. `tstack-roadmap` refuses criteria that aren't command-verifiable, so the signal is there before you need it.
+- **A fresh session per iteration.** Plan a milestone in one session, build it in the next; the on-disk plan + roadmap carry everything across the boundary, so context never piles up milestone over milestone. (This is the default — the skills won't auto-chain on their own.)
+
+This is roughly what people are starting to call **"loop engineering."** The more established terms are *context engineering* (curating what's in a single turn) and the *harness* (the whole runtime around the model). However you name it: TStack is a harness for product-build loops — the docs keep the loop grounded, and the verification step keeps it honest.
 
 ## The Skills
 

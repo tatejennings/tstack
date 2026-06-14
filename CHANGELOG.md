@@ -10,6 +10,11 @@ Move the Unreleased entries under a new version heading when you tag a release
 
 ## [Unreleased]
 
+## [0.3.2] — 2026-06-14
+
+### Changed
+- **Repositioned around the agentic loop (docs only, no behavior change).** README gains a "The agentic loop" section naming the three properties that make TStack's loop trustworthy — durable on-disk context, verification as the engine, and a fresh session per iteration — with an honest note on the "loop engineering" / context-engineering / harness terminology. CLAUDE.md records the same three as **design invariants** future edits must preserve. Also fixed a stale "two off-chain companions" reference (now three — includes `tstack-wrap`).
+
 ## [0.3.1] — 2026-06-14
 
 ### Changed

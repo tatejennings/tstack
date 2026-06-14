@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Repo Is
 
-This repo *is* the **TStack** Claude Code plugin. It's not an application, it's not a documentation kit — it's a plugin you install into other projects so the TStack skills become available there: seven chained skills plus two optional off-chain companions (`tstack-design`, `tstack-status`). The deliverable is the contents of `.claude-plugin/` and `skills/`.
+This repo *is* the **TStack** Claude Code plugin. It's not an application, it's not a documentation kit — it's a plugin you install into other projects so the TStack skills become available there: seven chained skills plus three optional off-chain companions (`tstack-design`, `tstack-status`, `tstack-wrap`). The deliverable is the contents of `.claude-plugin/` and `skills/`.
 
 Most edits here are editorial: tightening a `SKILL.md`, updating a `references/full-guide.md`, or refining the README. There is no build, test, or lint.
 
@@ -14,7 +14,7 @@ Most edits here are editorial: tightening a `SKILL.md`, updating a `references/f
 - `skills/tstack-<stage>/SKILL.md` — the concise procedural top-level for each skill. Frontmatter `description` is load-bearing — it drives auto-triggering. ~120–200 lines max.
 - `skills/tstack-<stage>/references/full-guide.md` — the long-form guide. Source of edge-case detail; SKILL.md tells Claude when to consult it. Each carries a header naming SKILL.md as the source of truth. The `discover`/`roadmap`/`build` guides are still the preserved pre-plugin prose; the `architect` and `product` guides have been actively maintained (de-staled/thickened) and are no longer verbatim.
 
-The chain: `discover → product → architect → roadmap → plan → build`. Plus `specify` as the iteration loop, which hands off to `plan`. Two skills sit **off-chain** (optional, invokable at any point, no required handoff): `tstack-design` (UX spec + ready-to-paste Claude Design prompts; reads PRODUCT.md if present) and `tstack-status` (strictly read-only project inspector — reports status and doc drift, writes nothing). When editing an off-chain skill, keep it off-chain — don't wire it into the linear flow, and keep `tstack-status` from mutating anything.
+The chain: `discover → product → architect → roadmap → plan → build`. Plus `specify` as the iteration loop, which hands off to `plan`. Three skills sit **off-chain** (optional, invokable at any point, no required handoff): `tstack-design` (UX spec + ready-to-paste Claude Design prompts; reads PRODUCT.md if present), `tstack-status` (strictly read-only project inspector — reports status and doc drift, writes nothing), and `tstack-wrap` (end-of-session doc sweep — writes undocumented decisions/gotchas to the right doc, but never commits and never adds/renumbers milestones). When editing an off-chain skill, keep it off-chain — don't wire it into the linear flow; keep `tstack-status` from mutating anything, and keep `tstack-wrap` from committing or touching roadmap milestones.
 
 **Cross-skill contracts (don't regress these when editing):**
 - **`AGENTS.md` is owned by `tstack-architect`.** Only it writes the full file. `tstack-roadmap` and `tstack-build` update *only* the `## Current Focus` block; they never restructure the rest.
@@ -25,6 +25,14 @@ The chain: `discover → product → architect → roadmap → plan → build`. 
 **Foundational decisions live in `tstack-architect`.** Before generating any technical doc, the skill asks four mandatory questions (security, observability, accessibility, privacy) — each becomes an ADR in DECISIONS.md. Optionally a fifth question for AI/LLM products. DECISIONS.md and TESTING.md are now mandatory outputs at every right-sizing level. When editing `tstack-architect/SKILL.md`, preserve this order: prereq check → foundational ADRs → AI question → right-sizing → approach.
 
 **`tstack-roadmap` mandates an `M0 — Infrastructure baseline` milestone** (CI, branch protection, secrets, deployment skeleton, observability bootstrap, lint, test runner). The skill refuses to save a roadmap without it. Don't relax this when editing.
+
+## Design Invariants — the Agentic Loop
+
+TStack is a harness for product-build loops. Three properties are what make the loop trustworthy over a long project; treat them as invariants and don't regress them when editing. (See the README's "The agentic loop" section for the user-facing version.)
+
+- **Verification is the engine — keep it external and quoted.** `tstack-build` checks every "Done when" criterion by running a real command and pasting its output; `tstack-roadmap` refuses criteria that aren't command-verifiable at write time. Don't soften either — a self-asserted "✓" is not a signal.
+- **State lives on disk, not in the session.** The docs + `docs/plans/{id}.md` + ROADMAP's Status section are the loop's durable memory; that's why plans are in-repo and why `.tstack/state.json` was removed (see BACKLOG). Don't move cross-session coordination back into session memory.
+- **Fresh session per milestone is the iteration boundary.** `tstack-plan` and `tstack-build` end and recommend a fresh session rather than auto-chaining (the v0.3.1 fix). Don't reintroduce same-window plan→build→next-milestone glide. Any future autonomous runner (BACKLOG #5) is opt-in re-automation *on top of* this default, not a reversal of it.
 
 ## Editorial Conventions (Match These When Editing)
 
