@@ -117,9 +117,9 @@ When the plan is approved and written to `docs/plans/{id}.md`:
 
 > Plan approved for M{N} — {name} and written to `docs/plans/{id}.md`. Feature branch `milestone/{id}-{desc}` is ready. {N} files to create/modify, {N} verification checks.
 >
-> **Next: run `tstack-build`** (or just say "build it" / "ship it"). Same session is fine — `tstack-build` reads the approved plan from `docs/plans/{id}.md` and the feature branch. (Commit the plan file if you want a cloud agent or another machine to build it.)
+> **Next: build it in a fresh session.** Commit the plan file, then start a new session and run `tstack-build` — it reads the approved plan from `docs/plans/{id}.md` and the feature branch, so it needs nothing from this conversation. A fresh window keeps build's context clean (planning chatter doesn't compete with implementation) and lets a cloud agent or another machine pick it up.
 
-Do not write any code in this skill. Hand the approved plan file + branch to `tstack-build`.
+**Stop here.** Write the plan, give the handoff above, and end. Do not write any code, and do not roll straight into `tstack-build` on your own — the plan→build boundary is deliberate. A small milestone *can* be built in this same session if the user explicitly asks, but that's their call to make, not yours.
 
 ## Reference handoff
 

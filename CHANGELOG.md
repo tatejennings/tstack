@@ -10,6 +10,11 @@ Move the Unreleased entries under a new version heading when you tag a release
 
 ## [Unreleased]
 
+## [0.3.1] — 2026-06-14
+
+### Changed
+- **Per-milestone loop now defaults to a fresh session per step instead of chaining in one window.** `tstack-plan` ends after writing the plan and recommends building in a fresh session (no rolling straight into `tstack-build`); `tstack-build` ends after shipping and recommends planning the next milestone in a fresh session (no auto-advancing). The on-disk plan (`docs/plans/{id}.md`) + ROADMAP status already carry all state across the boundary, so nothing is lost. Same-session work is still allowed when the user explicitly asks. Addresses user-reported context bloat from the skills auto-chaining plan→build→next-milestone. README Quick Start updated to match.
+
 ## [0.3.0] — 2026-06-14
 
 ### Added

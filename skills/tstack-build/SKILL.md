@@ -1,6 +1,6 @@
 ---
 name: tstack-build
-description: Executes an approved milestone plan for a TStack-managed project — implements the plan with frequent commits, verifies against the milestone's "Done when" criteria, commits and merges the feature branch, and updates docs/ROADMAP.md status. Use when a milestone plan has been approved (typically immediately after tstack-plan finishes) or the user says "build it", "implement the plan", "ship this milestone", "execute the plan". Do not use to plan a milestone — that's tstack-plan. Input is an approved plan + feature branch + docs/ROADMAP.md. Output is shipped code, merged branch, and updated roadmap status. Hands back to tstack-plan for the next milestone.
+description: Executes an approved milestone plan for a TStack-managed project — implements the plan with frequent commits, verifies against the milestone's "Done when" criteria, commits and merges the feature branch, and updates docs/ROADMAP.md status. Use when an approved plan exists at docs/plans/{id}.md (typically opened in a fresh session) or the user says "build it", "implement the plan", "ship this milestone", "execute the plan". Do not use to plan a milestone — that's tstack-plan. Input is an approved plan + feature branch + docs/ROADMAP.md. Output is shipped code, merged branch, and updated roadmap status. Ends cleanly; the next milestone is planned with tstack-plan in a fresh session.
 ---
 
 # tstack-build
@@ -104,14 +104,15 @@ git commit -m "docs: {id} complete, up next {next-id}"
 git push origin main
 ```
 
-### 5. Offer to continue
+### 5. Report and stop
 
-Ask the user:
+Report completion and point at what's next — then **end the session here**:
 
-> {id} shipped and merged. Up next: {next-id} — {next-name}. Want to plan it now?
+> {id} shipped and merged. Up next: {next-id} — {next-name}.
+>
+> **Plan it in a fresh session** — start a new session and run `tstack-plan` (or say "plan the next milestone"). A fresh window per milestone is the default: it stops context from piling up across milestones, which is what keeps a long roadmap sustainable. The roadmap on disk (`Completed:` / `Up next:`) is the only state the next session needs.
 
-- If yes → hand back to `tstack-plan` for the next milestone
-- If no → end cleanly. They can return later by invoking `tstack-plan` or saying "plan the next milestone."
+Do not auto-advance into `tstack-plan` or start planning the next milestone in this session on your own — the fresh-session boundary is the point. If the user *explicitly* wants to keep going now, that's their call; don't make it for them.
 
 ## Reference handoff
 
@@ -131,4 +132,4 @@ Silent overreach is the failure mode. Surface the issue, don't paper over it.
 
 ## Hand-back
 
-After step 5, you either loop into `tstack-plan` for the next milestone (continuous flow) or end the session cleanly. Either way, the project state on disk reflects exactly what's been shipped: `Completed:` and `Up next:` in ROADMAP.md are the source of truth for what to do next.
+After step 5, end the session cleanly — the next milestone is planned in a fresh session, not chained on here. The project state on disk reflects exactly what's been shipped: `Completed:` and `Up next:` in ROADMAP.md are the source of truth for what to do next, so nothing is lost across the boundary.

@@ -120,12 +120,12 @@ Once installed, the skills auto-trigger when their descriptions match what you s
    - "design the architecture" → `tstack-architect` produces the technical doc set
    - "make a roadmap" → `tstack-roadmap` produces ROADMAP.md
 
-3. **Per-milestone loop:** for every milestone, run two skills back-to-back in the same session:
+3. **Per-milestone loop:** work one milestone at a time, and **start a fresh session for each step** — the plan and roadmap live on disk, so each session needs nothing from the last:
 
-   - "plan milestone M0" → `tstack-plan` reads the milestone's referenced docs, branches, and produces an approved implementation plan
-   - "build it" → `tstack-build` implements the plan, verifies "Done when" criteria, merges, and updates ROADMAP.md status
+   - "plan milestone M0" → `tstack-plan` reads the milestone's referenced docs, branches, and produces an approved implementation plan (commit it under `docs/plans/`)
+   - In a new session, "build it" → `tstack-build` implements the plan, verifies "Done when" criteria, merges, and updates ROADMAP.md status
 
-   Then loop into the next milestone (`tstack-plan` again). Repeat until the roadmap is done.
+   Then plan the next milestone in another fresh session. A new window per step keeps context from piling up across a long roadmap — and lets a cloud agent or another machine pick up a committed plan. (Building a small milestone in the same session you planned it is fine if you prefer; the skills just won't roll on by themselves.)
 
 4. **Add features after launch.** When you want to extend the product, say:
 
