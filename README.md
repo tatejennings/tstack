@@ -11,21 +11,23 @@ Under the hood it's an **agentic loop** built to stay trustworthy over a long pr
 ## The Lifecycle
 
 ```mermaid
-flowchart LR
-  I["**tstack-ingest**<br/>(on-ramp) existing docs → docs/_adopted/ draft"]
+flowchart TD
   A["**tstack-discover**<br/>rough idea → business-brief.md"]
+  I["**tstack-ingest**<br/>(on-ramp) existing docs → docs/_adopted/ draft"]
   B["**tstack-product**<br/>brief / adopted draft → PRODUCT.md"]
-  C["**tstack-architect**<br/>PRODUCT.md → ARCHITECTURE / API / CONVENTIONS / DECISIONS / specs / AGENTS / CLAUDE"]
+  C["**tstack-architect**<br/>PRODUCT.md → ARCHITECTURE / API / CONVENTIONS /<br/>DECISIONS / specs / AGENTS / CLAUDE"]
   D["**tstack-roadmap**<br/>full docs/ → ROADMAP.md"]
   P["**tstack-plan**<br/>milestone + docs → approved plan + branch"]
   E["**tstack-build**<br/>plan → implement → verify → merge → update status"]
   F["**tstack-specify**<br/>(iteration) add new feature → update docs + ROADMAP"]
-  A --> B --> C --> D --> P --> E
-  I --> B
   A -.has docs?.-> I
+  A --> B
+  I --> B
+  B --> C --> D --> P --> E
   E -.next milestone.-> P
   F --> P
   subgraph offchain ["optional · off-chain · run at any point"]
+    direction LR
     G["**tstack-design**<br/>→ design.md + Claude Design prompts"]
     H["**tstack-status**<br/>read-only status + drift report"]
     W["**tstack-wrap**<br/>session sweep → write undocumented gaps"]
