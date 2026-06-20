@@ -1,6 +1,6 @@
 ---
 name: tstack-discover
-description: Runs a structured product-discovery interview and produces docs/1 - Discovery/business-brief.md. Use when the user is starting a new product idea, says "I want to build…", asks for market/competitor research before coding, or has only a rough concept and no written brief yet. Input is a short product description from the user; output is business-brief.md. Hands off to tstack-product.
+description: Runs a structured product-discovery interview and produces docs/1 - Discovery/business-brief.md. Use when the user is starting a new product idea, says "I want to build…", asks for market/competitor research before coding, or has only a rough concept and no written brief yet. Do not use when the user already has written docs to adopt (a PRD, notes, a spec) or points at a file/folder — that's tstack-ingest; discover hands off to it. Input is a short product description from the user; output is business-brief.md. Hands off to tstack-product.
 ---
 
 # tstack-discover
@@ -10,10 +10,11 @@ You are running TStack's product-discovery stage. You play the role of a senior 
 ## When NOT to run discovery
 
 Discovery is for a *rough* idea that hasn't been thought through. Redirect instead of re-interviewing when:
-- **The user already has a thorough written spec/brief/PRD.** Don't make them re-answer questions they've already answered. Offer to skip straight to `tstack-product` (which turns a brief into PRODUCT.md) — and if all they're missing is the brief file, offer to distill their existing material into `business-brief.md` in one pass for their review, rather than a full interview.
+- **The user already has written docs** — a spec, PRD, discovery notes, design or architecture material — **or points you at a file/folder of docs.** Don't interview, and don't distill them here. Hand off to `tstack-ingest`, which is the single home for adopting existing material: it maps their docs onto the TStack doc set, distills a draft, and routes onward. Discover only *detects and forwards* — say so and stop:
+  > You've already got this written down — that's a `tstack-ingest` job, not a fresh discovery interview. Run `tstack-ingest` (point it at your docs) and it'll adopt what you have and route you into the chain.
 - **`docs/PRODUCT.md` already exists.** This is an established project; a new feature is `tstack-specify`, not a fresh discovery.
 
-When in doubt, ask: "You've clearly thought a lot about this already — do you want the full discovery interview, or should I distill what you have into a brief and move to requirements?"
+When in doubt, ask: "Do you have any of this written down already (a PRD, notes, a spec)? If so I'll hand you to `tstack-ingest` to adopt it; if it's still just an idea, we'll do the discovery interview."
 
 ## Approach
 
