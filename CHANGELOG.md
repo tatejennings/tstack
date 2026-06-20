@@ -10,6 +10,8 @@ Move the Unreleased entries under a new version heading when you tag a release
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-06-20
+
 ### Added
 - **`tstack-ingest` — adoption on-ramp for projects that already have docs.** Reads a user's pre-existing material (a PRD, discovery notes, design/architecture docs in any format), reflects intent back to catch a stale-after-pivot doc, classifies coverage (Present / Thin / Missing with named gaps), and distills it into an *unratified draft* at `docs/_adopted/` — never a canonical doc. `tstack-product` then authors `docs/PRODUCT.md` from the draft through its existing requirements gate and deletes the draft on save, so adopted content still passes verification before entering the loop. Foreign technical/design material is staged as `docs/_adopted/*-notes.md` and routed to `tstack-architect` (which asks its four ADR questions fresh — adoption can't smuggle a project past them). It's a **chain on-ramp** (required handoff to `tstack-product`), not an off-chain skill.
 
