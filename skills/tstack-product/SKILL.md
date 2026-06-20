@@ -9,19 +9,24 @@ You are running TStack's product-requirements stage. You read the business brief
 
 ## Prereq check
 
-Before doing anything else, verify the input exists:
+Before doing anything else, check the inputs:
 
 ```
-docs/1 - Discovery/business-brief.md
+docs/_adopted/PRODUCT.draft.md   ← adoption path (check first)
+docs/1 - Discovery/business-brief.md   ← normal path
 ```
 
-If it's missing: stop and tell the user to run `tstack-discover` first.
+**Adoption path:** if `docs/_adopted/PRODUCT.draft.md` exists, the user adopted an existing project via `tstack-ingest`. Author PRODUCT.md from that draft instead of (or in addition to) the brief — see the **adoption-aware branch** in step 1. You are still the sole author of `docs/PRODUCT.md`; the draft is unratified input, not a finished doc.
+
+**Normal path:** require `docs/1 - Discovery/business-brief.md`. If it's missing *and* there's no adopted draft: stop and tell the user to run `tstack-discover` first (or `tstack-ingest` if they already have docs).
 
 If `docs/PRODUCT.md` already exists: stop and ask if they want to (a) replace it (run me), or (b) add a feature to it (run `tstack-specify` instead — that's the right tool for iteration). Default to (b).
 
 ## Approach
 
-1. **Read the business brief from disk** and summarize what you understood: the product, target user, core value prop. Flag any gaps that will block requirements writing — unclear features, missing user flows, ambiguous scope. Resolve those with the user before writing.
+1. **Read the input from disk** and summarize what you understood: the product, target user, core value prop. Flag any gaps that will block requirements writing — unclear features, missing user flows, ambiguous scope. Resolve those with the user before writing.
+
+   **Adoption-aware branch.** If `docs/_adopted/PRODUCT.draft.md` exists, read it *first* — it carries content `tstack-ingest` distilled from the user's own docs, plus a visible `## Open gaps` list. Treat the draft as **unratified input, not a finished doc**: confirm and extend its content through this skill's full gate (steps 2–5) rather than re-interviewing from scratch, and treat every entry in its Open gaps list as a required item to resolve with the user before save (a soft criterion, a missing data model, an AI feature with no eval set). Where a brief also exists, reconcile the two. **After PRODUCT.md is saved and signed off, delete (or archive) `docs/_adopted/PRODUCT.draft.md`** so the quarantine doesn't linger as stale state — note the removal in the save commit.
 
    **Flag AI/LLM/ML features now, not later.** As you read, identify every feature whose behavior is non-deterministic — chat, recommendations, classification, generation, search relevance, anything model-driven. Name them explicitly back to the user ("X and Y look like AI features"). This matters because those features take **eval-based** acceptance criteria (step 4), not Given/When/Then, and `tstack-architect` will need an AI-strategy ADR for them downstream. Catching them here prevents a soft criterion like "suggestions feel relevant" from slipping through to `tstack-build`, where it can't be verified.
 
@@ -72,7 +77,7 @@ If `docs/PRODUCT.md` already exists: stop and ask if they want to (a) replace it
    - If the gap reveals the *brief itself* is wrong or incomplete (a whole audience, market, or value-prop was never explored) → stop and send them back to `tstack-discover` to fix the brief, rather than inventing product direction here.
    Only save once the user confirms it's complete.
 
-6. **Save to `docs/PRODUCT.md`.** Commit: `docs: create PRODUCT.md from business brief`.
+6. **Save to `docs/PRODUCT.md`.** Commit: `docs: create PRODUCT.md from business brief`. **Adoption path:** also remove `docs/_adopted/PRODUCT.draft.md` in the same commit and use `docs: author PRODUCT.md from adopted draft` instead. (Leave any `docs/_adopted/*-notes.md` staged for the architect stage — don't delete those here.)
 
 ## What PRODUCT.md should NOT contain
 
