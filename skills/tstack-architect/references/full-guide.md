@@ -214,7 +214,7 @@ See @AGENTS.md
 - Database conventions (naming, timestamps, soft deletes, FK behavior)
 - Git conventions (branch naming, commit message format)
 - Testing conventions (what to test, how to test, where tests live)
-- Explicit anti-patterns ("never do X because Y")
+- Explicit anti-patterns ("never do X because Y") — but **only for correctness, security, and bug-class rules** (e.g. "never interpolate user input into SQL", "never swallow errors silently"). A *stack or structure choice* that lives in an ADR — whatever you decided for this project (its dependency posture, project layout, DI stance, state-management pattern) — is **not** an anti-pattern. State it as a default-with-rationale that points to its ADR ("Default: <choice> — see ADR-N; revisit per that ADR's trigger"). These are per-project decisions, not T-Stack rules; branding a revisable choice an inviolable convention is exactly what makes a later, legitimate override read like rule-breaking. Keep choices in DECISIONS.md (revisable) and prohibitions in CONVENTIONS.md (enforced).
 
 **If the project spans multiple languages** (e.g., TypeScript + Swift), include a section for each language.
 
@@ -242,14 +242,16 @@ See @AGENTS.md
 
 **Purpose:** Architecture Decision Records. Prevents Claude Code from suggesting things you've already evaluated and rejected. **Written first**, before the other technical docs.
 
-**Always opens with the four foundational ADRs**, in this order, captured before any other doc is written (see SKILL.md for the questions each asks):
+**Opens with a "How decisions change here" header**, before ADR-1, documenting the supersession path and the append-only numbering rule. Write it verbatim (see SKILL.md, "Decisions are authoritative but revisable" — the canonical block lives there). It establishes that ADRs are authoritative defaults with a sanctioned override path, so a later implementer overriding a default reads as a normal move, not rule-breaking. The numbering rule (*next ADR = highest existing + 1, never renumbered or reused, anyone may add the next one*) is what keeps a downstream implementer's ADR from colliding with a future T-Stack ADR.
+
+**Then the four foundational ADRs**, in this order, captured before any other doc is written (see SKILL.md for the questions each asks):
 - **ADR-1: Security posture** — sensitive/regulated data, secret storage, auth provider, authorization model
 - **ADR-2: Observability posture** — log destination + format, error tracker, metrics (or explicit "none in v1")
 - **ADR-3: Accessibility posture** — WCAG target for consumer-facing UI, or explicit minimal-obligation note for CLI/API
 - **ADR-4: Privacy & data handling** — residency, retention per data type, deletion capability, compliance regimes
 - **ADR-5: AI/LLM strategy** — *only if* the product uses AI; pairs with `docs/2 - Specs/ai-strategy.md`
 
-Tech-stack choices follow as ADR-6, ADR-7, … — each with a `Chosen: <date>` stamp and a revisit trigger.
+Tech-stack choices follow as ADR-6, ADR-7, … — each with a `Chosen: <date>` stamp. Every ADR (foundational and tech-stack) carries a `Revisit when:` trigger.
 
 **For each decision:**
 
@@ -257,7 +259,10 @@ Tech-stack choices follow as ADR-6, ADR-7, … — each with a `Chosen: <date>` 
 ## ADR-{N}: {Decision Title}
 
 **Date:** {Month Year}
-**Status:** Accepted
+**Status:** Accepted   <!-- or: Superseded by ADR-{M} -->
+**Revisit when:** {a concrete, generous trigger — a date, a scale threshold, or an event,
+e.g. "next major framework upgrade", "50k MAU or auth pricing change", "the team adopts a DI
+framework or a second module". Every ADR carries one — foundational and tech-stack alike.}
 
 **Context:** What problem needed solving.
 
@@ -272,6 +277,8 @@ Tech-stack choices follow as ADR-6, ADR-7, … — each with a `Chosen: <date>` 
 
 **Tradeoff:** What you gave up. Be honest — every decision has a cost.
 ```
+
+`Revisit when:` is mandatory on **every** ADR, not just tech-stack ones — it's what tells a later reader (or implementer) the choice is a default with a review horizon, not immutable law. `Status:` is `Accepted` until a later ADR replaces it, at which point it becomes `Superseded by ADR-{M}` and the original text stays for the record (see "How decisions change here" below).
 
 Good ADRs save time. When Claude Code suggests "why not use X?", you can point to the ADR that already evaluated X.
 

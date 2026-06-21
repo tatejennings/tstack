@@ -102,11 +102,22 @@ slink/
 
 ---
 
-# `docs/DECISIONS.md` (excerpt — first 5 ADRs)
+# `docs/DECISIONS.md` (excerpt — header + first 5 ADRs)
+
+## How decisions change here
+
+These ADRs are **authoritative defaults, not immutable law.** Each carries a `Revisit when:` trigger. To change one — including a later implementer (a bootstrapper, or a human adopting a new framework) overriding a default:
+
+1. Add a **new** ADR at the next free number that states the new decision and references the one it replaces.
+2. Flip the old ADR's status to `Superseded by ADR-N` (leave its text intact for the record).
+3. Update any docs the change affects (ARCHITECTURE.md, CONVENTIONS.md, ROADMAP.md as needed).
+
+**Numbering is append-only.** The next ADR is always *(highest existing number) + 1* — never renumber or reuse a number. Anyone may add the next ADR, T-Stack skill or downstream implementer alike; this is what keeps an implementer's decision from colliding with a future T-Stack one.
 
 ## ADR-1: Security posture
 
 **Status:** Accepted. 2026-05-15.
+**Revisit when:** a new data class is added (payments, health), a second auth provider is needed, or before any SOC 2 effort.
 
 **Context:** Slink stores user accounts, custom domain mappings, and click events that include hashed IPs and referrer hosts. EU users are expected — GDPR applies.
 
@@ -134,6 +145,7 @@ slink/
 ## ADR-3: Accessibility posture
 
 **Status:** Accepted. 2026-05-15.
+**Revisit when:** a native mobile client is added, or if an enterprise customer requires AAA for any flow.
 
 **Decision:** WCAG 2.1 AA across all user-facing dashboard screens. Marketing pages aim for AA. Branded 404 page for non-existent short links: AA. axe-core run in CI on every PR against key dashboard routes; failures block merge.
 

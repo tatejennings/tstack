@@ -21,6 +21,8 @@ If it's missing: stop and tell the user to run `tstack-product` first (or `tstac
 
 Four questions must be answered before any doc is written. Each answer becomes an Architecture Decision Record (ADR) in `docs/DECISIONS.md`. Answers can be brief — what matters is that the choice is explicit and recorded, not deferred to "we'll figure it out later." Push back on vague answers; record specific ones.
 
+**These decisions are authoritative but revisable — write them that way.** T-Stack decides everything (the architecture must be hand-implementable with no downstream tooling), but a decision is not a cage. *Every* ADR you write — the four foundational ones below and every tech-stack ADR — carries an explicit, prominent **`Revisit when:`** trigger, and DECISIONS.md opens with a standard supersession block (see "Decisions are authoritative but revisable" below). That way a later implementer — a downstream bootstrapper, or just a human who decides to adopt a DI framework — can override one cleanly through the sanctioned path instead of treating a legitimate choice as rule-breaking.
+
 ### ADR-1: Security posture
 
 Ask:
@@ -59,6 +61,33 @@ Ask:
 - Compliance regimes that constrain architecture choices? (GDPR, CCPA, HIPAA, COPPA, PCI, SOX, FERPA…)
 
 Record as **ADR-4: Privacy & data handling**. Even "none — internal tool" is a valid answer if explicit.
+
+## Decisions are authoritative but revisable
+
+Write DECISIONS.md so a decision can be changed without it reading like rule-breaking. Two mechanics, both authored here:
+
+**1. A `Revisit when:` trigger on every ADR.** Foundational and tech-stack alike. Make it generous and concrete — a date, a scale threshold, an event ("revisit at next major framework upgrade", "re-evaluate auth provider at 50k MAU or if pricing changes", "revisit if the team adopts a DI framework or a second module"). A reader should be able to tell at a glance whether a choice is still fresh or due for review.
+
+**2. A standard supersession header at the top of DECISIONS.md** that documents the low-ceremony path to change any decision and the numbering rule. Write it verbatim (adjust nothing structural):
+
+```markdown
+## How decisions change here
+
+These ADRs are **authoritative defaults, not immutable law.** Each carries a `Revisit when:`
+trigger. To change one — including a later implementer (a bootstrapper, or a human adopting a
+new framework) overriding a default:
+
+1. Add a **new** ADR at the next free number that states the new decision and references the one
+   it replaces.
+2. Flip the old ADR's status to `Superseded by ADR-N` (leave its text intact for the record).
+3. Update any docs the change affects (ARCHITECTURE.md, CONVENTIONS.md, ROADMAP.md as needed).
+
+**Numbering is append-only.** The next ADR is always *(highest existing number) + 1* — never
+renumber or reuse a number. Anyone may add the next ADR, T-Stack skill or downstream implementer
+alike; this is what keeps an implementer's decision from colliding with a future T-Stack one.
+```
+
+This is what makes an override a *sanctioned move* instead of a violation. Don't soften it into "decisions are final," and don't drop the `Revisit when:` field from any ADR.
 
 ## AI strategy (opt-in question)
 
@@ -102,7 +131,7 @@ Wait for the answer. Generate only the requested subset.
 
    Then **propose the opinionated default stack for that ecosystem; only present alternatives where the user signals they want to deviate.** Don't open every choice as a three-way menu — that creates paralysis. Lead with the defaults, ask the user to confirm or override, and only expand into tradeoffs when they push back. Append accepted choices as ADRs (ADR-6, ADR-7, …) — but **consolidate, don't proliferate.** Group a coherent set of choices into one ADR (e.g., one "ADR-6: Web stack" covering framework + language + styling + package manager) rather than a separate ADR per package. Reserve a standalone ADR for a choice that was genuinely contested or has a non-obvious tradeoff worth recording on its own.
 
-   **Date every tech-stack ADR.** These defaults are current as of early 2026 and *will* age. Each tech-stack ADR records `Chosen: <today's date>` and a revisit trigger (e.g., "revisit at next major framework upgrade" or "re-evaluate auth provider if pricing changes / at 50k MAU"). That way a reader in 2027 knows whether the choice is fresh or due for review, rather than treating a stale default as gospel.
+   **Date every tech-stack ADR.** These defaults are current as of early 2026 and *will* age. Each tech-stack ADR records `Chosen: <today's date>` plus the same mandatory `Revisit when:` trigger every ADR carries (e.g., "revisit at next major framework upgrade" or "re-evaluate auth provider if pricing changes / at 50k MAU"). That way a reader in 2027 knows whether the choice is fresh or due for review, rather than treating a stale default as gospel.
 
    **Default stacks by project type** (use these unless the user's ecosystem or a specific reason says otherwise):
 
@@ -123,7 +152,7 @@ Wait for the answer. Generate only the requested subset.
 4. **Write one doc at a time**, in this order, getting user review between each:
    1. ARCHITECTURE.md — system overview, tech-stack table with rationale, repo structure, module boundaries, data flow (showing where security/observability boundaries live), deployment topology
    2. API.md (if Standard or Full) — every endpoint with method, path, auth, request/response shapes, side effects, rate limits, idempotency where relevant
-   3. CONVENTIONS.md — code style, naming, file organization, anti-patterns. Cross-reference TESTING.md rather than duplicating testing rules.
+   3. CONVENTIONS.md — code style, naming, file organization, anti-patterns. Cross-reference TESTING.md rather than duplicating testing rules. **Separate genuine anti-patterns from project choices:** reserve "never do X" / "anti-pattern" framing for correctness, security, and bug-class rules (e.g. "never interpolate user input into SQL"). Whatever *stack or structure choice* you recorded for this project in an ADR — its dependency posture, project layout, DI stance, state-management pattern — is stated in CONVENTIONS as a **default-with-rationale that points to its ADR** ("Default: <choice> — see ADR-N; revisit per that ADR's trigger"), not branded an inviolable prohibition. None of these are T-Stack rules; they're decisions you made for this project, so an implementer who supersedes the ADR isn't breaking a convention.
    4. TESTING.md — unit/integration/e2e split with framework choice for each; coverage floor (be specific: "85% statements / 75% branches" or similar); where tests live (alongside code preferred for 2026 web stacks); mocking strategy; test data approach; what's in CI vs. local; how to verify a11y (axe in CI), security (dependency scanning), and the four ADRs' acceptance.
 
    Commit the four core docs here. For Full-sized projects, **consider** starting a fresh session before continuing with breakout specs and AGENTS.md — the specs phase is context-heavy. For Minimum/Standard projects (no breakout specs or just one), continuing in the same session is usually fine.

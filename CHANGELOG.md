@@ -10,6 +10,9 @@ Move the Unreleased entries under a new version heading when you tag a release
 
 ## [Unreleased]
 
+### Changed
+- **`tstack-architect` now frames foundational and stack ADRs as authoritative *but revisable*.** Every ADR (the four foundational ones *and* every tech-stack ADR) now carries a mandatory, prominent `Revisit when:` trigger — previously only tech-stack ADRs did. DECISIONS.md opens with a standard **"How decisions change here"** header documenting a low-ceremony supersession path (add a new ADR that supersedes the old, flip the old one's status to `Superseded by ADR-N`, update affected docs) and an **append-only numbering rule** (next ADR = highest existing + 1, never renumbered or reused) — so a downstream implementer (a bootstrapper, or a human later adopting a DI framework) can override a default cleanly without colliding with a future T-Stack ADR or reading like rule-breaking. CONVENTIONS.md generation now separates genuine anti-patterns (correctness/security/bug-class rules) from *project choices* (stack/structure decisions), which are stated as defaults-with-rationale that point to their ADR rather than branded inviolable prohibitions. Addresses feedback items **T1** and **T5**. Updates SKILL.md, `references/full-guide.md`, and `references/example-output.md`.
+
 ## [0.4.0] — 2026-06-20
 
 ### Added
