@@ -73,13 +73,32 @@ Every roadmap **must** begin with `M0 — Infrastructure baseline`. Do not gener
 - **Linting + formatting** — per CONVENTIONS.md: lint/format configured and enforced in CI
 - **Test runner** — per TESTING.md: test runner installed, one trivial passing test, CI runs it
 
-**Done when** criteria for M0 should explicitly include:
-- Pushing a PR triggers CI; CI status appears on the PR
-- A deliberate test error appears in the error tracker
-- Lint failures block merge
-- `main` is protected per the agreed rules
+**Split M0's "Done when" into two labeled groups** — what the implementation itself proves, vs. what the owner must set in an external console. This is tool-agnostic — the same split holds whether a human or a CI runner does the work — and it keeps a milestone from looking "not done" because a GitHub/host toggle the code can't flip is still pending:
+
+- ***Implementation satisfies*** (provable by the build/test/lint/CI run itself):
+  - The CI workflow file is committed; pushing a PR triggers it; it runs typecheck + lint + tests and the status appears on the PR
+  - CI fails when lint fails
+  - A deliberate test error reaches the error tracker
+  - The test runner runs one trivial passing test
+- ***Owner configures externally*** (provider console — GitHub/host/Apple settings; marked done by attestation, not a command):
+  - `main` branch protection requires the CI check and disallows force-push
+  - Secrets are set in the deploy platform's secret store (none in repo)
+  - Any provider-side deploy/distribution setup the platform requires
 
 Refuse to save the roadmap if M0 is absent or its scope is missing any of the above bullets. If the user pushes back ("I don't need CI for a weekend project"), point them at the ADRs they recorded in `tstack-architect` and ask which bullet they want to formally defer with an ADR-style explanation. Don't silently drop infrastructure.
+
+### iOS: the infrastructure baseline is `i0`
+
+When the project's primary or only platform is iOS, emit the mandatory baseline as **`i0 — iOS infrastructure baseline`** (the iOS analog of M0 — it satisfies the M0 mandate above; you don't also emit a `M0`). When the project has *both* a backend/web workstream and an iOS client, keep `M0` for the shared/backend baseline and add `i0` for the iOS workstream, with `i0` depending on `M0` where it consumes shared CI/secrets.
+
+`i0`'s scope is the iOS analog of M0's bullets:
+- **CI** running `xcodebuild build` + `swift test` (or `xcodebuild test`) + SwiftLint/SwiftFormat on every PR
+- **Signing & secrets** approach decided and wired (no secrets in repo)
+- **Buildable app skeleton** — an archivable app target that launches (the "deployment skeleton" analog)
+- **Crash/error reporting** bootstrapped per ADR-2 (e.g. a deliberate test error surfaces in the chosen reporter)
+- **Test runner** with one trivial passing test, run in CI
+
+`i0`'s "What gets built" describes the baseline as a normal, hand-implementable milestone — *"Stand up the iOS baseline: project skeleton, CI, signing/secrets, crash reporting, and a passing test."* Don't name or assume any particular scaffolding tool — how the baseline gets stood up is the implementer's choice; the milestone only specifies the deliverable. Use the same **implementation-vs-external split** (above) for `i0`'s "Done when": building/testing/linting and a test crash reaching the reporter are *implementation satisfies*; Xcode signing certificates, App Store Connect/TestFlight distribution, and branch protection are *owner configures externally (Apple/GitHub settings)*.
 
 5. **Naming conventions:**
    - Server/web milestones: `M0`, `M1`, `M2`, …
@@ -105,8 +124,8 @@ Refuse to save the roadmap if M0 is absent or its scope is missing any of the ab
    `tstack-specify` appends milestones surgically without re-running this skill, so the marker tells a reader when the roadmap was last fully reconciled against `docs/`. If PRODUCT.md/ARCHITECTURE.md changed after that point and the change wasn't a surgical `tstack-specify` edit, the roadmap may be stale — re-run `tstack-roadmap` to re-sequence.
 
 7. **Cross-check before saving:**
-   - `M0 — Infrastructure baseline` is present, with all six bullets above covered (or formally deferred with explicit rationale)
-   - Every feature milestone (`M1` onward) lists `M0` directly or transitively in its dependencies
+   - The infrastructure baseline is present — `M0 — Infrastructure baseline`, or `i0 — iOS infrastructure baseline` for an iOS-primary project — with all its bullets covered (or formally deferred with explicit rationale), and its "Done when" split into *implementation satisfies* vs *owner configures externally*
+   - Every feature milestone lists the baseline (`M0`/`i0`) directly or transitively in its dependencies
    - Every "Read before starting" reference points to a doc/section that exists
    - **Every "Done when" criterion is testable at write time.** For each criterion, name the command or test that would prove it (e.g., `curl …`, `npm test path`, `playwright test`, `axe` scan). If you can't name one — the criterion is soft ("looks good", "feels fast", "works well") — rewrite it now into something a command can verify, or split out the measurable part. Don't defer this to `tstack-build`; a soft criterion discovered at build time is a roadmap defect caught too late.
    - No milestone exceeds ~2 days of focused work (split if so)

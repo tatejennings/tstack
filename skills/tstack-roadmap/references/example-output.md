@@ -61,13 +61,17 @@ M0 — Infrastructure baseline
 - `docs/TESTING.md` — § CI matrix, § Test runner configuration
 
 **Done when:**
+
+*Implementation satisfies (provable by the build/test/lint/CI run):*
 - Pushing a PR triggers GitHub Actions; CI runs typecheck (`tsc --noEmit`), lint (`pnpm lint`), unit tests (`pnpm test`), and a Playwright smoke test. The CI status appears on the PR.
-- `main` branch protection requires the `ci` check to pass and disallows force-push.
 - Vercel preview deploys for `apps/web` succeed on every PR.
 - Wrangler deploys `apps/redirect` to a `*.workers.dev` preview from CI.
-- Secrets are wired (Vercel env vars for app, Wrangler secrets for Worker, Neon connection string for DB) — no secrets in repo; `gitleaks` runs in CI.
 - A deliberate `throw new Error("M0 sentry test")` in a test route surfaces in Sentry within 60s.
-- `pnpm test` runs one trivial passing unit test; `pnpm lint` passes; `pnpm typecheck` passes.
+- `pnpm test` runs one trivial passing unit test; `pnpm lint` passes; `pnpm typecheck` passes; `gitleaks` runs in CI and finds no secrets.
+
+*Owner configures externally (GitHub/Vercel/Cloudflare consoles — attested, not command-checked):*
+- `main` branch protection requires the `ci` check to pass and disallows force-push.
+- Secrets are set in the deploy platforms (Vercel env vars for app, Wrangler secrets for Worker, Neon connection string for DB) — none in repo.
 
 **Estimated effort:** 1–2 focused days.
 

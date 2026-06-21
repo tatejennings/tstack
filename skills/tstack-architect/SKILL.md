@@ -21,7 +21,7 @@ If it's missing: stop and tell the user to run `tstack-product` first (or `tstac
 
 Four questions must be answered before any doc is written. Each answer becomes an Architecture Decision Record (ADR) in `docs/DECISIONS.md`. Answers can be brief — what matters is that the choice is explicit and recorded, not deferred to "we'll figure it out later." Push back on vague answers; record specific ones.
 
-**These decisions are authoritative but revisable — write them that way.** T-Stack decides everything (the architecture must be hand-implementable with no downstream tooling), but a decision is not a cage. *Every* ADR you write — the four foundational ones below and every tech-stack ADR — carries an explicit, prominent **`Revisit when:`** trigger, and DECISIONS.md opens with a standard supersession block (see "Decisions are authoritative but revisable" below). That way a later implementer — a downstream bootstrapper, or just a human who decides to adopt a DI framework — can override one cleanly through the sanctioned path instead of treating a legitimate choice as rule-breaking.
+**These decisions are authoritative but revisable — write them that way.** T-Stack decides everything (the architecture must be hand-implementable with no downstream tooling), but a decision is not a cage. *Every* ADR you write — the four foundational ones below and every tech-stack ADR — carries an explicit, prominent **`Revisit when:`** trigger, and DECISIONS.md opens with a standard supersession block (see "Decisions are authoritative but revisable" below). That way a later implementer — another agent, a teammate, or future-you deciding to adopt a DI framework — can override one cleanly through the sanctioned path instead of treating a legitimate choice as rule-breaking.
 
 ### ADR-1: Security posture
 
@@ -74,8 +74,8 @@ Write DECISIONS.md so a decision can be changed without it reading like rule-bre
 ## How decisions change here
 
 These ADRs are **authoritative defaults, not immutable law.** Each carries a `Revisit when:`
-trigger. To change one — including a later implementer (a bootstrapper, or a human adopting a
-new framework) overriding a default:
+trigger. To change one — including a later implementer (another agent, a teammate, or future-you
+adopting a new framework) overriding a default:
 
 1. Add a **new** ADR at the next free number that states the new decision and references the one
    it replaces.
@@ -150,7 +150,7 @@ Wait for the answer. Generate only the requested subset.
    When the user wants to deviate from a default, ask why and record the rationale in the relevant ADR. "I prefer Remix" is fine if recorded; silent override is not. The point isn't to force the defaults — it's to make deviations explicit choices rather than accidental ones.
 
 4. **Write one doc at a time**, in this order, getting user review between each:
-   1. ARCHITECTURE.md — system overview, tech-stack table with rationale, repo structure, module boundaries, data flow (showing where security/observability boundaries live), deployment topology
+   1. ARCHITECTURE.md — system overview, tech-stack table with rationale, repo structure, module boundaries, data flow (showing where security/observability boundaries live), deployment topology. Emit a **complete, buildable repo tree** (a project implemented by hand, with no downstream tooling, needs it) — but label it a **baseline**: *"Baseline layout — an implementer may restructure; record the change as an ADR and update this section."* The structure is a starting point with the same revisable status as any ADR (see "Decisions are authoritative but revisable"); never mark it "TBD" and never leave it out. **A native app always lives in its own lowercase folder** — Apple in `apple/`, Android in `android/` (parallel to the web app's folder, never at the repo root) — see the guide's native-app note.
    2. API.md (if Standard or Full) — every endpoint with method, path, auth, request/response shapes, side effects, rate limits, idempotency where relevant
    3. CONVENTIONS.md — code style, naming, file organization, anti-patterns. Cross-reference TESTING.md rather than duplicating testing rules. **Separate genuine anti-patterns from project choices:** reserve "never do X" / "anti-pattern" framing for correctness, security, and bug-class rules (e.g. "never interpolate user input into SQL"). Whatever *stack or structure choice* you recorded for this project in an ADR — its dependency posture, project layout, DI stance, state-management pattern — is stated in CONVENTIONS as a **default-with-rationale that points to its ADR** ("Default: <choice> — see ADR-N; revisit per that ADR's trigger"), not branded an inviolable prohibition. None of these are T-Stack rules; they're decisions you made for this project, so an implementer who supersedes the ADR isn't breaking a convention.
    4. TESTING.md — unit/integration/e2e split with framework choice for each; coverage floor (be specific: "85% statements / 75% branches" or similar); where tests live (alongside code preferred for 2026 web stacks); mocking strategy; test data approach; what's in CI vs. local; how to verify a11y (axe in CI), security (dependency scanning), and the four ADRs' acceptance.

@@ -34,6 +34,8 @@ Three non-negotiable principles:
 
 ## Repo Structure
 
+*Baseline layout — an implementer may restructure; record the change as an ADR and update this section.*
+
 ```
 slink/
 ├── apps/
@@ -106,7 +108,7 @@ slink/
 
 ## How decisions change here
 
-These ADRs are **authoritative defaults, not immutable law.** Each carries a `Revisit when:` trigger. To change one — including a later implementer (a bootstrapper, or a human adopting a new framework) overriding a default:
+These ADRs are **authoritative defaults, not immutable law.** Each carries a `Revisit when:` trigger. To change one — including a later implementer (another agent, a teammate, or future-you adopting a new framework) overriding a default:
 
 1. Add a **new** ADR at the next free number that states the new decision and references the one it replaces.
 2. Flip the old ADR's status to `Superseded by ADR-N` (leave its text intact for the record).
