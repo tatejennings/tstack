@@ -50,6 +50,19 @@ slink/
 └── .github/workflows/    # CI: typecheck, test, lint, deploy preview
 ```
 
+Slink is web-only. If it grew a native client, the app would get its own top-level folder alongside `web/` — never an `apps/` wrapper, never loose at the root:
+
+```
+slink/
+├── web/                  # Next.js
+├── apple/                # Swift / SwiftUI client (iOS, later iPadOS/macOS)
+├── packages/             # shared TS libs (web only — Swift doesn't consume these)
+├── docs/
+└── .github/workflows/
+```
+
+`apple/` is named for the platform family, not `ios/`, since one Swift codebase commonly spans iOS/iPadOS/macOS. The web and Apple apps share no workspace tool, which is exactly why a top-level `apps/` parent buys nothing here.
+
 ## Data Flow
 
 ```

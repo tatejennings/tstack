@@ -165,3 +165,40 @@ Critical path (longest dependency chain to launch): **M0 → M1 → M2 → M3 �
 (none yet)
 
 **Up next:** M0 — Infrastructure baseline
+
+---
+
+## Aside: what an `i0` looks like (not part of Slink — iOS reference only)
+
+Slink is web-only, so its baseline is `M0`. If a project targets iOS, the mandatory baseline is emitted as `i0 — iOS infrastructure baseline` instead (see SKILL.md § iOS). Shown here for reference — note the same implementation-vs-external split, with Apple's console settings on the external side:
+
+```markdown
+## i0 — iOS infrastructure baseline
+
+**What gets built:** Stand up the iOS baseline: an archivable SwiftUI app target that launches,
+CI running build + test + lint on every PR, signing/secrets approach, and crash reporting.
+
+**Dependencies:** None — starting point. (For a web+iOS project, depends on the shared M0.)
+
+**Read before starting:**
+- `docs/ARCHITECTURE.md` — § Repo Structure (the `apple/` folder), § Tech Stack
+- `docs/DECISIONS.md` — ADR-1, ADR-2 (security & observability postures)
+- `docs/CONVENTIONS.md` — § Swift conventions
+- `docs/TESTING.md` — § Test runner, § CI
+
+**Done when:**
+
+*Implementation satisfies (provable by the build/test/lint/CI run):*
+- Pushing a PR triggers CI; it runs `xcodebuild build`, `xcodebuild test` (or `swift test`), and
+  SwiftLint/SwiftFormat. CI status appears on the PR.
+- The app target builds and archives cleanly (`xcodebuild -scheme App archive` succeeds).
+- One trivial XCTest/Swift Testing test passes in CI.
+- A deliberate test crash surfaces in the chosen crash reporter (e.g. Sentry/Crashlytics).
+
+*Owner configures externally (Apple/GitHub consoles — attested, not command-checked):*
+- Signing certificates + provisioning profiles set up in the Apple Developer account / Xcode.
+- App Store Connect record created; a build distributes to TestFlight.
+- `main` branch protection requires the CI check and disallows force-push.
+
+**Estimated effort:** 1–2 focused days.
+```
