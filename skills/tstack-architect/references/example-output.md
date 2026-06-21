@@ -38,9 +38,8 @@ Three non-negotiable principles:
 
 ```
 slink/
-├── apps/
-│   ├── web/              # Next.js — dashboard, marketing, API routes
-│   └── redirect/         # Cloudflare Worker — the redirect hot path
+├── web/                  # Next.js — dashboard, marketing, API routes
+├── redirect/             # Cloudflare Worker — the redirect hot path
 ├── packages/
 │   ├── db/               # Drizzle schema + migrations (shared)
 │   ├── shared/           # Types, validation schemas, link utilities
@@ -69,7 +68,7 @@ slink/
 
 [ Creator dashboard ]
         │
-        │  Next.js App Router (apps/web)
+        │  Next.js App Router (web)
         ▼
 ┌──────────────────────┐      ┌──────────────────┐
 │ Server Components    │ ───► │ Postgres (Neon)  │  Users, Domains, Links, daily click rollups
@@ -92,13 +91,13 @@ slink/
 
 ## Module Boundaries
 
-- `apps/web` may import from `packages/{db,shared,eval}`. Never the reverse.
-- `apps/redirect` (Worker) imports only from `packages/shared` — must stay tiny for cold-start performance. Drizzle is not in this bundle; Workers reads D1 directly via the binding.
+- `web` may import from `packages/{db,shared,eval}`. Never the reverse.
+- `redirect` (Worker) imports only from `packages/shared` — must stay tiny for cold-start performance. Drizzle is not in this bundle; Workers reads D1 directly via the binding.
 - `packages/db` owns schema and migrations. Schema changes follow the migration runbook in `docs/2 - Specs/database-schema.md`.
 
 ## Deployment Topology
 
-- **Production:** Vercel for `apps/web` (auto-deploy on main); Cloudflare for `apps/redirect` (Wrangler deploy in CI). Neon Postgres production branch; Cloudflare D1 production database.
+- **Production:** Vercel for `web` (auto-deploy on main); Cloudflare for `redirect` (Wrangler deploy in CI). Neon Postgres production branch; Cloudflare D1 production database.
 - **Preview:** Vercel preview per PR; redirect Worker preview via Wrangler; Neon branch DB per PR (auto-provisioned via the Vercel-Neon integration).
 - **Local:** `pnpm dev` runs Next.js + Wrangler dev for the Worker against a local D1; Neon dev branch for Postgres.
 
@@ -139,7 +138,7 @@ These ADRs are **authoritative defaults, not immutable law.** Each carries a `Re
 **Status:** Accepted. 2026-05-15.
 
 **Decision:**
-- Logs: structured JSON with `request_id` correlation. Vercel logs for `apps/web`; Cloudflare logs for `apps/redirect`. Both pipe to Better Stack via log drains.
+- Logs: structured JSON with `request_id` correlation. Vercel logs for `web`; Cloudflare logs for `redirect`. Both pipe to Better Stack via log drains.
 - Errors: Sentry SDK in both apps; sourcemaps uploaded in CI.
 - Product analytics: PostHog (cloud).
 - No metrics platform in v1 — Cloudflare Analytics + Vercel Analytics dashboards cover what v1 needs. Revisit at >5k MAU.
@@ -165,6 +164,6 @@ These ADRs are **authoritative defaults, not immutable law.** Each carries a `Re
 
 **Status:** Accepted. 2026-05-15.
 
-**Decision:** Use Claude (Haiku tier) for slug suggestions. Prompts versioned in `apps/web/lib/ai/prompts/`. Eval set at `evals/slug-suggestions-v1.jsonl`; CI runs evals on prompt changes and blocks merge if quality drops > 5% from baseline. Per-user free-tier cap of 5 AI suggestions/month; Pro = unlimited (soft-capped at 500/mo with alert at 80%). Total monthly LLM budget cap at $200 for v1; PagerDuty alert at 75%. On any error/timeout/filter: fall back to manual slug input with placeholder text. Privacy: only the page title + meta description is sent to the model, never the user's email or account info. Anthropic's standard data retention applies (no fine-tuning on customer data).
+**Decision:** Use Claude (Haiku tier) for slug suggestions. Prompts versioned in `web/lib/ai/prompts/`. Eval set at `evals/slug-suggestions-v1.jsonl`; CI runs evals on prompt changes and blocks merge if quality drops > 5% from baseline. Per-user free-tier cap of 5 AI suggestions/month; Pro = unlimited (soft-capped at 500/mo with alert at 80%). Total monthly LLM budget cap at $200 for v1; PagerDuty alert at 75%. On any error/timeout/filter: fall back to manual slug input with placeholder text. Privacy: only the page title + meta description is sent to the model, never the user's email or account info. Anthropic's standard data retention applies (no fine-tuning on customer data).
 
 (remaining ADRs ADR-6 through ADR-14 — tech-stack choices — omitted from this excerpt)

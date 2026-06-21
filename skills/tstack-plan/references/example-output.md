@@ -26,34 +26,34 @@ Cross-checked plan against M3's "Done when" criteria — every criterion is addr
 
 ### Layer 2: API routes (the contract)
 
-3. **`apps/web/app/api/links/route.ts`** (new) — `GET` (list, filtered by `?archived=false`) and `POST` (create). Uses the schemas + queries. Returns the standard `{ data | error }` shape from `apps/web/lib/api/response.ts`. Plan-tier limit enforced via `apps/web/lib/auth/limits.ts` (existing helper from M2's domain limit; extend with a `linksPerMonth` field).
+3. **`web/app/api/links/route.ts`** (new) — `GET` (list, filtered by `?archived=false`) and `POST` (create). Uses the schemas + queries. Returns the standard `{ data | error }` shape from `web/lib/api/response.ts`. Plan-tier limit enforced via `web/lib/auth/limits.ts` (existing helper from M2's domain limit; extend with a `linksPerMonth` field).
 
-4. **`apps/web/app/api/links/[id]/route.ts`** (new) — `PATCH` (update destination), `DELETE` (archive).
+4. **`web/app/api/links/[id]/route.ts`** (new) — `PATCH` (update destination), `DELETE` (archive).
 
 ### Layer 3: UI (the surface)
 
-5. **`apps/web/app/(dashboard)/links/page.tsx`** (new) — Server Component, fetches links via `listLinks(userId, …)`. Renders `<LinkList>` (Client Component for search/filter).
+5. **`web/app/(dashboard)/links/page.tsx`** (new) — Server Component, fetches links via `listLinks(userId, …)`. Renders `<LinkList>` (Client Component for search/filter).
 
-6. **`apps/web/components/links/LinkList.tsx`** (new) — list view with client-side search (no API call); empty state with concrete CTA.
+6. **`web/components/links/LinkList.tsx`** (new) — list view with client-side search (no API call); empty state with concrete CTA.
 
-7. **`apps/web/components/links/CreateLinkForm.tsx`** (new) — Server Action submission; optimistic update on success; surfaces 409 (slug taken) inline with form retention. **No** AI slug button yet — that's M4. Manual slug input only.
+7. **`web/components/links/CreateLinkForm.tsx`** (new) — Server Action submission; optimistic update on success; surfaces 409 (slug taken) inline with form retention. **No** AI slug button yet — that's M4. Manual slug input only.
 
-8. **`apps/web/components/links/LinkRow.tsx`** (new) — single row in the list with inline edit-destination + archive.
+8. **`web/components/links/LinkRow.tsx`** (new) — single row in the list with inline edit-destination + archive.
 
 ### Layer 4: tests
 
 9. **`packages/db/src/queries/links.test.ts`** (new) — unit tests for each query helper. Two-user fixture confirms cross-user isolation (user A's query returns 0 rows for user B's links).
 
-10. **`apps/web/tests/integration/links-crud.spec.ts`** (new) — Playwright: create → list → edit → archive → confirm 410 from redirect Worker on archived slug.
+10. **`web/tests/integration/links-crud.spec.ts`** (new) — Playwright: create → list → edit → archive → confirm 410 from redirect Worker on archived slug.
 
-11. **`apps/web/tests/integration/links-limits.spec.ts`** (new) — Free user at 4/5: UI shows progress. At 5/5: create blocked with upgrade CTA. API returns 402 `{ code: "PLAN_LIMIT" }`.
+11. **`web/tests/integration/links-limits.spec.ts`** (new) — Free user at 4/5: UI shows progress. At 5/5: create blocked with upgrade CTA. API returns 402 `{ code: "PLAN_LIMIT" }`.
 
 ## Patterns reused (not reinvented)
 
-- **`apps/web/lib/api/response.ts`** — existing helper for `{ data, error, code }` shape. Used by every endpoint in this milestone.
-- **`apps/web/lib/auth/limits.ts`** — existing limit-check helper from M2. Extending with `linksPerMonth`, not duplicating.
+- **`web/lib/api/response.ts`** — existing helper for `{ data, error, code }` shape. Used by every endpoint in this milestone.
+- **`web/lib/auth/limits.ts`** — existing limit-check helper from M2. Extending with `linksPerMonth`, not duplicating.
 - **`packages/shared/src/validators/url.ts`** — existing URL validator. Reused in `LinkCreateInput`.
-- **`apps/web/components/ui/*`** (shadcn) — reusing `Input`, `Button`, `Card`, `Dialog`. Zero net new shadcn additions.
+- **`web/components/ui/*`** (shadcn) — reusing `Input`, `Button`, `Card`, `Dialog`. Zero net new shadcn additions.
 
 ## Patterns introduced (with rationale)
 

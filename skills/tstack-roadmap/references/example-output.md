@@ -64,8 +64,8 @@ M0 — Infrastructure baseline
 
 *Implementation satisfies (provable by the build/test/lint/CI run):*
 - Pushing a PR triggers GitHub Actions; CI runs typecheck (`tsc --noEmit`), lint (`pnpm lint`), unit tests (`pnpm test`), and a Playwright smoke test. The CI status appears on the PR.
-- Vercel preview deploys for `apps/web` succeed on every PR.
-- Wrangler deploys `apps/redirect` to a `*.workers.dev` preview from CI.
+- Vercel preview deploys for `web` succeed on every PR.
+- Wrangler deploys `redirect` to a `*.workers.dev` preview from CI.
 - A deliberate `throw new Error("M0 sentry test")` in a test route surfaces in Sentry within 60s.
 - `pnpm test` runs one trivial passing unit test; `pnpm lint` passes; `pnpm typecheck` passes; `gitleaks` runs in CI and finds no secrets.
 

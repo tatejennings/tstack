@@ -66,7 +66,7 @@ Result: **PASS** — 409 returned with `code: "SLUG_CONFLICT"` matching CONVENTI
 
 ### Criterion 3: Free-tier link limit enforced
 
-Command: `pnpm playwright test apps/web/tests/integration/links-limits.spec.ts`
+Command: `pnpm playwright test web/tests/integration/links-limits.spec.ts`
 
 Output:
 ```
@@ -123,7 +123,7 @@ Result: **PASS** — archive flips the flag; redirect returns 410 (not 404) so a
 
 ### Criterion 6: a11y — list view keyboard-navigable; axe passes
 
-Command: `pnpm playwright test apps/web/tests/a11y/links-page.spec.ts`
+Command: `pnpm playwright test web/tests/a11y/links-page.spec.ts`
 
 Output:
 ```

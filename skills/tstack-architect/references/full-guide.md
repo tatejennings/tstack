@@ -170,7 +170,7 @@ See @AGENTS.md
 - Architecture philosophy / guiding principles
 - High-level data flow diagram (ASCII art works well for Claude Code)
 - Tech stack table with rationale for each choice
-- Repository structure (full directory tree with annotations) — emit it complete and buildable, but label it a **baseline an implementer may restructure** (*"Baseline layout — record any restructure as an ADR and update this section"*). It's a starting point with the same revisable status as any ADR, not a fixed contract; never mark it "TBD" or omit it.
+- Repository structure (full directory tree with annotations) — emit it complete and buildable, but label it a **baseline an implementer may restructure** (*"Baseline layout — record any restructure as an ADR and update this section"*). It's a starting point with the same revisable status as any ADR, not a fixed contract; never mark it "TBD" or omit it. **Give each deployable app its own top-level folder at the repo root** (`web/`, `apple/`, `android/`) — *not* nested under an `apps/` wrapper, and never the lone app's files dumped loose at the repo root. Shared cross-platform code goes in `shared/` (or `packages/`). Do this even for a single app, so adding a second platform later is *additive*, not a restructure. T-Stack projects are typically polyglot (a Swift app and a web app don't share one workspace tool), so a top-level `apps/` parent adds nesting without payoff; platform-at-root is the cleaner default.
 - Module boundaries — what runs where and why
 - Service communication patterns (what calls what)
 - Database overview — table inventory, relationship summary, NOT full SQL (that goes in a spec)
@@ -182,7 +182,7 @@ See @AGENTS.md
 - Endpoint definitions (that's API.md)
 - Business requirements (that's PRODUCT.md)
 
-> **Native app projects:** each native platform app always lives in its **own dedicated folder** — the same way a web app lives in its own folder (e.g. `web/` or `apps/web/`). An Apple app goes in `apple/`; an Android app goes in `android/` (lowercase, matching `web/`). This holds whether the project is native-only (`apple/` at the repo root, alongside `docs/`) or native + web (`apple/` next to the web folder, e.g. `apps/apple/` and `apps/web/`). Name the Apple folder `apple/`, not `ios/`, because one Swift codebase commonly spans multiple Apple platforms (iOS, iPadOS, macOS, watchOS). The folder is part of the baseline layout above — an implementer may restructure *within* it, but the native app does not live at the repo root.
+> **Native app projects:** consistent with the platform-at-root default above, each native platform app lives in its **own lowercase top-level folder** — an Apple app in `apple/`, an Android app in `android/`, matching `web/`. This holds whether the project is native-only (`apple/` is the only app today) or native + web (`apple/` next to `web/`) — a second app is then additive, not a restructure. Name the Apple folder `apple/`, not `ios/`, because one Swift codebase commonly spans multiple Apple platforms (iOS, iPadOS, macOS, watchOS). The folder is part of the baseline layout above — an implementer may restructure *within* it, but the native app is never dumped loose at the repo root.
 
 ---
 
