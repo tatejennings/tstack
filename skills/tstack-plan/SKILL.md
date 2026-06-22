@@ -54,6 +54,8 @@ Typical reads:
 
 Also read `docs/AGENTS.md` if present — it carries project-wide conventions every plan should respect.
 
+For a large milestone that spans several independent areas (e.g. a new API surface *and* a schema change *and* a UI flow), you can dispatch parallel subagents to explore each area concurrently and report back, rather than reading everything serially. Keep planning itself — the synthesis and the plan you write — in this session; subagents gather, you decide.
+
 ### 4. Enter plan mode and produce a plan
 
 Switch into plan mode. The plan must contain:

@@ -21,7 +21,7 @@ Three non-negotiable principles:
 | Frontend | Next.js 16 App Router | Server Components keep the dashboard small; Cache Components for analytics rollups | ADR-6 |
 | Language | TypeScript strict | Catches model/API drift at compile time | ADR-7 |
 | Styling | Tailwind v4 + shadcn/ui | Default; founder has prior fluency | ADR-8 |
-| Database | Postgres 16 (Neon) | Transactional links + serverless scaling fits the budget | ADR-9 |
+| Database | Postgres 18 (Neon) | Transactional links + serverless scaling fits the budget | ADR-9 |
 | Edge runtime | Cloudflare Workers | Redirect path; global p95 < 50ms achievable | ADR-10 |
 | Click events | Cloudflare D1 (replicated to Postgres nightly) | Hot writes at edge; analytical queries on Postgres | ADR-11 |
 | Auth | Clerk | Managed, supports SAML for future Team tier | ADR-12 |

@@ -98,6 +98,7 @@ Ask: **Does this product use LLMs, embeddings, ML models, or other AI components
   - **Model selection** — which model(s), provider, why (cost/quality/latency tradeoffs)
   - **Prompt versioning** — where prompts live, how they're tested, change-management process
   - **Eval framework** — how do you measure quality? (golden test set, side-by-side comparison, user feedback signal, automated graders)
+  - **Tool & data access** — what external tools/data sources the model reaches and via what protocol (MCP servers, function calling, direct API); which are read-only vs side-effecting, and how access is scoped
   - **Fallback behavior** — what happens on rate limit, timeout, low confidence, content filter trip
   - **Cost ceilings** — per-request, per-user-per-month, total monthly budget; what triggers alerts or shutoffs
   - **Privacy with AI** — what user data is sent to providers, retention by provider, opt-out path
@@ -138,7 +139,7 @@ Wait for the answer. Generate only the requested subset.
    | Project type | Defaults |
    |---|---|
    | Web app | Next.js App Router · TypeScript strict · Postgres · Vercel deploy · shadcn/ui · Vitest + Playwright · pnpm |
-   | Mobile (iOS) | Swift · SwiftUI · SwiftData · async/await · Xcode 16+ · SwiftLint + SwiftFormat |
+   | Mobile (iOS) | Swift · SwiftUI · SwiftData · async/await · Xcode 26+ · SwiftLint + SwiftFormat |
    | Mobile (Android) | Kotlin · Jetpack Compose · Room · Hilt · Kotest |
    | Python service | uv · FastAPI · Pydantic v2 · Postgres · pytest · Ruff |
    | Cross-platform mobile | React Native + Expo · TypeScript strict · TanStack Query · NativeWind |
