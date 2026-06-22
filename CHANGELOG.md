@@ -10,6 +10,8 @@ Move the Unreleased entries under a new version heading when you tag a release
 
 ## [Unreleased]
 
+## [0.5.1] — 2026-06-21
+
 ### Changed
 - **Currency refresh from `/upkeep` 2026-06-21.** `tstack-architect`'s default-stack table bumps the iOS row from `Xcode 16+` to `Xcode 26+` (Apple's calendar-year versioning jumped 16→26 in late 2025), and the example ARCHITECTURE.md bumps its sample database from `Postgres 16` to `Postgres 18`. The ai-strategy spec gains a **Tool & data access** bullet (MCP servers / function calling / direct API, read-only vs side-effecting, access scoping) — a real architecture decision previously missing for agentic AI products. `tstack-plan` notes that a large multi-area milestone may dispatch parallel subagents to explore concurrently, while planning/synthesis stays in-session. Report at `reviews/upkeep-2026-06-21.md`.
 
