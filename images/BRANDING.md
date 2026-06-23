@@ -182,8 +182,9 @@ COMPOSITION — a wide horizontal pipeline infographic. Title top center in oran
 "TStack Lifecycle". A left-to-right row of four paper note-cards: "DISCOVER", "PRODUCT",
 "ARCHITECT", "ROADMAP", joined by short orange arrows. To the right, two cards "PLAN" and "BUILD"
 inside a small rounded loop of two orange arrows, note beneath: "repeat per milestone". The
-reference mascot stands beside the row handing a document along the line. A small curved orange
-return arrow loops up into PLAN, labeled "SPECIFY · add features". Bottom: faint label
+reference mascot stands beside the row handing a document along the line. Two small curved orange
+return arrows loop up into PLAN, stacked and labeled "SPECIFY · add" and "REFACTOR · restructure".
+Bottom: faint label
 "optional · anytime" above four paper tags: "DESIGN", "STATUS", "WRAP", "AUTOPILOT". Far left, a
 small entry arrow noted "have docs? → INGEST". Generous cream negative space.
 ```
@@ -211,11 +212,14 @@ this block in the same change.
 
 ```
 main chain (row):   discover → product → architect → roadmap → plan ⇄ build
-iteration arrow:    specify → plan        (labeled "SPECIFY · add features")
+iteration arrows:   specify → plan        (labeled "SPECIFY · add")
+                    refactor → plan       (labeled "REFACTOR · restructure")
 on-ramp (entry):    ingest                (labeled "have docs? → INGEST", feeds product)
 off-chain shelf:    design · status · wrap · autopilot   (labeled "optional · anytime")
 loop note:          "repeat per milestone" on the plan ⇄ build cycle
 ```
 
-Total: 12 skills, matching `skills/tstack-*`. If a skill is added/removed/renamed, or its
+Total: 13 skills, matching `skills/tstack-*`. The `plan` node is `tstack-plan-milestone`
+and the `specify` node is `tstack-specify-feature` (renamed skills, unchanged one-word
+labels `PLAN`/`SPECIFY`). If a skill is added/removed/renamed, or its
 chain-vs-on-ramp-vs-off-chain role changes, the graph is **stale** and must be regenerated.
