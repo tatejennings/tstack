@@ -7,7 +7,7 @@ description: Read-only inspector for a TStack-managed project. Reads the docs/ t
 
 You are running TStack's status inspector. You read the project's docs and git state and report where things stand. This is the suite's read-only lens — it makes the project's state, and any drift between docs, visible at a glance.
 
-**Hard rule: this skill is strictly read-only.** Never write, edit, create, or commit anything. No file changes, no git mutations. If the report reveals something to fix, *recommend* the skill that fixes it (`tstack-specify`, `tstack-roadmap`, `tstack-plan`) — don't fix it here. This skill is off-chain and safe to run anytime.
+**Hard rule: this skill is strictly read-only.** Never write, edit, create, or commit anything. No file changes, no git mutations. If the report reveals something to fix, *recommend* the skill that fixes it (`tstack-specify-feature`, `tstack-roadmap`, `tstack-plan-milestone`) — don't fix it here. This skill is off-chain and safe to run anytime.
 
 ## Prereq check (soft)
 
@@ -38,7 +38,7 @@ Read (read-only) and report:
    - **Doc drift** — the key check (below).
    - **Suggested next action** — the single most useful next skill to run, given the above.
 
-3. **Doc drift check.** Compare when the upstream docs last changed against ROADMAP.md's `Docs last synced:` marker (and ROADMAP.md's own last-modified date as a fallback). If `PRODUCT.md`, `ARCHITECTURE.md`, `API.md`, or a breakout spec was modified *after* the roadmap was last synced — and the change wasn't a surgical `tstack-specify` edit — the roadmap may no longer reflect the docs. Flag it explicitly:
+3. **Doc drift check.** Compare when the upstream docs last changed against ROADMAP.md's `Docs last synced:` marker (and ROADMAP.md's own last-modified date as a fallback). If `PRODUCT.md`, `ARCHITECTURE.md`, `API.md`, or a breakout spec was modified *after* the roadmap was last synced — and the change wasn't a surgical `tstack-specify-feature` edit — the roadmap may no longer reflect the docs. Flag it explicitly:
 
    > ⚠ Drift: `PRODUCT.md` was edited 2026-05-20, after ROADMAP.md's last sync (2026-05-12). The roadmap may be stale — consider re-running `tstack-roadmap`.
 
@@ -62,4 +62,4 @@ For a realistic example of a Status-mode report (including a doc-drift flag and 
 
 ## Handoff
 
-Off-chain utility — no handoff. Close by pointing at the single most useful next action you identified (e.g., "Up next is M4 and unblocked — run `tstack-plan`," or "Drift detected — re-run `tstack-roadmap` first").
+Off-chain utility — no handoff. Close by pointing at the single most useful next action you identified (e.g., "Up next is M4 and unblocked — run `tstack-plan-milestone`," or "Drift detected — re-run `tstack-roadmap` first").

@@ -7,7 +7,7 @@
     {
       "name": "tstack",
       "source": "./",
-      "description": "Seven-skill chain that turns a rough product idea into a documented, milestone-sequenced, built project, an adoption on-ramp (tstack-ingest) for projects that already have docs, optional off-chain companions for UX design, project status, and end-of-session doc sweep, plus a manual-only autonomous runner (tstack-autopilot) that takes one milestone to an open PR and never merges."
+      "description": "Six-stage chain that turns a rough product idea into a documented, milestone-sequenced, built project, two iteration skills for evolving it (tstack-specify-feature to add a feature, tstack-refactor to restructure how it's built), an adoption on-ramp (tstack-ingest) for projects that already have docs, optional off-chain companions for UX design, project status, and end-of-session doc sweep, plus a manual-only autonomous runner (tstack-autopilot) that takes one milestone to an open PR and never merges."
     }
   ]
 }

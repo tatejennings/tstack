@@ -20,7 +20,7 @@ I looked at: this session's work (M4 — meal planner), `git log` since `Docs la
 1. **Decision:** we dropped the third-party meal-recommendation API and went with a simple rules engine, because the API's latency (~1.2s p95) blew the M4 "list renders < 300ms" criterion. → new dated ADR in `docs/DECISIONS.md`.
 2. **Gotcha:** the planner's date math assumes the user's local timezone, not UTC — off-by-one bugs if you forget. Not obvious from the code. → code comment in `lib/mealPlan/dates.ts`.
 3. **Operational:** `milestone/m4-meal-planner` is merged but the local branch wasn't deleted — it's stale. → note in `ROADMAP.md` Status.
-4. **Borderline — need your call:** mid-build we talked about letting users *share* a meal plan via a public link. We didn't build it. Is that (a) a passing idea, or (b) something to capture? If (b), it's new scope — that's a `tstack-specify` job, not something I'll write into the docs here.
+4. **Borderline — need your call:** mid-build we talked about letting users *share* a meal plan via a public link. We didn't build it. Is that (a) a passing idea, or (b) something to capture? If (b), it's new scope — that's a `tstack-specify-feature` job, not something I'll write into the docs here.
 
 > *User: (4) is real, let's not lose it. Write the other three.*
 
@@ -29,7 +29,7 @@ I looked at: this session's work (M4 — meal planner), `git log` since `Docs la
 - **`docs/DECISIONS.md`** — appended **ADR-009: Rules engine over third-party recommendation API** (dated 2026-06-14), with the latency rationale and a revisit trigger.
 - **`lib/mealPlan/dates.ts`** — added a comment above `addPlanDays()` flagging the local-timezone assumption.
 - **`docs/ROADMAP.md`** (Status section) — noted the stale local branch `milestone/m4-meal-planner` (merged, safe to delete).
-- **Routed out:** the public-share-link idea is new scope — **run `tstack-specify`** to spec it and add a milestone. I did *not* write it into the docs.
+- **Routed out:** the public-share-link idea is new scope — **run `tstack-specify-feature`** to spec it and add a milestone. I did *not* write it into the docs.
 
 **Nothing committed** — review the changes and commit when you're ready.
 

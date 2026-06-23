@@ -72,7 +72,7 @@ Bitly's free tier removed custom domains in 2022, pushing budget-conscious creat
 
 ### Explicitly Deferred (v2+)
 
-- Team workspaces (planned post-launch — clear path via tstack-specify)
+- Team workspaces (planned post-launch — clear path via tstack-specify-feature)
 - Mobile app (web is responsive; native deferred until >5k MAU)
 - Real-time click stream (batched analytics fine for v1)
 - A/B testing of destination URLs

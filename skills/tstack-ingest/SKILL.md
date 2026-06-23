@@ -1,6 +1,6 @@
 ---
 name: tstack-ingest
-description: Adopts a project that already has documents into TStack — reads pre-existing material (a written PRD, discovery notes, design or architecture docs in their own format, not TStack's), reflects intent back, classifies coverage, and distills it into a quarantined draft at docs/_adopted/ that the owning chain skill then ratifies into a canonical doc. Use when the user arrives with docs already written and says "adopt my project", "I already have a PRD/docs", "import my existing requirements", "we didn't start in TStack", or points you at a file/folder of docs. Reachable directly or via a tstack-discover hand-off — same outcome either way. Do not use for a rough unwritten idea (that's tstack-discover), to change an already-TStack project that has docs/PRODUCT.md (that's tstack-specify), or to merely report state (that's tstack-status, which is read-only — ingest writes). Input is the user's existing docs; output is a draft at docs/_adopted/ + a coverage report. Hands off to tstack-product.
+description: Adopts a project that already has documents into TStack — reads pre-existing material (a written PRD, discovery notes, design or architecture docs in their own format, not TStack's), reflects intent back, classifies coverage, and distills it into a quarantined draft at docs/_adopted/ that the owning chain skill then ratifies into a canonical doc. Use when the user arrives with docs already written and says "adopt my project", "I already have a PRD/docs", "import my existing requirements", "we didn't start in TStack", or points you at a file/folder of docs. Reachable directly or via a tstack-discover hand-off — same outcome either way. Do not use for a rough unwritten idea (that's tstack-discover), to change an already-TStack project that has docs/PRODUCT.md (that's tstack-specify-feature), or to merely report state (that's tstack-status, which is read-only — ingest writes). Input is the user's existing docs; output is a draft at docs/_adopted/ + a coverage report. Hands off to tstack-product.
 ---
 
 # tstack-ingest
@@ -12,7 +12,7 @@ The hard rule that keeps the loop trustworthy: **you never write a canonical doc
 ## Prereq check (soft)
 
 - **Foreign material + no owner-authored `docs/PRODUCT.md`** → primary path (below).
-- **`docs/PRODUCT.md` already exists** (owner-authored) → this is already a TStack project. Stop and redirect: to *change* docs, run `tstack-specify`; to *inspect* state, run `tstack-status`. Adopting more foreign material into an established project is out of scope for v1 — don't reconcile here.
+- **`docs/PRODUCT.md` already exists** (owner-authored) → this is already a TStack project. Stop and redirect: to *change* docs, run `tstack-specify-feature`; to *inspect* state, run `tstack-status`. Adopting more foreign material into an established project is out of scope for v1 — don't reconcile here.
 - **Nothing to adopt** (no written material, just a rough idea) → stop and point to `tstack-discover` for the discovery interview.
 
 ## Approach
@@ -35,7 +35,7 @@ Follow in order. Steps 3–5 are where the value is — don't skip to writing.
    - **Discovery-grade only** — rough notes, soft or absent criteria, no data models. Still adoptable: it seeds a lower-fidelity draft, with the soft areas marked as gaps for `tstack-product` to harden.
    - Report it as a short Present / Thin / Missing summary (see `references/example-output.md`).
 
-5. **Per-item approval.** Propose what you'll do with each piece of source, using the two-list shape (mirroring `tstack-specify`):
+5. **Per-item approval.** Propose what you'll do with each piece of source, using the two-list shape (mirroring `tstack-specify-feature`):
 
    ```
    Proposed adoption from "{source}":

@@ -66,7 +66,7 @@ ecosystem.
   `tstack-ingest` writes only to `docs/_adopted/`; four foundational ADRs in `tstack-architect`;
   `M0` (and `i0` for iOS) mandatory in `tstack-roadmap`.
 - **A4 — Editorial conventions.** Full-word filenames (no `PRD.md`); `tstack-product` vs
-  `tstack-specify` keep their mutually-exclusive negative-phrase triggers; AI-feature
+  `tstack-specify-feature` keep their mutually-exclusive negative-phrase triggers; AI-feature
   acceptance criteria use the eval-based format (eval set + quality bar + fallback), not
   Given/When/Then.
 - **A5 — Sync-point drift** (the known drifters — these are the highest-yield auto-fixables):

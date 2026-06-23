@@ -1,6 +1,6 @@
-# Example output: `tstack-specify` doc-impact proposal
+# Example output: `tstack-specify-feature` doc-impact proposal
 
-Realistic example of the proposal `tstack-specify` produces when a **Slink** user (post-launch, after M0–M12 shipped) asks to add team workspaces. Shows the two-list format with per-item approval, the "considered but no change" line, and the milestone-insertion that follows.
+Realistic example of the proposal `tstack-specify-feature` produces when a **Slink** user (post-launch, after M0–M12 shipped) asks to add team workspaces. Shows the two-list format with per-item approval, the "considered but no change" line, and the milestone-insertion that follows.
 
 ---
 
@@ -44,7 +44,7 @@ Reply: approve / modify / reject per item. Type "approve all" if everything look
 User replied:
 > approve all except: I think ARCHITECTURE.md *does* need a small update — we're shifting the security boundary. ADR-1 says "row ownership via user_id WHERE clauses." That's now "via workspace_id WHERE clauses, with workspace membership lookup as a join." That's a meaningful architectural change to the data-access layer. Add ARCHITECTURE.md back in.
 
-`tstack-specify` accepts the pushback and re-presents:
+`tstack-specify-feature` accepts the pushback and re-presents:
 
 ```
 Updated proposal — adding ARCHITECTURE.md back in:
@@ -56,7 +56,7 @@ User: "approve all."
 
 ## Applying edits (one at a time, with diff preview)
 
-For each approved item, `tstack-specify` reads the current section, drafts the change, presents the diff, gets a final go-ahead, applies the edit, and commits. Example for one of the docs (showing the pattern, not the full content):
+For each approved item, `tstack-specify-feature` reads the current section, drafts the change, presents the diff, gets a final go-ahead, applies the edit, and commits. Example for one of the docs (showing the pattern, not the full content):
 
 ```
 $ git diff docs/PRODUCT.md
@@ -73,7 +73,7 @@ $ git diff docs/PRODUCT.md
 +- ...
 ```
 
-User confirms. `tstack-specify` applies the edit and commits: `docs(product): add F-10 team workspaces feature spec`.
+User confirms. `tstack-specify-feature` applies the edit and commits: `docs(product): add F-10 team workspaces feature spec`.
 
 ## Appending milestones to ROADMAP.md
 
@@ -107,4 +107,4 @@ Sample new milestone entry appended:
 
 > Feature "Team workspaces" specified. Doc updates: PRODUCT.md, API.md, ARCHITECTURE.md, DECISIONS.md (ADR-15), new spec 2 - Specs/team-workspaces.md, ROADMAP.md (M13–M16 appended).
 >
-> **Next: run `tstack-plan`** (or say "plan milestone M13") to start implementation. M13 is the data migration; M14 (invite flow + UI), M15 (role enforcement), M16 (billing) follow in sequence.
+> **Next: run `tstack-plan-milestone`** (or say "plan milestone M13") to start implementation. M13 is the data migration; M14 (invite flow + UI), M15 (role enforcement), M16 (billing) follow in sequence.

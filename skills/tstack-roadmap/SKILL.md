@@ -1,11 +1,11 @@
 ---
 name: tstack-roadmap
-description: Reads the full docs/ tree and produces docs/ROADMAP.md — a dependency-sequenced list of milestones with "Read before starting" doc pointers and "Done when" criteria. Always mandates an M0 — Infrastructure baseline milestone covering CI, secrets, deployment skeleton, and observability bootstrap. Use when ARCHITECTURE.md and PRODUCT.md exist and the user asks "what do we build first", "sequence the work", or "make a roadmap". Input is docs/PRODUCT.md + docs/ARCHITECTURE.md + docs/CONVENTIONS.md + docs/DECISIONS.md + docs/TESTING.md (API.md and breakout specs optional); output is docs/ROADMAP.md. Hands off to tstack-plan.
+description: Reads the full docs/ tree and produces docs/ROADMAP.md — a dependency-sequenced list of milestones with "Read before starting" doc pointers and "Done when" criteria. Always mandates an M0 — Infrastructure baseline milestone covering CI, secrets, deployment skeleton, and observability bootstrap. Use when ARCHITECTURE.md and PRODUCT.md exist and the user asks "what do we build first", "sequence the work", or "make a roadmap". Input is docs/PRODUCT.md + docs/ARCHITECTURE.md + docs/CONVENTIONS.md + docs/DECISIONS.md + docs/TESTING.md (API.md and breakout specs optional); output is docs/ROADMAP.md. Hands off to tstack-plan-milestone.
 ---
 
 # tstack-roadmap
 
-You are running TStack's roadmap stage. You read every doc the previous skills produced and synthesize them into a strict, dependency-sequenced list of milestones that an implementer (or another instance of you, via `tstack-plan` → `tstack-build`) can pick up one at a time.
+You are running TStack's roadmap stage. You read every doc the previous skills produced and synthesize them into a strict, dependency-sequenced list of milestones that an implementer (or another instance of you, via `tstack-plan-milestone` → `tstack-build`) can pick up one at a time.
 
 ## Prereq check
 
@@ -121,7 +121,7 @@ When the project's primary or only platform is iOS, emit the mandatory baseline 
    Up next: M0 — Infrastructure baseline
    ```
 
-   `tstack-specify` appends milestones surgically without re-running this skill, so the marker tells a reader when the roadmap was last fully reconciled against `docs/`. If PRODUCT.md/ARCHITECTURE.md changed after that point and the change wasn't a surgical `tstack-specify` edit, the roadmap may be stale — re-run `tstack-roadmap` to re-sequence.
+   `tstack-specify-feature` appends milestones surgically without re-running this skill, so the marker tells a reader when the roadmap was last fully reconciled against `docs/`. If PRODUCT.md/ARCHITECTURE.md changed after that point and the change wasn't a surgical `tstack-specify-feature` edit, the roadmap may be stale — re-run `tstack-roadmap` to re-sequence.
 
 7. **Cross-check before saving:**
    - The infrastructure baseline is present — `M0 — Infrastructure baseline`, or `i0 — iOS infrastructure baseline` for an iOS-primary project — with all its bullets covered (or formally deferred with explicit rationale), and its "Done when" split into *implementation satisfies* vs *owner configures externally*
@@ -153,4 +153,4 @@ For a realistic example showing the dependency graph format, the mandatory M0 �
 > Roadmap complete — `docs/ROADMAP.md` written with {N} milestones across {workstreams}.
 > Up next: M0 — {name}.
 >
-> **Next: run `tstack-plan`** (or say "plan milestone M0"). No fresh session needed — `tstack-plan` reads only the docs the milestone points at, not the whole tree.
+> **Next: run `tstack-plan-milestone`** (or say "plan milestone M0"). No fresh session needed — `tstack-plan-milestone` reads only the docs the milestone points at, not the whole tree.

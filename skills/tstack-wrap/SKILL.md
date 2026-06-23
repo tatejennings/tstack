@@ -54,33 +54,33 @@ Map every surviving gap to exactly one destination, and **respect the ownership 
 | Project-wide focus shift | **`AGENTS.md` — `## Current Focus` block only** | `tstack-architect` owns the rest of the file; touch nothing else. |
 
 **Route out-of-lane work — don't do it here.** If a gap is really *new scope* — a feature, a behavior change, a new milestone, a doc restructure — do **not** write it. Surface it and recommend the right skill:
-- New feature / changed product behavior → **`tstack-specify`**.
+- New feature / changed product behavior → **`tstack-specify-feature`**.
 - The roadmap needs re-sequencing (not just a status note) → **`tstack-roadmap`**.
 
 ### 5. Confirm borderline items, then write
 
-Present the routed gaps as a short list — each with its proposed destination — before writing. Clear-cut records (an obvious ADR, an obvious comment) you can write directly. For anything **borderline** — is this a real decision or just a passing comment? does this belong in DECISIONS or CONVENTIONS? — ask the user first. (This mirrors `tstack-specify`'s per-item discipline: surface the judgment call rather than guessing.) Write only the confirmed ones.
+Present the routed gaps as a short list — each with its proposed destination — before writing. Clear-cut records (an obvious ADR, an obvious comment) you can write directly. For anything **borderline** — is this a real decision or just a passing comment? does this belong in DECISIONS or CONVENTIONS? — ask the user first. (This mirrors `tstack-specify-feature`'s per-item discipline: surface the judgment call rather than guessing.) Write only the confirmed ones.
 
 ### 6. Report what went where — and stop
 
 Close with a scannable report: each gap, where it was written (file + section), and any items you routed out to another skill instead. Then **stop**.
 
-**Do not commit.** Leave the working tree staged-or-unstaged exactly as the user prefers to review it — committing is their call (the same convention `tstack-plan`/`tstack-build` follow for their artifacts). If they want it committed, that's a separate, explicit ask.
+**Do not commit.** Leave the working tree staged-or-unstaged exactly as the user prefers to review it — committing is their call (the same convention `tstack-plan-milestone`/`tstack-build` follow for their artifacts). If they want it committed, that's a separate, explicit ask.
 
 ## Hard rules
 
 - **Never commit.** Write files; let the user review and commit.
-- **Never add or renumber roadmap milestones.** Status-section notes only; new milestones go through `tstack-specify` / `tstack-roadmap`.
+- **Never add or renumber roadmap milestones.** Status-section notes only; new milestones go through `tstack-specify-feature` / `tstack-roadmap`.
 - **Never restructure `AGENTS.md`.** Only the `## Current Focus` block, if anything.
 - **Don't invent findings.** Only write gaps grounded in the session's actual work and confirmed against disk.
 - **Route, don't overreach.** New scope is a recommendation, not an edit.
 
 ## Reference handoff
 
-For a realistic end-to-end run — candidates gathered, already-documented ones filtered out, one ADR written, one code comment, one borderline item confirmed with the user, one gap routed out to `tstack-specify`, and the final "what went where" report — read `references/example-output.md`.
+For a realistic end-to-end run — candidates gathered, already-documented ones filtered out, one ADR written, one code comment, one borderline item confirmed with the user, one gap routed out to `tstack-specify-feature`, and the final "what went where" report — read `references/example-output.md`.
 
 ## Handoff
 
 Off-chain utility — no required next step. End with the report and, if anything was routed out, the single most useful follow-up:
 
-> Swept the session. Wrote {n} gaps: {1-line each — file + what}. Routed {n} out (e.g., "the CSV-export idea is new scope — run `tstack-specify` to spec it"). Nothing committed — review and commit when ready.
+> Swept the session. Wrote {n} gaps: {1-line each — file + what}. Routed {n} out (e.g., "the CSV-export idea is new scope — run `tstack-specify-feature` to spec it"). Nothing committed — review and commit when ready.

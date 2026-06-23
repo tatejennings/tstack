@@ -1,9 +1,9 @@
 ---
-name: tstack-specify
-description: Specifies a new feature for an existing TStack project. Interviews the user about the change, proposes which docs need updates (PRODUCT.md, ARCHITECTURE.md, API.md, breakout specs) with per-item approval before editing, then appends new milestones to docs/ROADMAP.md. Use when docs/PRODUCT.md already exists and the user says "let's add X feature", "I want to spec out a new capability", "this product needs to change", "add a feature", or "extend the product". Do not use to create the initial PRODUCT.md — that's tstack-product. Input is the existing doc set; output is updated docs + new milestone entries in ROADMAP.md. Hands off to tstack-plan.
+name: tstack-specify-feature
+description: Specifies a new feature for an existing TStack project. Interviews the user about the change, proposes which docs need updates (PRODUCT.md, ARCHITECTURE.md, API.md, breakout specs) with per-item approval before editing, then appends new milestones to docs/ROADMAP.md. Use when docs/PRODUCT.md already exists and the user says "let's add X feature", "I want to spec out a new capability", "this product needs to change", "add a feature", or "extend the product". Do not use to create the initial PRODUCT.md — that's tstack-product; to restructure how the system is built with no product change (a refactor/migration) — that's tstack-refactor; or to regenerate the roadmap after a product pivot — re-run tstack-roadmap. Input is the existing doc set; output is updated docs + new milestone entries in ROADMAP.md. Recommends tstack-plan-milestone as the next step; never builds.
 ---
 
-# tstack-specify
+# tstack-specify-feature
 
 You are running TStack's iteration loop. The user has a TStack-managed project that's already past initial setup, and they want to add or change a feature. Your job is to weave that feature through every doc it affects and append the right milestones to ROADMAP.md — without touching anything that doesn't need to change.
 
@@ -89,10 +89,12 @@ If you're creating a new breakout spec, follow the template style of existing sp
 
 This is the most surgical edit. **Contract with `tstack-roadmap`:** this skill is *append-only* — it adds new milestone IDs and never renumbers, re-sequences, or rewrites existing entries. A full re-sequence (e.g., the feature reshuffles the whole build order, or you've accumulated many surgical edits) is `tstack-roadmap`'s job — tell the user to re-run it rather than hand-reordering here.
 
+**Routing guard.** If partway through you realize this isn't a feature: a **refactor** (changing *how* the system is built with no product change — a migration, module split, provider swap) belongs in `tstack-refactor`; a **pivot** (the product's direction changes and the whole sequence needs regenerating) means re-authoring PRODUCT.md and re-running `tstack-roadmap`. Hand off rather than forcing it through the feature flow.
+
 Rules:
 
 - **Numbering is append-only; ordering is expressed by dependencies, not by ID.** Always take the next free ID, even when the new work logically slots earlier. Example: existing roadmap has M0–M5 completed and M6–M8 planned, and the new feature needs M6's output. The new milestone is **M9 with an explicit `Dependencies: M6`** — *not* inserted between M6 and M7 and *not* a renumber of M7+. The dependency field and the graph edges carry the real order; the integer is just a stable label.
-- **Dependency-aware** — a new milestone may depend on existing infrastructure milestones (e.g., the encryption module from M3). Make those dependencies explicit so `tstack-plan` won't start it before its prerequisites are in `Completed`.
+- **Dependency-aware** — a new milestone may depend on existing infrastructure milestones (e.g., the encryption module from M3). Make those dependencies explicit so `tstack-plan-milestone` won't start it before its prerequisites are in `Completed`.
 - **Reuse the milestone template** from `references/full-guide.md` of the `tstack-roadmap` skill (i.e., `../tstack-roadmap/references/full-guide.md` from the plugin's perspective; in a consumer project, read the patterns in the existing ROADMAP.md).
 - **Required fields per milestone:** What gets built, Dependencies, Read before starting (point at the *just-updated* doc sections), Done when (binary, command-verifiable criteria — same testability bar `tstack-roadmap` enforces).
 - **Status section** — do not touch existing Completed entries. Do not move the "Up next" pointer unless the user explicitly says this new feature is taking priority. **Do** update the `Docs last synced:` marker to the new commit with a surgical annotation, e.g. `Docs last synced: <sha> (surgical: added {feature})`, so the marker stays honest — specify kept docs and roadmap consistent for this change, but did not re-validate the whole sequence.
@@ -125,6 +127,6 @@ When all approved edits are applied and committed:
 
 > Feature "{name}" specified. Doc updates: {list}. New milestones in ROADMAP.md: {Mx, My, …}.
 >
-> **Next: run `tstack-plan`** (or say "plan milestone {Mx}") to start implementation.
+> **Next: run `tstack-plan-milestone`** (or say "plan milestone {Mx}") to start implementation.
 >
-> No fresh session required — `tstack-plan` reads only what the new milestone points at.
+> No fresh session required — `tstack-plan-milestone` reads only what the new milestone points at.

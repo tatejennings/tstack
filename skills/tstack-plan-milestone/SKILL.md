@@ -1,9 +1,9 @@
 ---
-name: tstack-plan
+name: tstack-plan-milestone
 description: Plans the next milestone for a TStack-managed project. Reads docs/ROADMAP.md to identify which milestone is up, creates the feature branch, reads every doc the milestone's "Read before starting" section names, enters plan mode, and produces an approved implementation plan. Use when docs/ROADMAP.md exists and the user says "plan milestone Mx", "let's plan the next milestone", "what should we build next", "enter plan mode for M4", or otherwise wants a doc-grounded implementation plan before writing code. Input is docs/ROADMAP.md + the docs that milestone references. Output is an approved implementation plan and a feature branch ready to build on. Hands off to tstack-build.
 ---
 
-# tstack-plan
+# tstack-plan-milestone
 
 You are running TStack's per-milestone planning stage. Your job is to take a roadmap entry and turn it into an implementation plan grounded in the specific docs that milestone points at — not in your own assumptions about what the user probably wants. The output is an *approved* plan and a clean feature branch. You don't write feature code in this skill. That's `tstack-build`.
 
@@ -17,7 +17,7 @@ docs/ROADMAP.md
 
 If missing: stop. Tell the user this skill is for TStack-managed projects only. If they want to start one, run `tstack-discover`. If they have docs but no roadmap, run `tstack-roadmap`.
 
-Check the Status section of `docs/ROADMAP.md`. If "Up next" is empty: the project is done — tell the user. If they want to add a feature instead, point them to `tstack-specify`.
+Check the Status section of `docs/ROADMAP.md`. If "Up next" is empty: the project is done — tell the user. If they want to add a feature instead, point them to `tstack-specify-feature`.
 
 ## Approach
 
@@ -70,7 +70,7 @@ Switch into plan mode. The plan must contain:
 Cross-check the plan against the milestone's "Done when" criteria in ROADMAP.md. Every criterion must be addressed by a specific step in the plan. If a criterion isn't covered, your plan is incomplete — fix it before presenting.
 
 **Granularity check.** A well-sized milestone plan touches roughly 5–15 files. Use that as a smell test, not a hard rule:
-- Ballooning past ~20 files, or splitting into two or more independently-shippable chunks → the milestone is too big. Stop and tell the user to re-scope it (`tstack-specify` to amend, or re-run `tstack-roadmap` to re-sequence). Don't quietly plan a three-day milestone.
+- Ballooning past ~20 files, or splitting into two or more independently-shippable chunks → the milestone is too big. Stop and tell the user to re-scope it (`tstack-specify-feature` to amend, or re-run `tstack-roadmap` to re-sequence). Don't quietly plan a three-day milestone.
 - Only one or two trivial files with no real dependencies → the milestone may be too granular to be worth its own loop; suggest folding it into an adjacent one.
 
 ### 5. Review with the user, adjust, approve
@@ -133,4 +133,4 @@ For a realistic example of an approved plan — showing dependency-ordered file 
 
 - The user says "just start building" — politely refuse. Plan-first is the discipline that makes the milestone loop work. The plan takes 5 minutes and saves an hour of misdirection.
 - The user wants to plan a milestone whose dependencies aren't in Completed — refuse and list the missing dependencies.
-- During planning, the user reveals the feature is misspecified or the roadmap entry is wrong — stop and tell them to run `tstack-specify` to update the doc set first. Don't paper over spec gaps in the plan.
+- During planning, the user reveals the feature is misspecified or the roadmap entry is wrong — stop and tell them to run `tstack-specify-feature` to update the doc set first. Don't paper over spec gaps in the plan.

@@ -12,7 +12,7 @@ Excerpt from the **Slink** roadmap. Shows the mandatory `M0 — Infrastructure b
 
 ## How to Use
 
-Check the **Status section at the bottom** for the current milestone. Read the listed specs for that milestone, run `tstack-plan` to produce an approved plan, then `tstack-build` to ship.
+Check the **Status section at the bottom** for the current milestone. Read the listed specs for that milestone, run `tstack-plan-milestone` to produce an approved plan, then `tstack-build` to ship.
 
 Milestone IDs use `M` prefix for the web workstream. There's no separate mobile workstream in v1.
 

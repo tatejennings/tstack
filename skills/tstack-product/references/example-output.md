@@ -120,7 +120,7 @@ The actual short-link redirect. Hot path. Lives on Cloudflare Workers (per ARCHI
 
 ## Out of Scope (v1)
 
-- Team workspaces (post-launch, via tstack-specify)
+- Team workspaces (post-launch, via tstack-specify-feature)
 - Native mobile apps
 - Real-time analytics
 - A/B testing of destinations

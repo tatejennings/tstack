@@ -1,21 +1,21 @@
 ---
 name: tstack-build
-description: Executes an approved milestone plan for a TStack-managed project — implements the plan with frequent commits, verifies against the milestone's "Done when" criteria, commits and merges the feature branch, and updates docs/ROADMAP.md status. Use when an approved plan exists at docs/plans/{id}.md (typically opened in a fresh session) or the user says "build it", "implement the plan", "ship this milestone", "execute the plan". Do not use to plan a milestone — that's tstack-plan. Input is an approved plan + feature branch + docs/ROADMAP.md. Output is shipped code, merged branch, and updated roadmap status. Ends cleanly; the next milestone is planned with tstack-plan in a fresh session.
+description: Executes an approved milestone plan for a TStack-managed project — implements the plan with frequent commits, verifies against the milestone's "Done when" criteria, commits and merges the feature branch, and updates docs/ROADMAP.md status. Use when an approved plan exists at docs/plans/{id}.md (typically opened in a fresh session) or the user says "build it", "implement the plan", "ship this milestone", "execute the plan". Do not use to plan a milestone — that's tstack-plan-milestone. Input is an approved plan + feature branch + docs/ROADMAP.md. Output is shipped code, merged branch, and updated roadmap status. Ends cleanly; the next milestone is planned with tstack-plan-milestone in a fresh session.
 ---
 
 # tstack-build
 
-You are running TStack's per-milestone execution stage. The plan is already approved and the feature branch is checked out (`tstack-plan` did that). Your job is to implement, verify, merge, and update the roadmap. You do not re-litigate the plan unless it turns out to be wrong.
+You are running TStack's per-milestone execution stage. The plan is already approved and the feature branch is checked out (`tstack-plan-milestone` did that). Your job is to implement, verify, merge, and update the roadmap. You do not re-litigate the plan unless it turns out to be wrong.
 
 ## Prereq check
 
 Required state:
 
 - `docs/ROADMAP.md` exists
-- An approved implementation plan exists in the repo at `docs/plans/{id}.md` (written by `tstack-plan`). If it was committed, this works even when a cloud agent or a different machine — not the session that planned it — is doing the build.
+- An approved implementation plan exists in the repo at `docs/plans/{id}.md` (written by `tstack-plan-milestone`). If it was committed, this works even when a cloud agent or a different machine — not the session that planned it — is doing the build.
 - The current branch is a `milestone/*` branch (not `main`)
 
-**Load the plan first.** Read `docs/plans/{id}.md` for the milestone you're building. If it's missing and there's no approved plan in context: stop and tell the user to run `tstack-plan` first. Don't try to plan-as-you-go — that's the failure mode this split exists to prevent. The plan file carries the "Done when" criteria copied from ROADMAP.md; still open `docs/ROADMAP.md` to confirm they match (if they've drifted, the roadmap is authoritative — flag it).
+**Load the plan first.** Read `docs/plans/{id}.md` for the milestone you're building. If it's missing and there's no approved plan in context: stop and tell the user to run `tstack-plan-milestone` first. Don't try to plan-as-you-go — that's the failure mode this split exists to prevent. The plan file carries the "Done when" criteria copied from ROADMAP.md; still open `docs/ROADMAP.md` to confirm they match (if they've drifted, the roadmap is authoritative — flag it).
 
 ## Approach
 
@@ -27,7 +27,7 @@ For larger milestones, work in chunks (steps 1–3, then 4–6, then 7+) and ver
 
 If the plan turns out to be wrong mid-build (a missing piece, an unanticipated constraint, an underspecified edge case):
 - For small course corrections, adjust and continue
-- For anything that affects what the milestone *delivers* (scope creep, missing prerequisite, spec gap): stop and tell the user to either re-enter `tstack-plan` for this milestone, or run `tstack-specify` if PRODUCT.md is wrong
+- For anything that affects what the milestone *delivers* (scope creep, missing prerequisite, spec gap): stop and tell the user to either re-enter `tstack-plan-milestone` for this milestone, or run `tstack-specify-feature` if PRODUCT.md is wrong
 
 ### 2. Verify against "Done when" criteria
 
@@ -66,7 +66,7 @@ If a criterion can't be verified by any of the above, the criterion is not testa
 
 **Waiving a criterion (controlled escape hatch).** A criterion may be deferred *only* with explicit user sign-off, and only when it's a genuine scope split rather than a defect being hidden. When the user signs off:
 1. Record it in the verification report as `Result: DEFERRED — {reason} (user-approved {date})`, not PASS.
-2. Append a follow-up milestone to `docs/ROADMAP.md` (via `tstack-specify` rules, or a direct append with explicit dependency) that carries the deferred criterion, so it isn't lost.
+2. Append a follow-up milestone to `docs/ROADMAP.md` (via `tstack-specify-feature` rules, or a direct append with explicit dependency) that carries the deferred criterion, so it isn't lost.
 3. Note the known gap in the merge commit body.
 
 Never silently mark a milestone done with a failing or unmet criterion. A waiver is a visible, tracked decision — not a soft pass.
@@ -110,9 +110,9 @@ Report completion and point at what's next — then **end the session here**:
 
 > {id} shipped and merged. Up next: {next-id} — {next-name}.
 >
-> **Plan it in a fresh session** — start a new session and run `tstack-plan` (or say "plan the next milestone"). A fresh window per milestone is the default: it stops context from piling up across milestones, which is what keeps a long roadmap sustainable. The roadmap on disk (`Completed:` / `Up next:`) is the only state the next session needs.
+> **Plan it in a fresh session** — start a new session and run `tstack-plan-milestone` (or say "plan the next milestone"). A fresh window per milestone is the default: it stops context from piling up across milestones, which is what keeps a long roadmap sustainable. The roadmap on disk (`Completed:` / `Up next:`) is the only state the next session needs.
 
-Do not auto-advance into `tstack-plan` or start planning the next milestone in this session on your own — the fresh-session boundary is the point. If the user *explicitly* wants to keep going now, that's their call; don't make it for them.
+Do not auto-advance into `tstack-plan-milestone` or start planning the next milestone in this session on your own — the fresh-session boundary is the point. If the user *explicitly* wants to keep going now, that's their call; don't make it for them.
 
 ## Reference handoff
 
@@ -124,8 +124,8 @@ For a realistic verification-report example showing the quoted-command-output di
 
 Don't silently expand scope. If during build you find:
 
-- The milestone is bigger than the plan accounted for → propose splitting (`Mxa` / `Mxb`) and re-enter `tstack-plan` for the second half
-- A feature is misspecified in PRODUCT.md or API.md → stop, run `tstack-specify` to update the docs, regenerate the relevant roadmap entries, then re-enter `tstack-plan`
+- The milestone is bigger than the plan accounted for → propose splitting (`Mxa` / `Mxb`) and re-enter `tstack-plan-milestone` for the second half
+- A feature is misspecified in PRODUCT.md or API.md → stop, run `tstack-specify-feature` to update the docs, regenerate the relevant roadmap entries, then re-enter `tstack-plan-milestone`
 - The plan referenced a doc section that doesn't exist → flag the gap, get the user to fill it before continuing
 
 Silent overreach is the failure mode. Surface the issue, don't paper over it.

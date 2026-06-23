@@ -1,4 +1,4 @@
-# Example output: `tstack-plan` plan-mode output
+# Example output: `tstack-plan-milestone` plan-mode output
 
 Realistic example of an approved plan for **Slink** milestone M3 (Link CRUD). This is what gets presented to the user inside plan mode, refined through review, and then approved before handing off to `tstack-build`.
 

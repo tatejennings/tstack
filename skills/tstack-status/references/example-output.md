@@ -22,7 +22,7 @@ A realistic Status-mode report in chat. Calibrate against the scannable, headed 
 **Mandatory docs** — all present ✓ (PRODUCT, ARCHITECTURE, CONVENTIONS, TESTING, DECISIONS, ROADMAP). API.md present (optional).
 
 **⚠ Doc drift**
-- `PRODUCT.md` was edited 2026-05-26, after ROADMAP.md's last sync (`Docs last synced: 2026-05-18`). The roadmap may not reflect the latest requirements. If that edit added scope, re-run `tstack-roadmap`; if it was a surgical `tstack-specify` change, you can ignore this.
+- `PRODUCT.md` was edited 2026-05-26, after ROADMAP.md's last sync (`Docs last synced: 2026-05-18`). The roadmap may not reflect the latest requirements. If that edit added scope, re-run `tstack-roadmap`; if it was a surgical `tstack-specify-feature` change, you can ignore this.
 
 **Suggested next action**
 - Finish and verify M4, then merge (`tstack-build`). But first, resolve the drift on `PRODUCT.md` — confirm whether the roadmap needs re-sequencing.

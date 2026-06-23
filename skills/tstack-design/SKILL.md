@@ -71,4 +71,4 @@ This skill is off-chain, so there's no required next step. End with what you pro
 
 > Design spec written to `docs/2 - Specs/design.md` — {n} screens, {n} components, token set, and a "For Claude Design" section ready to paste.
 >
-> Optional next steps: paste the per-screen prompts into **Claude Design** to generate the UI; or, if this surfaced UI work that isn't yet on the roadmap, run `tstack-specify` to add it (or `tstack-roadmap` to re-sequence). Nothing here forces a chain step.
+> Optional next steps: paste the per-screen prompts into **Claude Design** to generate the UI; or, if this surfaced UI work that isn't yet on the roadmap, run `tstack-specify-feature` to add it (or `tstack-roadmap` to re-sequence). Nothing here forces a chain step.

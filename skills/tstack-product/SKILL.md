@@ -1,6 +1,6 @@
 ---
 name: tstack-product
-description: Turns a completed business brief into docs/PRODUCT.md — the product requirements doc with features, user flows, data models, and acceptance criteria (Given/When/Then for deterministic features, eval-based for AI/LLM features, measurable thresholds for performance). Use when docs/1 - Discovery/business-brief.md exists and the user wants product requirements, says "let's write the PRD", or asks what to build next after discovery. Do not use to add features to an existing PRODUCT.md — that's tstack-specify. Input is the business brief; output is docs/PRODUCT.md. Hands off to tstack-architect.
+description: Turns a completed business brief into docs/PRODUCT.md — the product requirements doc with features, user flows, data models, and acceptance criteria (Given/When/Then for deterministic features, eval-based for AI/LLM features, measurable thresholds for performance). Use when docs/1 - Discovery/business-brief.md exists and the user wants product requirements, says "let's write the PRD", or asks what to build next after discovery. Do not use to add features to an existing PRODUCT.md — that's tstack-specify-feature. Input is the business brief; output is docs/PRODUCT.md. Hands off to tstack-architect.
 ---
 
 # tstack-product
@@ -20,7 +20,7 @@ docs/1 - Discovery/business-brief.md   ← normal path
 
 **Normal path:** require `docs/1 - Discovery/business-brief.md`. If it's missing *and* there's no adopted draft: stop and tell the user to run `tstack-discover` first (or `tstack-ingest` if they already have docs).
 
-If `docs/PRODUCT.md` already exists: stop and ask if they want to (a) replace it (run me), or (b) add a feature to it (run `tstack-specify` instead — that's the right tool for iteration). Default to (b).
+If `docs/PRODUCT.md` already exists: stop and ask if they want to (a) replace it (run me), or (b) add a feature to it (run `tstack-specify-feature` instead — that's the right tool for iteration). Default to (b).
 
 ## Approach
 
