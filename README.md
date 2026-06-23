@@ -2,7 +2,7 @@
 
 # TStack — a Claude Code Plugin
 
-TStack is a Claude Code plugin that takes you from a rough product idea to a fully documented, milestone-sequenced, built project: **seven chained skills** (discover → product → architect → roadmap → plan → build, plus the specify iteration loop), an **adoption on-ramp** (`tstack-ingest`) for projects that already have docs, and **three optional, off-chain companions** (`tstack-design`, `tstack-status`, and `tstack-wrap`) you can run at any point. Each chained stage auto-triggers based on what you say, reads its input artifact from disk, produces its output, and hands off to the next.
+TStack is a Claude Code plugin that takes you from a rough product idea to a fully documented, milestone-sequenced, built project: **seven chained skills** (discover → product → architect → roadmap → plan → build, plus the specify iteration loop), an **adoption on-ramp** (`tstack-ingest`) for projects that already have docs, **three optional, off-chain companions** (`tstack-design`, `tstack-status`, and `tstack-wrap`) you can run at any point, and a **manual-only autonomous runner** (`tstack-autopilot`) that takes one milestone to an open PR unattended. Each chained stage auto-triggers based on what you say, reads its input artifact from disk, produces its output, and hands off to the next.
 
 > Replaces a previous paste-the-guide-into-each-session workflow with a chain of skills that activate automatically and remember the state of your project on disk.
 
@@ -31,10 +31,11 @@ flowchart TD
     G["**tstack-design**<br/>→ design.md + Claude Design prompts"]
     H["**tstack-status**<br/>read-only status + drift report"]
     W["**tstack-wrap**<br/>session sweep → write undocumented gaps"]
+    AP["**tstack-autopilot**<br/>(manual-only) milestone → open PR · never merges"]
   end
 ```
 
-Four skills form a one-time setup chain (`discover` → `product` → `architect` → `roadmap`). Then `tstack-plan` and `tstack-build` form the per-milestone loop you run repeatedly. `tstack-specify` is the iteration skill for adding features after launch — it hands into the same `plan` → `build` loop. **`tstack-ingest` is the adoption on-ramp**: if you already have docs (a PRD, notes, a design or architecture doc), it maps them onto the TStack doc set, distills a draft into `docs/_adopted/`, and routes you into the chain at `tstack-product` — so you resume mid-stream instead of restarting. (`tstack-discover` forwards to it the moment it sees you already have docs.) `tstack-design`, `tstack-status`, and `tstack-wrap` sit **outside** the chain: invoke them whenever you need them — none is a required step and none blocks the flow. `tstack-wrap` is the natural way to close a session — it sweeps the work you just did for anything that should be in the docs but isn't, and writes the gaps.
+Four skills form a one-time setup chain (`discover` → `product` → `architect` → `roadmap`). Then `tstack-plan` and `tstack-build` form the per-milestone loop you run repeatedly. `tstack-specify` is the iteration skill for adding features after launch — it hands into the same `plan` → `build` loop. **`tstack-ingest` is the adoption on-ramp**: if you already have docs (a PRD, notes, a design or architecture doc), it maps them onto the TStack doc set, distills a draft into `docs/_adopted/`, and routes you into the chain at `tstack-product` — so you resume mid-stream instead of restarting. (`tstack-discover` forwards to it the moment it sees you already have docs.) `tstack-design`, `tstack-status`, and `tstack-wrap` sit **outside** the chain: invoke them whenever you need them — none is a required step and none blocks the flow. `tstack-wrap` is the natural way to close a session — it sweeps the work you just did for anything that should be in the docs but isn't, and writes the gaps. `tstack-autopilot` is also off-chain but a different animal: a **manual-only** runner (it never auto-triggers) that takes a single milestone unattended — plan → adversarially red-team the plan → build → verify → open PR — and **stops at an open PR for a human to review and merge.** It never merges and never chains to the next milestone, so it layers on top of the fresh-session default rather than replacing it.
 
 ## The agentic loop
 
@@ -73,6 +74,9 @@ This is roughly what people are starting to call **"loop engineering."** The mor
 | `tstack-design` | "design the UI" / "create a design system" / "give me design prompts" | PRODUCT.md if present (else a description) + frontend stack | `docs/2 - Specs/design.md` + ready-to-paste Claude Design prompts |
 | `tstack-status` | "where are we" / "project status" / "what's left" / "is anything out of sync" | `docs/` tree + git (read-only) | a chat status report incl. doc-drift flags |
 | `tstack-wrap` | "before we wrap" / "did we miss documenting anything" / "sweep for doc gaps" / end of session | session work + `git log` + `docs/` tree | undocumented decisions/gotchas/events written to the right doc (no commit) + a chat report |
+| `tstack-autopilot` | **manual-only** — `/tstack-autopilot <milestone-id>` (never auto-triggers; it mutates git) | `docs/ROADMAP.md` + the milestone's docs (+ committed `docs/plans/{id}.md` if present), starting from a clean, up-to-date default branch | an **open, reviewed PR** off a feature branch + handoff report at `docs/plans/{id}-report.md` — **never merges** |
+
+> `tstack-autopilot` is the suite's autonomous runner. It's fail-closed: it **refuses** unless the tree is clean and current, the M0/i0 infrastructure baseline + CI exist, every "Done when" criterion is command-verifiable, dependencies are all Completed, and no `AGENTS.md`/`CONTRIBUTING` policy forbids autonomous pushes. All work happens on a feature branch and the run **stops at an open PR** — merging is always the human's (no GitHub branch protection required). The plan is gated by a 3-agent adversarial red-team (replacing the human plan approval); quoted "Done when" output is the only authorizing gate; tests are append-only. One milestone per run, PR-and-stop.
 
 ### Optional: auto-prompt `tstack-wrap` at session end
 
@@ -235,7 +239,8 @@ claude-code-starter/             # this repo = the plugin
 │   ├── tstack-ingest/           SKILL.md + references/example-output.md (adoption on-ramp)
 │   ├── tstack-design/           SKILL.md + references/example-output.md (optional, off-chain)
 │   ├── tstack-status/           SKILL.md + references/example-output.md (optional, off-chain)
-│   └── tstack-wrap/             SKILL.md + references/example-output.md (optional, off-chain)
+│   ├── tstack-wrap/             SKILL.md + references/example-output.md (optional, off-chain)
+│   └── tstack-autopilot/        SKILL.md (manual-only autonomous runner — never auto-triggers)
 ├── README.md                    # you are here
 ├── CLAUDE.md                    # for someone editing the plugin
 ├── BACKLOG.md                   # plugin's own backlog of upcoming features

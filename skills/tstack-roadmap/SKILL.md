@@ -1,6 +1,6 @@
 ---
 name: tstack-roadmap
-description: Reads the full docs/ tree and produces docs/ROADMAP.md — a dependency-sequenced list of milestones with "Read before starting" doc pointers and "Done when" criteria. Always mandates an M0 — Infrastructure baseline milestone covering CI, branch protection, secrets, deployment skeleton, and observability bootstrap. Use when ARCHITECTURE.md and PRODUCT.md exist and the user asks "what do we build first", "sequence the work", or "make a roadmap". Input is docs/PRODUCT.md + docs/ARCHITECTURE.md + docs/CONVENTIONS.md + docs/DECISIONS.md + docs/TESTING.md (API.md and breakout specs optional); output is docs/ROADMAP.md. Hands off to tstack-plan.
+description: Reads the full docs/ tree and produces docs/ROADMAP.md — a dependency-sequenced list of milestones with "Read before starting" doc pointers and "Done when" criteria. Always mandates an M0 — Infrastructure baseline milestone covering CI, secrets, deployment skeleton, and observability bootstrap. Use when ARCHITECTURE.md and PRODUCT.md exist and the user asks "what do we build first", "sequence the work", or "make a roadmap". Input is docs/PRODUCT.md + docs/ARCHITECTURE.md + docs/CONVENTIONS.md + docs/DECISIONS.md + docs/TESTING.md (API.md and breakout specs optional); output is docs/ROADMAP.md. Hands off to tstack-plan.
 ---
 
 # tstack-roadmap
@@ -66,7 +66,6 @@ If a required input is missing: stop and tell the user to run `tstack-architect`
 Every roadmap **must** begin with `M0 — Infrastructure baseline`. Do not generate a roadmap without it. This milestone covers the things that, if deferred, create compounding pain across every feature milestone:
 
 - **CI workflow** — GitHub Actions (or equivalent) running typecheck + tests + lint on every PR
-- **Branch protection** — `main` requires passing CI and at least one approval for teams (or "no force-push, status checks required" for solo)
 - **Secrets management** — wired up per ADR-1's choice (e.g., Vercel env vars, Doppler, Vault); no secrets in the repo
 - **Deployment skeleton** — at minimum, a working deploy of the empty app to the chosen platform (per ARCHITECTURE.md's deployment topology) so subsequent milestones have somewhere to land
 - **Observability bootstrap** — per ADR-2: log destination working, error tracker integrated (e.g., Sentry SDK installed and reporting from a deliberate test error), basic dashboard or log view accessible
@@ -81,9 +80,10 @@ Every roadmap **must** begin with `M0 — Infrastructure baseline`. Do not gener
   - A deliberate test error reaches the error tracker
   - The test runner runs one trivial passing test
 - ***Owner configures externally*** (provider console — GitHub/host/Apple settings; marked done by attestation, not a command):
-  - `main` branch protection requires the CI check and disallows force-push
   - Secrets are set in the deploy platform's secret store (none in repo)
   - Any provider-side deploy/distribution setup the platform requires
+
+  *(TStack does not add branch protection or required-review rules to M0. If the user wants them, that's their call to make in their own repo settings — don't suggest them.)*
 
 Refuse to save the roadmap if M0 is absent or its scope is missing any of the above bullets. If the user pushes back ("I don't need CI for a weekend project"), point them at the ADRs they recorded in `tstack-architect` and ask which bullet they want to formally defer with an ADR-style explanation. Don't silently drop infrastructure.
 
@@ -98,7 +98,7 @@ When the project's primary or only platform is iOS, emit the mandatory baseline 
 - **Crash/error reporting** bootstrapped per ADR-2 (e.g. a deliberate test error surfaces in the chosen reporter)
 - **Test runner** with one trivial passing test, run in CI
 
-`i0`'s "What gets built" describes the baseline as a normal, hand-implementable milestone — *"Stand up the iOS baseline: project skeleton, CI, signing/secrets, crash reporting, and a passing test."* Don't name or assume any particular scaffolding tool — how the baseline gets stood up is the implementer's choice; the milestone only specifies the deliverable. Use the same **implementation-vs-external split** (above) for `i0`'s "Done when": building/testing/linting and a test crash reaching the reporter are *implementation satisfies*; Xcode signing certificates, App Store Connect/TestFlight distribution, and branch protection are *owner configures externally (Apple/GitHub settings)*.
+`i0`'s "What gets built" describes the baseline as a normal, hand-implementable milestone — *"Stand up the iOS baseline: project skeleton, CI, signing/secrets, crash reporting, and a passing test."* Don't name or assume any particular scaffolding tool — how the baseline gets stood up is the implementer's choice; the milestone only specifies the deliverable. Use the same **implementation-vs-external split** (above) for `i0`'s "Done when": building/testing/linting and a test crash reaching the reporter are *implementation satisfies*; Xcode signing certificates and App Store Connect/TestFlight distribution are *owner configures externally (Apple settings)*.
 
 5. **Naming conventions:**
    - Server/web milestones: `M0`, `M1`, `M2`, …

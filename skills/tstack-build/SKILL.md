@@ -87,7 +87,7 @@ git push origin {branch}
 git checkout main && git merge {branch} && git push origin main && git branch -d {branch}
 ```
 
-**Team projects** — open a PR instead of merging directly. Use `gh pr create` if available, targeting `main`. Find the review requirements where the project records them — `AGENTS.md`, `CONTRIBUTING.md`, or ADR-1 / the M0 branch-protection rules in `DECISIONS.md` (e.g., "requires one approval + passing CI"). Put the verification report (from step 2) in the PR body so reviewers see the proof. **The milestone is not `Completed` until the PR actually merges** — don't update ROADMAP status (step 4) on PR open. If CI or review is still pending, tell the user the milestone is "in review" and pause the loop there; resume step 4 once it merges.
+**Team projects** — open a PR instead of merging directly. Use `gh pr create` if available, targeting `main`. If the project records review requirements of its own — in `AGENTS.md`, `CONTRIBUTING.md`, or `DECISIONS.md` (e.g., "requires one approval + passing CI") — follow them; TStack doesn't impose any. Put the verification report (from step 2) in the PR body so reviewers see the proof. **The milestone is not `Completed` until the PR actually merges** — don't update ROADMAP status (step 4) on PR open. If CI or review is still pending, tell the user the milestone is "in review" and pause the loop there; resume step 4 once it merges.
 
 ### 4. Update roadmap status
 

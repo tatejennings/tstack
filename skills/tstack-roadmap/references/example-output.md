@@ -50,7 +50,7 @@ M0 — Infrastructure baseline
 
 ## M0 — Infrastructure baseline
 
-**What gets built:** The non-negotiable platform plumbing that every later milestone depends on. CI workflow, branch protection, secrets management, deployment skeleton, observability bootstrap, lint/format, and test runner.
+**What gets built:** The non-negotiable platform plumbing that every later milestone depends on. CI workflow, secrets management, deployment skeleton, observability bootstrap, lint/format, and test runner.
 
 **Dependencies:** None — starting point.
 
@@ -70,7 +70,6 @@ M0 — Infrastructure baseline
 - `pnpm test` runs one trivial passing unit test; `pnpm lint` passes; `pnpm typecheck` passes; `gitleaks` runs in CI and finds no secrets.
 
 *Owner configures externally (GitHub/Vercel/Cloudflare consoles — attested, not command-checked):*
-- `main` branch protection requires the `ci` check to pass and disallows force-push.
 - Secrets are set in the deploy platforms (Vercel env vars for app, Wrangler secrets for Worker, Neon connection string for DB) — none in repo.
 
 **Estimated effort:** 1–2 focused days.
@@ -195,10 +194,9 @@ CI running build + test + lint on every PR, signing/secrets approach, and crash 
 - One trivial XCTest/Swift Testing test passes in CI.
 - A deliberate test crash surfaces in the chosen crash reporter (e.g. Sentry/Crashlytics).
 
-*Owner configures externally (Apple/GitHub consoles — attested, not command-checked):*
+*Owner configures externally (Apple consoles — attested, not command-checked):*
 - Signing certificates + provisioning profiles set up in the Apple Developer account / Xcode.
 - App Store Connect record created; a build distributes to TestFlight.
-- `main` branch protection requires the CI check and disallows force-push.
 
 **Estimated effort:** 1–2 focused days.
 ```

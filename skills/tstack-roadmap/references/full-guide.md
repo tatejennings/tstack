@@ -157,7 +157,7 @@ If none, say "None — starting point."
 **Infrastructure milestones (`M0`, `i0`) split "Done when" into two labeled groups.** Mixing them lets a milestone read as "not done" because a provider-console toggle the code can't flip is still pending — and lets a real implementation gap hide behind one. The split is tool-agnostic (same whether a human or a CI runner does the work):
 
 - ***Implementation satisfies*** — provable by the build/test/lint/CI run itself: the workflow file is committed and fires on a PR, lint/typecheck/tests run, a deliberate test error reaches the tracker, one trivial test passes.
-- ***Owner configures externally*** — provider-console settings the implementation can't assert, marked done by attestation not a command: branch protection, secrets set in the deploy platform, and (iOS) Xcode signing certificates + App Store Connect/TestFlight distribution.
+- ***Owner configures externally*** — provider-console settings the implementation can't assert, marked done by attestation not a command: secrets set in the deploy platform, and (iOS) Xcode signing certificates + App Store Connect/TestFlight distribution. (TStack does not put branch protection or required-review rules here — those are the user's own repo-settings call, never suggested by the framework.)
 
 See SKILL.md (§ M0 mandate and § iOS `i0`) for the canonical bullet lists.
 
