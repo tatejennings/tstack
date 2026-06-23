@@ -1,5 +1,7 @@
 # Product Discovery & Business Brief Guide
 
+> **Source of truth:** `SKILL.md` is authoritative for the *process and shape* of this stage — when to interview vs. forward to `tstack-ingest`, the discovery areas, the brief-ready gate, and the handoff to `tstack-product`. This guide is longer-form reference: the discovery areas in depth, the business-brief template, and market-research patterns. It is preserved pre-plugin prose and may lag the SKILL.md; where the two disagree, follow SKILL.md and treat the discrepancy as a guide bug to fix.
+
 ## Purpose
 
 This document defines a structured process for turning a rough product idea into a comprehensive business brief. The output is a `business-brief.md` file that feeds directly into the Claude Code Project Documentation Guide as the foundation for all technical documentation.

@@ -1,5 +1,7 @@
 # How to Generate a Build-Order Roadmap
 
+> **Source of truth:** `SKILL.md` is authoritative for the *process and shape* of this stage — the mandatory `M0`/`i0` infrastructure baseline, write-time "Done when" testability, the implementation-vs-external split, and the `Docs last synced:` contract with `tstack-specify`. This guide is longer-form reference: milestone-sequencing patterns and the roadmap template. It is preserved pre-plugin prose and may lag the SKILL.md; where the two disagree, follow SKILL.md and treat the discrepancy as a guide bug to fix.
+
 You are creating a `docs/ROADMAP.md` file from existing project documentation. This file sequences every piece of work into milestones ordered by technical dependencies, where each milestone points back to the source docs that define what gets built.
 
 Read this entire file before starting. Then read all project documentation. Then generate the roadmap.
