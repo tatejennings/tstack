@@ -71,7 +71,7 @@ ecosystem.
   Given/When/Then.
 - **A5 — Sync-point drift** (the known drifters — these are the highest-yield auto-fixables):
   - `version` in `.claude-plugin/plugin.json` vs the latest released heading in `CHANGELOG.md`.
-  - The skill-count wording ("Seven-skill chain", "three … off-chain companions") in
+  - The skill-count wording ("six-stage chain", "two … off-chain companions") in
     `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `README.md`, and
     `CLAUDE.md` — all four must agree with each other and with reality.
   - The README **mermaid lifecycle diagram**, the **skill table**, and the **repo-layout tree**
