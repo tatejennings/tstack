@@ -1,74 +1,89 @@
 ---
 name: tstack-design
-description: Produces a design/UX spec (docs/2 - Specs/design.md) plus ready-to-paste prompts and structured context for Claude Design — design tokens, component inventory, key screen layouts, interaction/empty/error/loading states, and accessibility patterns tied to ADR-3. Optional and off-chain — invoke it at ANY point in a TStack project (before architect, after roadmap, or mid-build) when a consumer-facing surface needs design work. Use when the user says "design the UI", "create a design system", "give me design prompts", "spec a screen", "design material for Claude Design", or wants the look-and-feel defined. Input is docs/PRODUCT.md if present (else the user's description) + docs/ARCHITECTURE.md's frontend stack and ADR-3 if present; output is docs/2 - Specs/design.md. Not part of the discover→build chain; hands off to nothing by default.
+description: Designs the UX and visual interface for a TStack product and writes the docs/3 - Design/ set — design.md (information architecture, navigation, user flows, per-screen breakdown with all states, visual direction, component inventory, accessibility tied to ADR-3), design-tokens.json (W3C DTCG), a paste-ready claude-design-prompts.md for Claude Design, and previews/. The conditional UI design stage of the chain — runs between tstack-product and tstack-architect for products with a consumer-facing UI (so the frontend-stack ADR and ADR-3 are design-informed), and is also invokable any time (after roadmap, mid-build) for screen-level work. Two modes — GENERATE (pick wireframe vs high-fidelity, then a route: a Claude Design brief, in-repo HTML previews, or a Figma round-trip) and LINK-BACK (you designed in Claude Design/Figma — record the link/screenshots into the design set). Use when the user says "design the UI", "design/spec the screens", "create a design system", "wireframe this", "give me Claude Design prompts", "I designed this in Claude Design / link my designs", or "I have Figma mockups/screenshots to bring in". Skip for headless products (CLI/library/API — no UI). Not a requirements skill — to define WHAT to build use tstack-product/tstack-specify-feature. Input is docs/PRODUCT.md (+ docs/ARCHITECTURE.md frontend stack & ADR-3 if present, or docs/_adopted/design.draft.md when adopting). Output is the docs/3 - Design/ set. Hands off to tstack-architect.
 ---
 
 # tstack-design
 
-You are running TStack's design/UX stage. You turn product intent into a concrete design specification **and** into material a human can paste straight into Claude Design to generate the actual interface. You give frontend work an upstream source of truth that `tstack-build` can later verify against (especially accessibility).
+You are running TStack's design/UX stage. You turn product intent into a concrete UX + visual specification, a machine-readable token set, and ready-to-paste material for **Claude Design** — giving frontend work an upstream source of truth that `tstack-build` can later verify against (especially accessibility). You own the `docs/3 - Design/` set; no other skill writes it.
 
-**This skill is optional and off-chain.** It is *not* a step in `discover → product → architect → roadmap → plan → build`. No skill hands off to it, it blocks nothing, and you can run it whenever a consumer-facing surface needs design — before `tstack-architect` (to inform the frontend stack), after `tstack-roadmap` (to flesh out a UI milestone), or mid-`tstack-build` (when a screen needs a design pass).
+**Conditional UI stage with a retained off-chain mode.** For a product with a consumer-facing UI this runs **between `tstack-product` and `tstack-architect`** — so the frontend-stack ADR and ADR-3 (accessibility) are *design-informed* rather than guessed. It is **conditional** (skipped entirely for headless products) and a **recommendation, never a gate**: it blocks nothing, and you can also invoke it any time — before architect, after roadmap, or mid-build when a single screen needs a design pass. Like `tstack-ingest` (an on-ramp, not off-chain), it has a place in the chain without ever forcing one.
 
 ## When to run / when to skip
 
-- **Run** for any product with a consumer-facing UI (web or mobile) that needs look-and-feel, a design system, or screen-level design defined.
+- **Run** for any product with a consumer-facing UI (web or mobile). Recommended right after `tstack-product`, before `tstack-architect`.
 - **Skip** for headless products — APIs, CLIs, libraries, backend services with no UI. If asked anyway, say so and stop rather than inventing UI for something that has none.
 
 ## Prereq check (soft)
 
-Nothing is mandatory — this skill works from whatever exists:
+Work from whatever exists:
 
-- `docs/PRODUCT.md` — preferred. Use its features, user flows, and screen inventory as the design's requirements. If it's absent, work from the user's description (and offer that `tstack-product` would give you firmer ground).
-- `docs/ARCHITECTURE.md` — if present, read the **frontend stack** (e.g., Next.js + shadcn/ui + Tailwind, or SwiftUI). Design tokens and component choices should fit that stack, not fight it.
-- `docs/DECISIONS.md` — if present, honor **ADR-3 (accessibility)**: the design must meet at least the committed WCAG bar. Don't propose a weaker one.
+- **`docs/_adopted/design.draft.md` exists** → the user adopted existing designs via `tstack-ingest`. Take the **adopt/ratify** path (step 4): author the `docs/3 - Design/` set from the draft, then delete it.
+- `docs/PRODUCT.md` — preferred. Use its features, flows, and §6 screen inventory as the design's requirements. If absent, work from the user's description (and offer that `tstack-product` would give firmer ground).
+- `docs/ARCHITECTURE.md` — if present, read the **frontend stack**; express tokens and components in that system's vocabulary (shadcn/ui, Tailwind, SwiftUI), not against it. When design runs *before* architect the stack isn't chosen yet — keep tokens stack-neutral (that's why `design-tokens.json` is DTCG).
+- `docs/DECISIONS.md` — if present, honor **ADR-3 (accessibility)**: meet at least the committed WCAG bar, never propose a weaker one.
 
 ## Approach
 
-1. **Establish the design direction.** Confirm the product's tone and audience, then propose an opinionated visual direction (mood, density, personality — e.g., "calm, editorial, lots of whitespace" vs "dense, utilitarian, data-first"). Get the user to confirm or redirect before going wide. Don't open with a blank canvas.
+1. **Pick a mode.**
+   - **Generate** — produce the design from PRODUCT.md (steps 2–3 + 5).
+   - **Link-back / adopt** — the user already has designs (a Claude Design / Figma link, screenshots) or `tstack-ingest` staged a draft (step 4 + 5).
 
-2. **Define the design tokens.** A concrete, named set the implementation and Claude Design both consume:
-   - Color (semantic roles: background, surface, primary, on-primary, muted, border, success/warn/danger — not just hex swatches)
-   - Typography scale (families, sizes, weights, line-heights)
-   - Spacing scale, radius scale, elevation/shadow steps
-   - If `ARCHITECTURE.md` names a system (shadcn/ui, Tailwind, native), express tokens in that system's vocabulary.
+2. **Generate — choose fidelity, then route.**
+   - **Fidelity:** *wireframe* (structure, layout, IA, flows, state placement — no brand/polish) or *high-fidelity* (full visual: tokens, brand, polish). Default to **wireframe** when running *before architect* (the cheap, architecture-informing pass) and **high-fidelity** for a UI milestone. You can run the skill twice — wireframe now, visual later.
+   - **Route** (how the artifact gets produced — default **A**):
+     - **A · Claude Design (recommended).** Write a rich, paste-ready brief to `docs/3 - Design/claude-design-prompts.md` (per-screen prompts at the chosen fidelity, the token block, the component inventory, brand constraints). The user generates in Claude Design, then **links the result back** (step 4). Claude Design is a separate surface you can't invoke directly — your job is the best brief + the link-back loop, not out-designing it.
+     - **B · In-repo HTML previews.** Write self-contained HTML per screen (all states) to `docs/3 - Design/previews/`. Be honest about fidelity: an HTML **wireframe** is fully adequate; a high-fidelity preview is a *rough scaffold, not the final design* — use Route A for hi-fi quality. Good for an instant look without leaving the session. (Use the **frontend-design** skill as the engine.)
+     - **C · Figma round-trip.** Only if a **Figma MCP is connected** — build the screens in Figma (lo-fi or hi-fi) and pull screenshots back into `previews/`. Offer it when you detect Figma; never assume it.
 
-3. **Inventory the components.** List the reusable components the screens need (Button, Input, Card, Nav, Modal, EmptyState, …), each with its variants and states (default/hover/focus/disabled/loading). Pull the set from PRODUCT.md's flows, not from imagination.
+3. **Author the design content** (structure below) and the **token set.** Write `docs/3 - Design/design-tokens.json` in **W3C DTCG** format as the canonical, stack-agnostic token source; mirror a readable summary in `design.md`. (A pure wireframe pass may defer the token JSON until the visual pass.)
 
-4. **Lay out the key screens.** For each primary screen/flow in PRODUCT.md: purpose, layout structure (regions/hierarchy), the components it uses, and the **full state set** — populated, empty, loading, error. Empty/error/loading states are first-class, not afterthoughts; `tstack-build` will expect them.
+4. **Link-back / adopt.**
+   - **A brought-back link or screenshots** (lightweight, no ingest): record it in the `## Design source` block at the top of `design.md` (URL + tool + date + pointer to `previews/`), save any screenshots/exports to `docs/3 - Design/previews/`, and reconcile any edits the user made back into `design.md`. If the design set doesn't exist yet, author it from the brought-back material + PRODUCT.md. You own `docs/3 - Design/` and write it directly — no `docs/_adopted/` quarantine for a simple link.
+   - **An ingest-staged draft** (`docs/_adopted/design.draft.md` exists): ratify it — read the draft + its `## Open gaps`, resolve every gap through this skill's steps, author the `docs/3 - Design/` set, record the source in `## Design source`, and **delete the draft on save** (`docs: author 3 - Design from adopted design`).
 
-5. **Specify accessibility patterns.** Concrete patterns that satisfy ADR-3: focus order, keyboard navigation, contrast adherence to the token set, labelling, motion-reduction. These become the a11y acceptance criteria downstream.
+5. **Write the `docs/3 - Design/` set.** Create the folder if needed. Commit: `docs: add design for {product/screen}`.
+   - `design.md` — the canonical UX + visual spec (structure below).
+   - `claude-design-prompts.md` — the paste-ready Claude Design brief (Route A).
+   - `design-tokens.json` — DTCG tokens.
+   - `previews/` — HTML mockups / screenshots (Routes B/C, or linked screenshots).
+   - `screens/{name}.md` — per-screen breakouts **only** for large multi-screen apps (right-sizing; mirrors architect's breakout specs).
 
-6. **Write `docs/2 - Specs/design.md`.** Two clearly separated parts (label them explicitly):
-   - **For the human reader** — the spec above (direction, tokens, components, screens, a11y), readable and reviewable.
-   - **For Claude Design** — the ready-to-paste hand-off material (next section). Mark this section so the user knows exactly what to drop into Claude Design.
+6. **Round-trip awareness.** Whenever you change a `design.md` that carries a `## Design source` link, **ask**: "this design is linked to `{URL}` — want to update the linked Claude Design to match these changes?" Regenerate the updated prompts into `claude-design-prompts.md` for the user to paste. Never auto-push to the external tool.
 
-   If `docs/2 - Specs/` doesn't exist, create it. Match the formatting of any existing specs in that folder. Commit: `docs: add design spec for {product/screen}`.
+## What `design.md` contains
 
-## Claude Design hand-off material (the headline output)
+The canonical, human-readable design doc — **UX first, then visual** (the Claude Design brief lives separately in `claude-design-prompts.md`):
 
-Under a clearly marked **"For Claude Design"** section, produce material the user can paste directly into Claude Design to generate or iterate the UI:
+- **`## Design source`** — only if linked: URL + tool + date + pointer to `previews/`.
+- **Part 1 — UX spec**
+  - *Information architecture* — content model, screen map / sitemap, grouping & hierarchy.
+  - *Navigation structure* — nav pattern (tabs / sidebar / stack / breadcrumb), the screen/route graph, global vs contextual nav.
+  - *User flows* — ordered steps across screens per key task (happy path + key alternates).
+  - *Screen / page breakdown* — per screen: purpose, layout regions & hierarchy, components used, and the **full state set** (populated / empty / loading / error). Empty/error/loading are first-class; `tstack-build` expects them.
+  - *Interaction patterns* — forms, validation, feedback, transitions, motion intent.
+- **Part 2 — Visual spec**
+  - *Design direction* — tone, density, personality.
+  - *Design tokens (summary)* — readable mirror of `design-tokens.json` (semantic color roles, type scale, spacing, radius, elevation).
+  - *Component inventory* — each component with variants and states.
+  - *Accessibility patterns* — focus order, keyboard nav, contrast against the token set, labelling, reduced-motion — the a11y criteria that satisfy ADR-3 downstream.
 
-- **Per-screen generation prompts** — one self-contained prompt per key screen: its purpose, layout intent, the components it uses, the content and every state (populated/empty/loading/error), and the visual direction/tone. Written so it stands alone when pasted.
-- **The design-token set** — colors, type, spacing, radius, elevation, in copy-pasteable form.
-- **The component inventory** — names, variants, states.
-- **Brand/style constraints** — any fixed rules (logo, palette locks, voice) Claude Design must respect.
-
-Keep this section verbatim-pasteable: a reader should be able to copy one screen's prompt + the token block into Claude Design without editing.
+**Seam with `PRODUCT.md §6`:** product says *which* screens exist and what each must do (requirements); design owns the deeper navigation model, IA, and per-screen layout/state breakdown. Don't duplicate the screen list — deepen it. For large apps, break the per-screen breakdown out to `screens/{name}.md`.
 
 ## Reference handoff
 
-This skill pairs with the broader design tooling available in the environment:
-- The **frontend-design** skill — for translating the spec into production-grade component code.
-- The **Figma** skills — for building or syncing a design system / screens in Figma from this spec.
+This skill pairs with the environment's design tooling — it defines *what* to design; they help *produce* it:
+- **frontend-design** — translating the spec (or a Route-B preview) into production-grade component code.
+- The **Figma** skills — building or syncing a design system / screens in Figma from this spec (Route C).
 
-Lean on those once the spec and Claude Design material exist; this skill defines *what* to design, they help *produce* it.
-
-For a realistic example of the two-part output — the human-readable spec and the "For Claude Design" paste-ready prompts — read `references/example-output.md`.
+For a realistic example of the `docs/3 - Design/` set — `design.md`, the DTCG token set, and the `claude-design-prompts.md` material — read `references/example-output.md`.
 
 ## Handoff
 
-This skill is off-chain, so there's no required next step. End with what you produced and the optional follow-ups:
+When the design set is written and committed:
 
-> Design spec written to `docs/2 - Specs/design.md` — {n} screens, {n} components, token set, and a "For Claude Design" section ready to paste.
+> Design written to `docs/3 - Design/` — {n} screens, {n} components, a DTCG token set, and (Route A) a `claude-design-prompts.md` ready to paste into **Claude Design**.
 >
-> Optional next steps: paste the per-screen prompts into **Claude Design** to generate the UI; or, if this surfaced UI work that isn't yet on the roadmap, run `tstack-specify-feature` to add it (or `tstack-roadmap` to re-sequence). Nothing here forces a chain step.
+> **Next: run `tstack-architect`** — it reads the design set so the **frontend-stack ADR** and **ADR-3 (accessibility)** are design-informed. (If you ran this mid-build for one screen, just continue — nothing forces a chain step.)
+>
+> {If Route A: once you've generated in Claude Design, bring the **link or screenshots** back and I'll record them in `design.md`'s `## Design source` and reconcile any changes.}

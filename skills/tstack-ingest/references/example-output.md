@@ -21,12 +21,15 @@ Two artifacts: the **coverage report** you present in chat, and the **draft** yo
 - Stack + hosting choices from `prd-v2.md §8`.
 - A rough data-flow sketch from `design/screens.md`.
 
+**Design material → `design.draft.md`** *(routed to `tstack-design`, which ratifies it into `docs/3 - Design/`)*
+- Screen layouts + navigation from `design/screens.md` (mockups) — flagged: states beyond the happy path (empty/loading/error) not shown.
+
 **Considered, not adopting**
 - `notes/standup-2026-03.md` — meeting notes, not requirements.
 
 **Conflict to resolve before I write:** `prd-v2.md §3` says recipes can't be edited after sharing; `design/screens.md` shows an "Edit" button on shared recipes. Which is canonical?
 
-→ Once you resolve that and approve, I write the draft and route you to `tstack-product`.
+→ Once you resolve that and approve, I write the drafts and route you to `tstack-product` (with the design draft waiting for `tstack-design` after product).
 
 ---
 
@@ -34,7 +37,7 @@ Two artifacts: the **coverage report** you present in chat, and the **draft** yo
 
 ```markdown
 ## Adoption status
-- Source: `notes/prd-v2.md` + `design/screens.md`, adopted 2026-06-20.
+- Source: `notes/prd-v2.md`, adopted 2026-06-20. *(Screen designs from `design/screens.md` staged separately in `design.draft.md` for `tstack-design`.)*
 - **Unratified draft — not a canonical doc.** Ratify via `tstack-product`, which authors
   `docs/PRODUCT.md` from this and resolves the gaps below through its requirements gate.
 

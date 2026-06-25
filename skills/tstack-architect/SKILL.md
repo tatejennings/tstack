@@ -1,6 +1,6 @@
 ---
 name: tstack-architect
-description: Generates the technical doc set (ARCHITECTURE.md, API.md, CONVENTIONS.md, TESTING.md, DECISIONS.md, optional ai-strategy spec, breakout specs in docs/2 - Specs/, plus AGENTS.md and CLAUDE.md) from a completed PRODUCT.md. Use when docs/PRODUCT.md exists and the user wants system design, tech-stack decisions, API contracts, coding conventions, or technical foundation work. Asks four foundational questions (security, observability, accessibility, privacy) before generating docs — each becomes an ADR. Input is docs/PRODUCT.md; output is the full technical doc set. Hands off to tstack-roadmap.
+description: Generates the technical doc set (ARCHITECTURE.md, API.md, CONVENTIONS.md, TESTING.md, DECISIONS.md, optional ai-strategy spec, breakout specs in docs/2 - Specs/, plus AGENTS.md and CLAUDE.md) from a completed PRODUCT.md. Use when docs/PRODUCT.md exists and the user wants system design, tech-stack decisions, API contracts, coding conventions, or technical foundation work. Asks four foundational questions (security, observability, accessibility, privacy) before generating docs — each becomes an ADR. Input is docs/PRODUCT.md (and docs/3 - Design/ if a UI design exists — it informs the frontend-stack ADR and ADR-3); output is the full technical doc set. Hands off to tstack-roadmap.
 ---
 
 # tstack-architect
@@ -51,6 +51,8 @@ Ask:
 - Is this a CLI / library / API-only product with no UI? a11y obligations are minimal — say so explicitly, don't quietly skip.
 
 Record as **ADR-3: Accessibility posture**. Default for consumer web/mobile: "WCAG 2.1 AA across all user-facing screens; tested with axe in CI."
+
+**If `docs/3 - Design/design.md` exists**, fold its accessibility patterns (focus order, keyboard paths, contrast against the token set, reduced-motion) into ADR-3 as concrete commitments rather than re-deriving them — and never set a WCAG target weaker than what the design specifies.
 
 ### ADR-4: Privacy & data handling
 
@@ -124,11 +126,13 @@ Wait for the answer. Generate only the requested subset.
 
 ## Approach
 
-1. **Read inputs.** `docs/PRODUCT.md` is required. Also read `docs/1 - Discovery/business-brief.md` if present — the "Technical Context" section constrains tech-stack choices. Confirm understanding before designing.
+1. **Read inputs.** `docs/PRODUCT.md` is required. Also read `docs/1 - Discovery/business-brief.md` if present — the "Technical Context" section constrains tech-stack choices. **If `docs/3 - Design/` exists** (the user ran `tstack-design` for a UI product), read `design.md` and `design-tokens.json` too — they *inform* the frontend-stack ADR and ADR-3 (below). You **read** the design set; you never edit it (`tstack-design` owns it). Confirm understanding before designing.
 
 2. **Write `docs/DECISIONS.md` first** with the four foundational ADRs (plus ADR-5 if AI is in scope). The rest of the doc set must be internally consistent with these — for example, if ADR-1 specifies row-level security, the ARCHITECTURE.md data-flow diagram needs to show where the policy is enforced.
 
 3. **Ask the target platform and the team's language/ecosystem before proposing a stack.** One question first: "What platform(s) are we targeting (web, iOS, Android, service/API, CLI), and what language/ecosystem does the team already know well?" The opinionated default is only useful if it's a default *for the right ecosystem* — don't propose Next.js to a team that lives in Python, or FastAPI to an iOS shop. Pick the default-stack row that matches their answer; if their existing expertise conflicts with the listed default, lead with *their* ecosystem and record the rationale.
+
+   **If a `docs/3 - Design/` set exists, let it inform the frontend choice.** Tokens already expressed in a system's vocabulary (e.g. shadcn/Tailwind scales) or a committed component inventory are a signal toward that stack; record `design.md` / `design-tokens.json` as a rationale input in the relevant tech-stack ADR ("frontend stack chosen to realize the design set — see `docs/3 - Design/`"). Design *informs*; architect still decides and authors the ADR.
 
    Then **propose the opinionated default stack for that ecosystem; only present alternatives where the user signals they want to deviate.** Don't open every choice as a three-way menu — that creates paralysis. Lead with the defaults, ask the user to confirm or override, and only expand into tradeoffs when they push back. Append accepted choices as ADRs (ADR-6, ADR-7, …) — but **consolidate, don't proliferate.** Group a coherent set of choices into one ADR (e.g., one "ADR-6: Web stack" covering framework + language + styling + package manager) rather than a separate ADR per package. Reserve a standalone ADR for a choice that was genuinely contested or has a non-obvious tradeoff worth recording on its own.
 
@@ -174,6 +178,7 @@ Wait for the answer. Generate only the requested subset.
    - Every significant tech choice has an ADR in DECISIONS.md (including the four foundational ones and the AI ADR if applicable)
    - AGENTS.md's doc table lists every doc that exists (including TESTING.md and DECISIONS.md)
    - TESTING.md's a11y testing approach aligns with ADR-3
+   - If a `docs/3 - Design/` set exists: the chosen frontend stack can realize its component inventory and tokens, and ADR-3 reflects its a11y patterns
 
    Flag inconsistencies for the user to resolve.
 

@@ -1,6 +1,6 @@
 ---
 name: tstack-product
-description: Turns a completed business brief into docs/PRODUCT.md — the product requirements doc with features, user flows, data models, and acceptance criteria (Given/When/Then for deterministic features, eval-based for AI/LLM features, measurable thresholds for performance). Use when docs/1 - Discovery/business-brief.md exists and the user wants product requirements, says "let's write the PRD", or asks what to build next after discovery. Do not use to add features to an existing PRODUCT.md — that's tstack-specify-feature. Input is the business brief; output is docs/PRODUCT.md. Hands off to tstack-architect.
+description: Turns a completed business brief into docs/PRODUCT.md — the product requirements doc with features, user flows, data models, and acceptance criteria (Given/When/Then for deterministic features, eval-based for AI/LLM features, measurable thresholds for performance). Use when docs/1 - Discovery/business-brief.md exists and the user wants product requirements, says "let's write the PRD", or asks what to build next after discovery. Do not use to add features to an existing PRODUCT.md — that's tstack-specify-feature. Input is the business brief; output is docs/PRODUCT.md. Hands off to tstack-design for UI products (then tstack-architect), or straight to tstack-architect for headless products.
 ---
 
 # tstack-product
@@ -97,6 +97,8 @@ For a realistic PRODUCT.md excerpt showing the expected level of detail — incl
 
 > PRODUCT.md complete — committed to `docs/PRODUCT.md`.
 >
-> **Next: run `tstack-architect`** (or say "design the architecture").
+> **Next:**
+> - **UI product** (PRODUCT.md §6 lists real consumer-facing screens) → run **`tstack-design`** to design the screens and token set, *then* `tstack-architect` — so the frontend-stack ADR and ADR-3 (accessibility) come out design-informed instead of guessed.
+> - **Headless product** (CLI / library / API — no UI) → go straight to **`tstack-architect`** (no design step).
 >
-> **Fresh session** if this is a larger project — rough rule: **8+ features, 5+ data entities, or more than one workstream** (e.g., web + mobile). `tstack-architect` produces several docs and benefits from a clean context budget. For a small single-domain project, continuing here is fine.
+> **Fresh session** if this is a larger project — rough rule: **8+ features, 5+ data entities, or more than one workstream** (e.g., web + mobile). `tstack-architect` (and `tstack-design`) produce several docs and benefit from a clean context budget. For a small single-domain project, continuing here is fine.

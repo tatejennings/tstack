@@ -1,6 +1,6 @@
 ---
 name: tstack-build
-description: Executes an approved milestone plan for a TStack-managed project — implements the plan with frequent commits, verifies against the milestone's "Done when" criteria, commits and merges the feature branch, and updates docs/ROADMAP.md status. Use when an approved plan exists at docs/plans/{id}.md (typically opened in a fresh session) or the user says "build it", "implement the plan", "ship this milestone", "execute the plan". Do not use to plan a milestone — that's tstack-plan-milestone. Input is an approved plan + feature branch + docs/ROADMAP.md. Output is shipped code, merged branch, and updated roadmap status. Ends cleanly; the next milestone is planned with tstack-plan-milestone in a fresh session.
+description: Executes an approved milestone plan for a TStack-managed project — implements the plan with frequent commits, verifies against the milestone's "Done when" criteria, commits and merges the feature branch, and updates docs/ROADMAP.md status. Use when an approved plan exists at docs/plans/{id}-plan.md (typically opened in a fresh session) or the user says "build it", "implement the plan", "ship this milestone", "execute the plan". Do not use to plan a milestone — that's tstack-plan-milestone. Input is an approved plan + feature branch + docs/ROADMAP.md. Output is shipped code, merged branch, and updated roadmap status. Ends cleanly; the next milestone is planned with tstack-plan-milestone in a fresh session.
 ---
 
 # tstack-build
@@ -12,10 +12,10 @@ You are running TStack's per-milestone execution stage. The plan is already appr
 Required state:
 
 - `docs/ROADMAP.md` exists
-- An approved implementation plan exists in the repo at `docs/plans/{id}.md` (written by `tstack-plan-milestone`). If it was committed, this works even when a cloud agent or a different machine — not the session that planned it — is doing the build.
+- An approved implementation plan exists in the repo at `docs/plans/{id}-plan.md` (written by `tstack-plan-milestone`). If it was committed, this works even when a cloud agent or a different machine — not the session that planned it — is doing the build.
 - The current branch is a `milestone/*` branch (not `main`)
 
-**Load the plan first.** Read `docs/plans/{id}.md` for the milestone you're building. If it's missing and there's no approved plan in context: stop and tell the user to run `tstack-plan-milestone` first. Don't try to plan-as-you-go — that's the failure mode this split exists to prevent. The plan file carries the "Done when" criteria copied from ROADMAP.md; still open `docs/ROADMAP.md` to confirm they match (if they've drifted, the roadmap is authoritative — flag it).
+**Load the plan first.** Read `docs/plans/{id}-plan.md` for the milestone you're building. If it's missing and there's no approved plan in context: stop and tell the user to run `tstack-plan-milestone` first. Don't try to plan-as-you-go — that's the failure mode this split exists to prevent. The plan file carries the "Done when" criteria copied from ROADMAP.md; still open `docs/ROADMAP.md` to confirm they match (if they've drifted, the roadmap is authoritative — flag it).
 
 ## Approach
 
@@ -59,6 +59,7 @@ Per-criterion command guidance:
 - **Encryption round-trip:** encrypt → store → read → decrypt; show input value, stored ciphertext (truncated), and output value.
 - **Background jobs:** trigger the job; show both the success log and a forced-failure log (or its absence with a "no error scenario possible" note).
 - **Manual UI flows** (last resort, only when no automated path exists): describe the exact click sequence, paste a screenshot path or console output captured during it, and call out that this is manual.
+- **UI milestones with a `docs/3 - Design/` pointer:** verify the **accessibility** criteria with real commands — `axe` (or the project's a11y test) for the scan, a contrast check computed against `docs/3 - Design/design-tokens.json`, a keyboard-path test, reduced-motion. If this milestone introduces the design tokens, translating `design-tokens.json` into the stack-native config (Tailwind theme / CSS vars / Swift tokens) is part of the build. **Do not** invent a "matches `design.md`" criterion — visual fidelity is a human review against `docs/3 - Design/previews/`, never a command and never a PASS-by-assertion.
 
 If a criterion can't be verified by any of the above, the criterion is not testable. Stop and tell the user the roadmap entry has a soft criterion that needs rewriting before the milestone can be shipped. (This should be rare — `tstack-roadmap` now checks testability at write time. If you hit one here, it slipped through; fixing it is a roadmap edit, not a build judgment call.)
 

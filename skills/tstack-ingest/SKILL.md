@@ -1,6 +1,6 @@
 ---
 name: tstack-ingest
-description: Adopts a project that already has documents into TStack — reads pre-existing material (a written PRD, discovery notes, design or architecture docs in their own format, not TStack's), reflects intent back, classifies coverage, and distills it into a quarantined draft at docs/_adopted/ that the owning chain skill then ratifies into a canonical doc. Use when the user arrives with docs already written and says "adopt my project", "I already have a PRD/docs", "import my existing requirements", "we didn't start in TStack", or points you at a file/folder of docs. Reachable directly or via a tstack-discover hand-off — same outcome either way. Do not use for a rough unwritten idea (that's tstack-discover), to change an already-TStack project that has docs/PRODUCT.md (that's tstack-specify-feature), or to merely report state (that's tstack-status, which is read-only — ingest writes). Input is the user's existing docs; output is a draft at docs/_adopted/ + a coverage report. Hands off to tstack-product.
+description: Adopts a project that already has documents into TStack — reads pre-existing material (a written PRD, discovery notes, design or architecture docs in their own format, not TStack's), reflects intent back, classifies coverage, and distills it into a quarantined draft at docs/_adopted/ that the owning chain skill then ratifies into a canonical doc (product material → PRODUCT.draft.md for tstack-product; design material such as mockups/HTML/style guides → design.draft.md for tstack-design; architecture material → staged notes for tstack-architect). Use when the user arrives with docs already written and says "adopt my project", "I already have a PRD/docs", "import my existing requirements", "we didn't start in TStack", or points you at a file/folder of docs. Reachable directly or via a tstack-discover hand-off — same outcome either way. Do not use for a rough unwritten idea (that's tstack-discover), to change an already-TStack project that has docs/PRODUCT.md (that's tstack-specify-feature), or to merely report state (that's tstack-status, which is read-only — ingest writes). Input is the user's existing docs; output is a draft at docs/_adopted/ + a coverage report. Hands off to tstack-product.
 ---
 
 # tstack-ingest
@@ -28,7 +28,12 @@ Follow in order. Steps 3–5 are where the value is — don't skip to writing.
 
 2. **Reflect intent back (mandatory).** Before distilling anything, summarize what the material says they're building — product, user, core value — and ask: **"Is this still current?"** A rigorous PRD can still describe a product the user has since pivoted away from. This one question catches a stale doc that the coverage check alone would wave through.
 
-3. **Map source → TStack stages, at the section level.** A single file often spans stages — a "spec" mixing requirements and technical design. Split it: requirements/flows/data → **product material** (becomes the draft); architecture/stack/API/decisions → **staged notes** (reference only, routed to `tstack-architect`). Surface the proposed seam and let the user confirm before you act. When a section is ambiguous, prefer staging it as notes (recoverable) over folding a guess into the draft.
+3. **Map source → TStack stages, at the section level.** A single file often spans stages — a "spec" mixing requirements, design, and technical design. Split it:
+   - requirements/flows/data → **product material** (becomes `docs/_adopted/PRODUCT.draft.md`, routed to `tstack-product`);
+   - **UX/UI material — design docs, HTML/CSS app mockups, style guides, design-system/token files, Figma exports → design material** (becomes `docs/_adopted/design.draft.md`, routed to `tstack-design`, which owns `docs/3 - Design/`);
+   - architecture/stack/API/decisions → **staged notes** (reference only, routed to `tstack-architect`).
+
+   Surface the proposed seam and let the user confirm before you act. When a section is ambiguous, prefer staging it as notes (recoverable) over folding a guess into a draft.
 
 4. **Assess coverage.** For the product material, classify against what `tstack-product` requires, naming the *specific* missing elements (no opaque score):
    - **PRODUCT-grade** — features with user flows **and** testable acceptance criteria, defined data models (entities, relationships, field types), explicit v1 scope boundaries. Any non-deterministic (AI/LLM/ML) feature lacking an eval set / quality bar / fallback → name it as a gap.
@@ -45,6 +50,10 @@ Follow in order. Steps 3–5 are where the value is — don't skip to writing.
    - [ ] Data models from {source §Y} (PRODUCT-grade)
    - [ ] Onboarding flow from {source §Z} (Thin — no acceptance criteria; flagged as gap)
 
+   Distil into docs/_adopted/design.draft.md (→ tstack-design ratifies into docs/3 - Design/):
+   - [ ] Screen mockups + UI from {source §D} (design material — e.g. mockups.html)
+   - [ ] Color/spacing from {source §D} (Thin — embedded in HTML, no token names; flagged as gap)
+
    Stage as notes for tstack-architect (docs/_adopted/architecture-notes.md):
    - [ ] Stack + infra choices from {source §W} — not transcribed; architect asks its ADR questions fresh
 
@@ -56,21 +65,22 @@ Follow in order. Steps 3–5 are where the value is — don't skip to writing.
 
    Surface any **source-vs-source contradictions** here (PRD says one data model, design doc implies another) and make the user resolve them — never silently pick a winner. Wait for explicit approval.
 
-6. **Write the draft(s) to `docs/_adopted/`.** Create the directory if needed. The product draft is `docs/_adopted/PRODUCT.draft.md`; staged notes are `docs/_adopted/{topic}-notes.md`. Every draft opens with two **visible** sections (not hidden comments):
+6. **Write the draft(s) to `docs/_adopted/`.** Create the directory if needed. The **drafts that become canonical docs** are `docs/_adopted/PRODUCT.draft.md` (→ `tstack-product`) and `docs/_adopted/design.draft.md` (→ `tstack-design`); reference-only **staged notes** are `docs/_adopted/{topic}-notes.md`. Every draft opens with two **visible** sections (not hidden comments):
 
    ```markdown
    ## Adoption status
    - Source: {file/folder/URL}, adopted {date}.
    - **Unratified draft — not a canonical doc.** Ratify via `tstack-product`, which authors `docs/PRODUCT.md` from this.
+     (design draft: "Ratify via `tstack-design`, which authors `docs/3 - Design/` from this.")
 
    ## Open gaps
    - {specific, actionable gap, e.g. "Onboarding feature has no acceptance criteria — needs Given/When/Then"}
-   - {e.g. "Recommendations feature is AI-driven but has no eval set / quality bar / fallback"}
+   - {e.g. "Mockups show the populated state only — empty/loading/error missing"}
    ```
 
-   Then the distilled content below, organized toward PRODUCT.md's section order. Carry the source's substance across faithfully; do not invent anything to fill a gap — that's what the Open gaps list is for. Commit: `adopt: distilled {source} into draft (unratified, {N} gaps)`.
+   Then the distilled content below, organized toward the target doc's section order (PRODUCT.md, or the `docs/3 - Design/` set). Carry the source's substance across faithfully; do not invent anything to fill a gap — that's what the Open gaps list is for. Commit: `adopt: distilled {source} into draft(s) (unratified, {N} gaps)`.
 
-7. **Route.** Hand off to `tstack-product` (it reads the draft and authors the canonical doc). If you staged architecture/design notes, mention they're waiting at `docs/_adopted/` for when the chain reaches `tstack-architect`.
+7. **Route.** Hand off to `tstack-product` (it reads `PRODUCT.draft.md` and authors the canonical doc). If you staged a **design draft**, mention it's waiting for `tstack-design` to ratify into `docs/3 - Design/` (design runs after product, before architect, for UI products); if you staged **architecture notes**, mention they're waiting for `tstack-architect`.
 
 ## Reference handoff
 
@@ -84,7 +94,7 @@ For a realistic coverage report and a sample `PRODUCT.draft.md` with its Adoptio
 
 When the draft is written and committed:
 
-> Adopted `{source}` → `docs/_adopted/PRODUCT.draft.md` ({N} open gaps named inside). {If staged: Architecture/design notes parked at `docs/_adopted/` for the architect stage.}
+> Adopted `{source}` → `docs/_adopted/PRODUCT.draft.md` ({N} open gaps named inside). {If staged: design draft at `docs/_adopted/design.draft.md` for `tstack-design`; architecture notes at `docs/_adopted/` for `tstack-architect`.}
 >
 > **Next: run `tstack-product`** (or say "write the PRD") — it authors `docs/PRODUCT.md` from this draft, resolving the open gaps through its requirements gate, then continues the chain.
 >

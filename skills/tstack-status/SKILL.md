@@ -33,7 +33,7 @@ Read (read-only) and report:
 2. **Report (in chat) these sections:**
    - **Shipped** — milestones in `Completed:`.
    - **Up next** — the `Up next:` milestone and whether its dependencies are all in `Completed` (if not → **Blocked**, name the missing deps).
-   - **In progress** — if on a `milestone/*` branch, which milestone and whether its plan exists at `docs/plans/{id}.md`. Also surface any `docs/plans/*.md` for milestones not yet built (planned-ahead work waiting for a builder).
+   - **In progress** — if on a `milestone/*` branch, which milestone and whether its plan exists at `docs/plans/{id}-plan.md`. Also surface any `docs/plans/*-plan.md` for milestones not yet built (planned-ahead work waiting for a builder).
    - **Missing mandatory docs** — flag any absent from: PRODUCT.md, ARCHITECTURE.md, CONVENTIONS.md, TESTING.md, DECISIONS.md, ROADMAP.md. (API.md and breakout specs are optional — don't flag them.)
    - **Doc drift** — the key check (below).
    - **Suggested next action** — the single most useful next skill to run, given the above.

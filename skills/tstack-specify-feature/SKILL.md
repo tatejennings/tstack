@@ -1,6 +1,6 @@
 ---
 name: tstack-specify-feature
-description: Specifies a new feature for an existing TStack project. Interviews the user about the change, proposes which docs need updates (PRODUCT.md, ARCHITECTURE.md, API.md, breakout specs) with per-item approval before editing, then appends new milestones to docs/ROADMAP.md. Use when docs/PRODUCT.md already exists and the user says "let's add X feature", "I want to spec out a new capability", "this product needs to change", "add a feature", or "extend the product". Do not use to create the initial PRODUCT.md — that's tstack-product; to restructure how the system is built with no product change (a refactor/migration) — that's tstack-refactor; or to regenerate the roadmap after a product pivot — re-run tstack-roadmap. Input is the existing doc set; output is updated docs + new milestone entries in ROADMAP.md. Recommends tstack-plan-milestone as the next step; never builds.
+description: Specifies a new feature for an existing TStack project. Interviews the user about the change, proposes which docs need updates (PRODUCT.md, ARCHITECTURE.md, API.md, breakout specs) with per-item approval before editing, then appends new milestones to docs/ROADMAP.md. Use when docs/PRODUCT.md already exists and the user says "let's add X feature", "I want to spec out a new capability", "this product needs to change", "add a feature", or "extend the product". Do not use to create the initial PRODUCT.md — that's tstack-product; to restructure how the system is built with no product change (a refactor/migration) — that's tstack-refactor; or to regenerate the roadmap after a product pivot — re-run tstack-roadmap. Input is the existing doc set; output is updated docs + new milestone entries in ROADMAP.md. Recommends tstack-design (for UI features) then tstack-plan-milestone as the next step; never builds.
 ---
 
 # tstack-specify-feature
@@ -45,6 +45,7 @@ Before proposing edits, read the current state of every doc you might touch:
 - `docs/DECISIONS.md` — see if any ADR constrains this feature's implementation
 - `docs/ROADMAP.md` — find the right insertion point (dependency-aware, not just bottom-append)
 - `docs/2 - Specs/` — see existing spec topics; decide if a new spec is needed
+- `docs/3 - Design/` (if present) — see whether the feature adds/changes a UI surface that needs a design pass
 
 ### 3. Doc-impact proposal
 
@@ -57,12 +58,14 @@ Changes I want to make:
 - [ ] PRODUCT.md — {what changes: new feature section under §X, updated data model for User (adds `timezone`), updated acceptance criteria for §Y}
 - [ ] API.md — {which endpoints get added/modified, with method+path}
 - [ ] 2 - Specs/{name}.md — {new file | edits to existing spec X}
+- [ ] 3 - Design/ — {extend design.md + design-tokens.json with the new screen(s) | add screens/{name}.md} (UI features only)
 - [ ] ROADMAP.md — append milestones {Mx (server-side), My (UI), iz (mobile)} with dependencies on {Ma, Mb}
 
 Docs I considered but propose NOT to change (challenge any of these if you disagree):
 - ARCHITECTURE.md — {one-line reason, e.g. "no new module boundaries; existing data flow handles this"}
 - CONVENTIONS.md — {one-line reason, e.g. "uses existing API + validation patterns"}
 - DECISIONS.md — {one-line reason, e.g. "no architecturally significant choice; defers to ADR-3"}
+- 3 - Design/ — {one-line reason, e.g. "no UI surface — backend-only feature"}
 - 2 - Specs/encryption.md — {one-line reason, e.g. "this feature doesn't store new sensitive fields"}
 - {…any other existing spec files} — {one-line reason each}
 
@@ -127,6 +130,8 @@ When all approved edits are applied and committed:
 
 > Feature "{name}" specified. Doc updates: {list}. New milestones in ROADMAP.md: {Mx, My, …}.
 >
-> **Next: run `tstack-plan-milestone`** (or say "plan milestone {Mx}") to start implementation.
+> **Next:**
+> - **If this feature adds or changes a UI surface** → run **`tstack-design`** first to spec the new screen(s) (extend `docs/3 - Design/`), *then* `tstack-plan-milestone`.
+> - **Otherwise** → run **`tstack-plan-milestone`** (or say "plan milestone {Mx}") to start implementation.
 >
 > No fresh session required — `tstack-plan-milestone` reads only what the new milestone points at.

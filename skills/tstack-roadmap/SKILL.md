@@ -1,6 +1,6 @@
 ---
 name: tstack-roadmap
-description: Reads the full docs/ tree and produces docs/ROADMAP.md — a dependency-sequenced list of milestones with "Read before starting" doc pointers and "Done when" criteria. Always mandates an M0 — Infrastructure baseline milestone covering CI, secrets, deployment skeleton, and observability bootstrap. Use when ARCHITECTURE.md and PRODUCT.md exist and the user asks "what do we build first", "sequence the work", or "make a roadmap". Input is docs/PRODUCT.md + docs/ARCHITECTURE.md + docs/CONVENTIONS.md + docs/DECISIONS.md + docs/TESTING.md (API.md and breakout specs optional); output is docs/ROADMAP.md. Hands off to tstack-plan-milestone.
+description: Reads the full docs/ tree and produces docs/ROADMAP.md — a dependency-sequenced list of milestones with "Read before starting" doc pointers and "Done when" criteria. Always mandates an M0 — Infrastructure baseline milestone covering CI, secrets, deployment skeleton, and observability bootstrap. Use when ARCHITECTURE.md and PRODUCT.md exist and the user asks "what do we build first", "sequence the work", or "make a roadmap". Input is docs/PRODUCT.md + docs/ARCHITECTURE.md + docs/CONVENTIONS.md + docs/DECISIONS.md + docs/TESTING.md (API.md, breakout specs, and docs/3 - Design/ optional); output is docs/ROADMAP.md. Hands off to tstack-plan-milestone.
 ---
 
 # tstack-roadmap
@@ -24,6 +24,7 @@ Optional but used if present:
 ```
 docs/API.md
 docs/2 - Specs/*.md         (including ai-strategy.md if the product uses AI)
+docs/3 - Design/            (design.md + design-tokens.json, + screens/*.md at scale — for UI products)
 docs/1 - Discovery/business-brief.md
 ```
 
@@ -38,6 +39,7 @@ If a required input is missing: stop and tell the user to run `tstack-architect`
    - From CONVENTIONS.md: which milestones introduce a new pattern domain
    - From DECISIONS.md: ADRs to reference when a milestone touches an architecturally significant choice
    - From `2 - Specs/`: detailed blueprints — milestones point to specific specs
+   - From `3 - Design/` (if present): the UX + visual spec and tokens — UI-bearing milestones point at the relevant screen (`design.md — §{screen}` or `screens/{name}.md`)
 
    Don't reference `1 - Discovery/` directly from milestones; use it only for context on prioritization.
 
@@ -58,6 +60,8 @@ If a required input is missing: stop and tell the user to run `tstack-architect`
    - **Dependencies** (M-IDs that must be complete first, or "None — starting point")
    - **Read before starting** (specific doc sections — not whole files)
    - **Done when** (binary, testable criteria — happy path + error path + isolation where relevant)
+
+   For any **UI-bearing milestone**, add a `docs/3 - Design/design.md — §{screen}` (or `screens/{name}.md`) pointer to its "Read before starting" so the implementer builds the screen against its design spec.
 
    Do NOT put status on individual milestones. Status lives only in the Status section at the bottom.
 
@@ -128,6 +132,7 @@ When the project's primary or only platform is iOS, emit the mandatory baseline 
    - Every feature milestone lists the baseline (`M0`/`i0`) directly or transitively in its dependencies
    - Every "Read before starting" reference points to a doc/section that exists
    - **Every "Done when" criterion is testable at write time.** For each criterion, name the command or test that would prove it (e.g., `curl …`, `npm test path`, `playwright test`, `axe` scan). If you can't name one — the criterion is soft ("looks good", "feels fast", "works well") — rewrite it now into something a command can verify, or split out the measurable part. Don't defer this to `tstack-build`; a soft criterion discovered at build time is a roadmap defect caught too late.
+   - **Design conformance is not, by itself, command-verifiable.** "Matches the mockup / looks right" is a forbidden soft criterion. For a UI milestone, the verifiable slice is **accessibility**: an `axe` scan passes, contrast meets the token set's committed values, the keyboard path test passes, `prefers-reduced-motion` is respected. Cite those plus the feature's functional criteria; the `design.md` pointer tells the implementer *what to build*, while visual fidelity is reviewed by a human against `docs/3 - Design/previews/`, outside the "Done when" gate.
    - No milestone exceeds ~2 days of focused work (split if so)
    - No milestone is so granular it's not independently shippable (combine if so)
 

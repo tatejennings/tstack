@@ -1,6 +1,6 @@
 # Implementation Guide — Building from the Roadmap
 
-> **Source of truth:** `SKILL.md` is authoritative for the *process and shape* of this stage — loading the approved plan from `docs/plans/{id}.md`, quoted-command-output verification, the all-or-nothing + controlled-waiver policy, merge, and roadmap-status update. This guide is longer-form reference: the practical milestone workflow and prompting patterns. It is preserved pre-plugin prose and may lag the SKILL.md; where the two disagree, follow SKILL.md and treat the discrepancy as a guide bug to fix.
+> **Source of truth:** `SKILL.md` is authoritative for the *process and shape* of this stage — loading the approved plan from `docs/plans/{id}-plan.md`, quoted-command-output verification, the all-or-nothing + controlled-waiver policy, merge, and roadmap-status update. This guide is longer-form reference: the practical milestone workflow and prompting patterns. It is preserved pre-plugin prose and may lag the SKILL.md; where the two disagree, follow SKILL.md and treat the discrepancy as a guide bug to fix.
 
 ## Purpose
 

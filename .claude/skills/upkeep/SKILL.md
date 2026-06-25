@@ -61,7 +61,7 @@ ecosystem.
   end and recommend a fresh session, no auto-chain glide). Quote the offending line if softened.
 - **A3 — Cross-skill contracts.** Per CLAUDE.md § Cross-skill contracts: `AGENTS.md` written in
   full only by `tstack-architect` (roadmap/build touch only `## Current Focus`); approved plan
-  at `docs/plans/{id}.md` (plan writes, build reads); `ROADMAP.md` has one regenerator
+  at `docs/plans/{id}-plan.md` (plan writes, build reads); `ROADMAP.md` has one regenerator
   (roadmap) + one append-only editor (specify) with a `Docs last synced:` marker;
   `tstack-ingest` writes only to `docs/_adopted/`; four foundational ADRs in `tstack-architect`;
   `M0` (and `i0` for iOS) mandatory in `tstack-roadmap`.

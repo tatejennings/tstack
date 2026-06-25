@@ -179,14 +179,15 @@ small black dot eyes, a cheerful open smile, and small white gloved cartoon hand
 [Style Block from §10]
 
 COMPOSITION — a wide horizontal pipeline infographic. Title top center in orange marker:
-"TStack Lifecycle". A left-to-right row of four paper note-cards: "DISCOVER", "PRODUCT",
-"ARCHITECT", "ROADMAP", joined by short orange arrows. To the right, two cards "PLAN" and "BUILD"
-inside a small rounded loop of two orange arrows, note beneath: "repeat per milestone". The
-reference mascot stands beside the row handing a document along the line. Two small curved orange
-return arrows loop up into PLAN, stacked and labeled "SPECIFY · add" and "REFACTOR · restructure".
-Bottom: faint label
-"optional · anytime" above four paper tags: "DESIGN", "STATUS", "WRAP", "AUTOPILOT". Far left, a
-small entry arrow noted "have docs? → INGEST". Generous cream negative space.
+"TStack Lifecycle". A left-to-right row of paper note-cards joined by short orange arrows:
+"DISCOVER", "PRODUCT", "DESIGN", "ARCHITECT", "ROADMAP". The "DESIGN" card has a DASHED/dotted
+outline (not solid) with a small handwritten "if UI" label beneath, marking it the conditional
+UI stage between product and architect. To the right, two cards "PLAN" and "BUILD" inside a small
+rounded loop of two orange arrows, note beneath: "repeat per milestone". The reference mascot
+stands beside the row handing a document along the line. Two small curved orange return arrows
+loop up into PLAN, stacked and labeled "SPECIFY · add" and "REFACTOR · restructure". Far left, a
+small entry arrow noted "have docs? → INGEST". Bottom: faint label "optional · anytime" above
+three paper tags: "STATUS", "WRAP", "AUTOPILOT". Generous cream negative space.
 ```
 
 For `agentic-loop.jpg`, swap the composition for: title "The agentic loop"; a short ascending
@@ -211,15 +212,18 @@ list in lockstep with the rendered image:** if you regenerate with a different n
 this block in the same change.
 
 ```
-main chain (row):   discover → product → architect → roadmap → plan ⇄ build
+main chain (row):   discover → product → design → architect → roadmap → plan ⇄ build
+conditional node:   design        (dashed card + "if UI" — conditional UI stage between product
+                                   and architect; skipped for headless products)
 iteration arrows:   specify → plan        (labeled "SPECIFY · add")
                     refactor → plan       (labeled "REFACTOR · restructure")
 on-ramp (entry):    ingest                (labeled "have docs? → INGEST", feeds product)
-off-chain shelf:    design · status · wrap · autopilot   (labeled "optional · anytime")
+off-chain shelf:    status · wrap · autopilot   (labeled "optional · anytime")
 loop note:          "repeat per milestone" on the plan ⇄ build cycle
 ```
 
-Total: 13 skills, matching `skills/tstack-*`. The `plan` node is `tstack-plan-milestone`
-and the `specify` node is `tstack-specify-feature` (renamed skills, unchanged one-word
-labels `PLAN`/`SPECIFY`). If a skill is added/removed/renamed, or its
-chain-vs-on-ramp-vs-off-chain role changes, the graph is **stale** and must be regenerated.
+Total: 13 skills, matching `skills/tstack-*`. `design` is the **conditional UI node** — it moved
+off the off-chain shelf into the chain (between product and architect) as of the design-integration
+change. The `plan` node is `tstack-plan-milestone` and the `specify` node is `tstack-specify-feature`
+(renamed skills, unchanged one-word labels `PLAN`/`SPECIFY`). If a skill is added/removed/renamed,
+or its chain-vs-on-ramp-vs-off-chain role changes, the graph is **stale** and must be regenerated.

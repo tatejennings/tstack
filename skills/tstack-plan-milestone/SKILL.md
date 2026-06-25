@@ -89,10 +89,10 @@ Iterate until the user approves. Do not exit plan mode prematurely.
 The approved plan is `tstack-build`'s input, so it must survive a session restart — and it should be able to travel **with the project**, because you may plan several milestones ahead and hand them to a cloud agent or a different machine to build. So it lives in the repo, not a local user folder. Write it to a deterministic in-repo path:
 
 ```
-docs/plans/{milestone-id}.md      e.g. docs/plans/m4.md, docs/plans/i2.md
+docs/plans/{milestone-id}-plan.md      e.g. docs/plans/m4-plan.md, docs/plans/i2-plan.md
 ```
 
-Create `docs/plans/` if it doesn't exist. Use the milestone ID (lowercased) as the filename so `tstack-build` can find it without guessing. The file contains the approved plan in this shape:
+Create `docs/plans/` if it doesn't exist. Use the milestone ID (lowercased) plus a `-plan` suffix as the filename so `tstack-build` can find it without guessing (it pairs with the autopilot handoff's `{id}-report.md`). The file contains the approved plan in this shape:
 
 ```markdown
 # Plan: {milestone-id} — {name}
@@ -115,11 +115,11 @@ The plan lives in the repo so it can travel — you can commit it and hand the m
 
 ### 7. Hand off
 
-When the plan is approved and written to `docs/plans/{id}.md`:
+When the plan is approved and written to `docs/plans/{id}-plan.md`:
 
-> Plan approved for M{N} — {name} and written to `docs/plans/{id}.md`. Feature branch `milestone/{id}-{desc}` is ready. {N} files to create/modify, {N} verification checks.
+> Plan approved for M{N} — {name} and written to `docs/plans/{id}-plan.md`. Feature branch `milestone/{id}-{desc}` is ready. {N} files to create/modify, {N} verification checks.
 >
-> **Next: build it in a fresh session.** Commit the plan file, then start a new session and run `tstack-build` — it reads the approved plan from `docs/plans/{id}.md` and the feature branch, so it needs nothing from this conversation. A fresh window keeps build's context clean (planning chatter doesn't compete with implementation) and lets a cloud agent or another machine pick it up.
+> **Next: build it in a fresh session.** Commit the plan file, then start a new session and run `tstack-build` — it reads the approved plan from `docs/plans/{id}-plan.md` and the feature branch, so it needs nothing from this conversation. A fresh window keeps build's context clean (planning chatter doesn't compete with implementation) and lets a cloud agent or another machine pick it up.
 
 **Stop here.** Write the plan, give the handoff above, and end. Do not write any code, and do not roll straight into `tstack-build` on your own — the plan→build boundary is deliberate. A small milestone *can* be built in this same session if the user explicitly asks, but that's their call to make, not yours.
 

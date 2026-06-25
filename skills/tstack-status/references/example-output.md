@@ -13,7 +13,7 @@ A realistic Status-mode report in chat. Calibrate against the scannable, headed 
 - M3 — Recipe search
 
 **In progress**
-- On branch `milestone/m4-meal-planner`. Plan at `docs/plans/m4.md`. Not yet merged.
+- On branch `milestone/m4-meal-planner`. Plan at `docs/plans/m4-plan.md`. Not yet merged.
 
 **Up next**
 - M4 — Meal planner *(in progress, above)*. Dependencies M2, M3 ✓ — unblocked.
