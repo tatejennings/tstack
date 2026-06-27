@@ -10,6 +10,9 @@ Move the Unreleased entries under a new version heading when you tag a release
 
 ## [Unreleased]
 
+### Fixed
+- **`tstack-design` Route A (Claude Design) is clearer end-to-end — the handoff surfaces the link-back loop, and the kickoff prompt no longer risks designing before you're ready.** Two fixes from real-run feedback: (1) *Handoff buried the link-back step.* The closing handoff used to bold "Next: run `tstack-architect`" and demote the Claude Design generate → link-back step to a trailing optional brace, so users jumped to architect before their actual design was folded back into the docs. It's now a **two-path "Next:"** that **leads with "design in Claude Design → bring the link/screenshots back → *then* architect" (recommended for Route A)** — so the frontend-stack ADR + ADR-3 reflect the design actually landed on — with "continue to `tstack-architect` now" as the clear alternative (architect is still recommended in both paths; never a gate). (2) *Kickoff (P0) could start designing.* `claude-design-prompts.md`'s kickoff ended with a soft "before designing, ask me questions," which didn't stop Claude Design from drafting screens off P0. The kickoff now carries an **explicit hold** — *set up the design system + component library, ask clarifying questions, and wait for the first screen prompt before designing* — and the docs state plainly that **screen design begins at the first screen prompt (P1)**, not P0. P0 and the per-screen prompts stay **separate** by design (P0 is the shared-library anchor re-pasted each session). Updated `SKILL.md` (Handoff + Route A kickoff), `references/claude-design-prompting.md` (kickoff + per-screen note), and `references/example-output.md` (P0 example + how-to-use note).
+
 ## [0.8.1] — 2026-06-27
 
 ### Fixed

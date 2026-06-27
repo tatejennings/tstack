@@ -75,7 +75,7 @@ Claude Code translates this into the chosen stack's config (Tailwind `theme` / C
 
 ## `claude-design-prompts.md` (Route A — paste into Claude Design)
 
-> **How to use:** open `claude.ai/design`. Paste **Prompt 0** first and send it (re-paste it whenever you start a new session — Claude Design has no cross-session memory). Then paste each screen prompt below **as a single message** — they're complete on their own; nothing to assemble. Start at **wireframe** fidelity to save credits, then rerun **high-fidelity** once the flows feel right. End with the **consistency pass**.
+> **How to use:** open `claude.ai/design`. Paste **Prompt 0** first and send it (re-paste it whenever you start a new session — Claude Design has no cross-session memory). Prompt 0 **sets up the design system and asks you questions — it won't design screens; designing starts when you paste Prompt 1.** Then paste each screen prompt below **as a single message** — they're complete on their own; nothing to assemble. Start at **wireframe** fidelity to save credits, then rerun **high-fidelity** once the flows feel right. End with the **consistency pass**.
 
 ### Prompt 0 — Kickoff (paste once, first)
 ```
@@ -98,8 +98,9 @@ Brand & voice: accent indigo (#4F46E5) is the only saturated color — progress 
 action only. No red except genuine errors/destructive actions. Warm and brief, never guilt-tripping.
 Accessibility: meet WCAG 2.1 AA — AA text contrast, a clear keyboard focus ring, visible labels.
 
-Before designing, ask me any questions about the UX/UI that would make these screens as
-effective as possible.
+Don't design any screens yet — set up this design system and component library, then ask me any
+questions about the UX/UI that would make these screens as effective as possible, and wait for my
+next message before designing.
 ```
 
 ### Prompt 1 — Dashboard (Today)

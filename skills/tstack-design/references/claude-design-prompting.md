@@ -35,8 +35,10 @@ One message that establishes the **design system as the shared source of truth**
 - The **tokens** (color roles, type scale, spacing, radius, elevation) with the rule *never hard-code values*.
 - The **brand & voice** constraints and the **accessibility bar** (the WCAG level from ADR-3).
 - The **component inventory as a shared library** — name the components and their variants/states.
-- End with a planning ask, e.g. *"Before designing, ask me any questions about the UX/UI that would
-  make these screens as effective as possible."* This makes Claude Design plan before spending tokens.
+- End with an **explicit hold**, e.g. *"Don't design any screens yet — set up this design system and
+  component library, then ask me any clarifying questions about the UX/UI, and wait for my next message
+  before designing."* This keeps Claude Design from drafting screens off the kickoff and makes it plan
+  before spending credits — **designing begins when you paste the first screen prompt**, not P0.
 
 **At wireframe fidelity** the kickoff is the same shape but **structural**: open with *"low-fidelity
 grayscale wireframes — boxes-and-labels, no color/brand styling — focus on layout, hierarchy, and the
@@ -46,7 +48,8 @@ detail and focus on layout, hierarchy, and the full state set.
 
 ## Per-screen prompts (one message each, send as-is)
 
-Each is **self-contained** but references the kickoff rather than re-pasting tokens. Include:
+**Screen design starts here** — paste the first screen prompt only after the kickoff's questions are
+answered. Each is **self-contained** but references the kickoff rather than re-pasting tokens. Include:
 
 - **Purpose** of the screen, and **layout regions / hierarchy**.
 - The **full state set as separate frames** — populated, empty, loading, error (Claude Design produces
