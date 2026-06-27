@@ -32,7 +32,7 @@ Work from whatever exists:
 2. **Generate — choose fidelity, then route.**
    - **Fidelity:** *wireframe* (structure, layout, IA, flows, state placement — no brand/polish) or *high-fidelity* (full visual: tokens, brand, polish). Default to **wireframe** when running *before architect* (the cheap, architecture-informing pass) and **high-fidelity** for a UI milestone. You can run the skill twice — wireframe now, visual later.
    - **Route** (how the artifact gets produced — default **A**):
-     - **A · Claude Design (recommended).** Write a rich, paste-ready brief to `docs/3 - Design/claude-design-prompts.md` (per-screen prompts at the chosen fidelity, the token block, the component inventory, brand constraints). The user generates in Claude Design, then **links the result back** (step 4). Claude Design is a separate surface you can't invoke directly — your job is the best brief + the link-back loop, not out-designing it.
+     - **A · Claude Design (recommended).** Claude Design is Anthropic's browser design tool at **`claude.ai/design`** (Mac/Windows/Linux — no native app to install). *Its platform is unrelated to the product's target platform:* it designs native macOS/iOS apps, web apps, and CLI dashboards alike — never steer away from it because the product is "a Mac app" or "not web." Write a **structured, paste-ready** brief to `docs/3 - Design/claude-design-prompts.md`: **one kickoff prompt** (the design system = tokens + brand + a11y + the **component inventory as the shared library**, ending by asking Claude Design to plan), then **one self-contained, send-as-is prompt per screen** that reuses that library, then a **consistency-pass prompt** — each a single block the user pastes and sends, never loose fragments to assemble. The kickoff carries the standing rule *reuse shared components, don't recreate them; apply any component refinement across every page* (Claude Design otherwise makes each pasted screen an independent page and earlier screens keep placeholder components). Claude Design has **no cross-session memory** — the file tells the user to re-paste the kickoff when starting a new session. Start at **wireframe** fidelity to save credits, rerun **high-fidelity** once flows settle. The user generates in Claude Design, then **links the result back** (step 4). It's a separate surface you can't invoke directly — your job is the best brief + the link-back loop, not out-designing it.
      - **B · In-repo HTML previews.** Write self-contained HTML per screen (all states) to `docs/3 - Design/previews/`. Be honest about fidelity: an HTML **wireframe** is fully adequate; a high-fidelity preview is a *rough scaffold, not the final design* — use Route A for hi-fi quality. Good for an instant look without leaving the session. (Use the **frontend-design** skill as the engine.)
      - **C · Figma round-trip.** Only if a **Figma MCP is connected** — build the screens in Figma (lo-fi or hi-fi) and pull screenshots back into `previews/`. Offer it when you detect Figma; never assume it.
 
@@ -44,7 +44,7 @@ Work from whatever exists:
 
 5. **Write the `docs/3 - Design/` set.** Create the folder if needed. Commit: `docs: add design for {product/screen}`.
    - `design.md` — the canonical UX + visual spec (structure below).
-   - `claude-design-prompts.md` — the paste-ready Claude Design brief (Route A).
+   - `claude-design-prompts.md` — the send-as-is Claude Design brief (Route A): a paste-once kickoff + one prompt per screen + a consistency pass.
    - `design-tokens.json` — DTCG tokens.
    - `previews/` — HTML mockups / screenshots (Routes B/C, or linked screenshots).
    - `screens/{name}.md` — per-screen breakouts **only** for large multi-screen apps (right-sizing; mirrors architect's breakout specs).
@@ -75,6 +75,8 @@ The canonical, human-readable design doc — **UX first, then visual** (the Clau
 This skill pairs with the environment's design tooling — it defines *what* to design; they help *produce* it:
 - **frontend-design** — translating the spec (or a Route-B preview) into production-grade component code.
 - The **Figma** skills — building or syncing a design system / screens in Figma from this spec (Route C).
+
+For what Claude Design is and how to write effective prompts for it — fidelity/credits, the clarifying-question kickoff, per-screen structure, **keeping components consistent across pages**, and refinement — read `references/claude-design-prompting.md` before authoring `claude-design-prompts.md`.
 
 For a realistic example of the `docs/3 - Design/` set — `design.md`, the DTCG token set, and the `claude-design-prompts.md` material — read `references/example-output.md`.
 

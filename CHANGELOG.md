@@ -10,6 +10,12 @@ Move the Unreleased entries under a new version heading when you tag a release
 
 ## [Unreleased]
 
+### Changed
+- **`tstack-design` now emits send-as-is Claude Design prompts that stay consistent across pages — and stops spuriously steering away from Claude Design.** Three fixes to the Route-A brief: (1) `claude-design-prompts.md` is restructured from loose blocks the user had to stitch together ("paste the screen prompt *plus* the token block") into **one kickoff prompt (paste once) + one self-contained prompt per screen + a final consistency pass** — each a single block you paste and send. (2) The kickoff now hands Claude Design the **component inventory as a shared library** and every screen prompt instructs it to **reuse components, not recreate them, and to apply any refinement across all pages** (with an explicit consistency-pass prompt) — fixing the failure where pasting screens one-by-one made each an independent page and earlier screens kept placeholder components. (3) The skill now **grounds what Claude Design is** — a browser tool at `claude.ai/design` on Mac/Windows/Linux (no native app), whose platform is *independent of the product's target platform* — so it no longer invents a "macOS-only, not recommended" objection and skips its own recommended default route. Rewrote `SKILL.md` Route A + the artifact bullet + the reference handoff, and `references/example-output.md`'s prompts section.
+
+### Added
+- **`skills/tstack-design/references/claude-design-prompting.md`** — a best-practices reference for writing Claude Design prompts (what Claude Design is and its platforms, fidelity/credits, the clarifying-question kickoff, per-screen prompt anatomy, **cross-page component consistency**, refinement modes, and a pointer to `/design-sync`), cited to Anthropic's announcement + help center. `SKILL.md` points to it before authoring `claude-design-prompts.md`.
+
 ## [0.7.0] — 2026-06-25
 
 ### Added

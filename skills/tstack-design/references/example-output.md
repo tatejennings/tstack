@@ -75,33 +75,64 @@ Claude Code translates this into the chosen stack's config (Tailwind `theme` / C
 
 ## `claude-design-prompts.md` (Route A — paste into Claude Design)
 
-> Paste any screen prompt below, plus the token block, directly into Claude Design.
+> **How to use:** open `claude.ai/design`. Paste **Prompt 0** first and send it (re-paste it whenever you start a new session — Claude Design has no cross-session memory). Then paste each screen prompt below **as a single message** — they're complete on their own; nothing to assemble. Start at **wireframe** fidelity to save credits, then rerun **high-fidelity** once the flows feel right. End with the **consistency pass**.
 
-**Token block**
+### Prompt 0 — Kickoff (paste once, first)
 ```
-Background #FAFAF7, Surface #FFFFFF, Primary #4F46E5 (text on it #FFFFFF),
-Border #E7E5E4, Muted text #78716C, Success #15803D, Danger #C2410C.
-Inter / system-ui. Sizes 12–40, body line-height 1.5. Spacing 4–48 scale.
-Radius sm6/md10/lg16. Soft single-layer card shadows.
+You're designing HabitFlow, a calm, encouraging habit tracker. Calm and low-pressure,
+generous whitespace, one accent color used sparingly for progress. Wireframe fidelity for now.
+
+Design system — use these tokens everywhere, never hard-code values:
+- Color: bg #FAFAF7, surface #FFFFFF, primary #4F46E5 (text on it #FFFFFF),
+  border #E7E5E4, muted text #78716C, success #15803D, danger #C2410C.
+- Type: Inter / system-ui, sizes 12–40, body line-height 1.5.
+- Spacing 4–48 scale. Radius sm6/md10/lg16. Soft single-layer card shadows.
+
+Shared component library — build these once and REUSE them on every screen, don't recreate:
+- Button (primary / ghost / destructive; states default·hover·focus·disabled·loading)
+- HabitCard (active / completed-today / paused)
+- StreakBadge (active / broken), EmptyState, Toast (success / error)
+If you refine a shared component on any screen, apply that change to EVERY page that uses it.
+
+Brand & voice: accent indigo (#4F46E5) is the only saturated color — progress and primary
+action only. No red except genuine errors/destructive actions. Warm and brief, never guilt-tripping.
+Accessibility: meet WCAG 2.1 AA — AA text contrast, a clear keyboard focus ring, visible labels.
+
+Before designing, ask me any questions about the UX/UI that would make these screens as
+effective as possible.
 ```
 
-**Screen prompt — Dashboard (high-fidelity)**
+### Prompt 1 — Dashboard (Today)
 ```
-Design a habit-tracker dashboard, calm and encouraging with generous whitespace.
-Top bar: greeting ("Good morning, Sam") and today's date. Below: a vertical list
-of habit cards, each with name, a streak badge, and a large circular check control.
-A floating "Add habit" button bottom-right (primary indigo). Show four versions:
-(1) populated with 5 habits, two checked; (2) empty with a friendly illustration and
-"Add your first habit" CTA; (3) loading with 3 skeleton cards; (4) error "Couldn't
-load — retry". Use the token block. Ensure AA contrast and a clear keyboard focus ring.
+Design the Today dashboard for HabitFlow, using the design system and shared components from
+my first message (reuse them, don't recreate). Top bar: greeting ("Good morning, Sam") and
+today's date. Below: a vertical list of HabitCards, each with name, a StreakBadge, and a large
+circular check control. A floating "Add habit" Button bottom-right (primary).
+Show these four states as separate frames:
+(1) populated with 5 habits, two checked; (2) empty — EmptyState with a friendly illustration
+and "Add your first habit" CTA; (3) loading — 3 skeleton cards; (4) error — "Couldn't load — retry".
+Keep AA contrast and a clear keyboard focus ring. If this screen needs to extend HabitCard or
+Button, update that component everywhere it's used.
 ```
-*(For a **wireframe** pass, the same prompt drops color/brand: "low-fidelity grayscale wireframe, boxes-and-labels, no styling — focus on layout, hierarchy, and the four states.")*
 
-**Brand constraints**
+### Prompt 2 — Add Habit (modal)
 ```
-Accent indigo (#4F46E5) is the only saturated color — progress and primary action only.
-No red except genuine errors/destructive actions. Voice: warm and brief, never guilt-tripping.
+Design the Add Habit modal for HabitFlow, using the design system and shared components from my
+first message. Fields: name, cadence selector, color pick; Save (primary Button) / Cancel (ghost).
+Show these states as separate frames: default; error — inline validation on an empty name;
+loading — save in flight, Save button in its loading state. Trap focus in the modal, restore to
+the trigger on close, Esc closes. Reuse the Button component; if you adjust it, apply that across all pages.
 ```
+
+### Prompt 3 — Consistency pass (paste after all screens)
+```
+Review every page for component consistency. For each shared component (Button, HabitCard,
+StreakBadge, EmptyState, Toast), make sure all instances match one canonical version — promote
+the most refined version and apply it across all pages. Flag and fix anything that drifted from
+the design system (off-token colors, spacing, type) or any state I'm missing.
+```
+
+*(For a **wireframe** pass, Prompt 0 swaps in "low-fidelity grayscale wireframes — boxes-and-labels, no color/brand styling — focus on layout, hierarchy, and the state set," and screen prompts drop color/brand detail. Re-run the same prompts at high fidelity later by changing only that line.)*
 
 ---
 
