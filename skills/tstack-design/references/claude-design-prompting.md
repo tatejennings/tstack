@@ -20,10 +20,13 @@
 
 ## Fidelity & credits
 
+- **Claude Design does both fidelities** — wireframe → high-fidelity → interactive prototype. A
+  wireframe pass **still routes through Claude Design**; you write `claude-design-prompts.md` at
+  wireframe fidelity, you don't defer the brief to a later visual pass.
 - **Start at wireframe.** It's cheaper, faster to iterate, and the right altitude when design runs
   *before* `tstack-architect` (the architecture-informing pass). Rerun **high-fidelity** once flows settle.
 - Re-running the same prompts at a higher fidelity later should change **only** the fidelity line in
-  the kickoff — everything else stays put.
+  the kickoff (and add the color/brand tokens) — the structure, screens, and component library stay put.
 
 ## The kickoff prompt (paste once, first)
 
@@ -34,6 +37,12 @@ One message that establishes the **design system as the shared source of truth**
 - The **component inventory as a shared library** — name the components and their variants/states.
 - End with a planning ask, e.g. *"Before designing, ask me any questions about the UX/UI that would
   make these screens as effective as possible."* This makes Claude Design plan before spending tokens.
+
+**At wireframe fidelity** the kickoff is the same shape but **structural**: open with *"low-fidelity
+grayscale wireframes — boxes-and-labels, no color/brand styling — focus on layout, hierarchy, and the
+state set,"* keep the **component inventory** as the shared library and the **a11y intent**, and
+**omit the color/brand tokens** (they arrive on the high-fidelity rerun). Screen prompts drop visual
+detail and focus on layout, hierarchy, and the full state set.
 
 ## Per-screen prompts (one message each, send as-is)
 
